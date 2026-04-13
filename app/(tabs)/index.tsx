@@ -1,98 +1,123 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Text, RefreshControl, View, FlatList, ActivityIndicator } from "react-native"
+import { Suspense, useCallback, useRef, useState } from "react"
+import PagerView from "react-native-pager-view"
+import { SafeAreaView } from "react-native-safe-area-context"
+import { TabType } from "@/constants/type"
+import { Header } from "@/components/layout/header"
+import { commonStyles } from "@/styles/common-styles"
+import { useFollowingFeedQuery, useRecommendedFeedQuery } from "@/api/domains/post/queries"
+import { FeedCard } from "@/components/feed/FeedCard"
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+function FollowingFeedList() {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } = useFollowingFeedQuery()
+  const posts = data.pages.flatMap((page) => page)
 
-export default function HomeScreen() {
+  // 각 리스트가 자신의 새로고침 상태를 관리합니다.
+  const [refreshing, setRefreshing] = useState(false)
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true)
+    await refetch()
+    setRefreshing(false)
+  }, [refetch])
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
-
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
+    <FlatList
+      data={posts}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => <FeedCard post={item} />}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      onEndReached={() => {
+        if (hasNextPage && !isFetchingNextPage) fetchNextPage()
+      }}
+      onEndReachedThreshold={0.5}
+      ListFooterComponent={
+        isFetchingNextPage ? (
+          <ActivityIndicator size="small" style={{ marginVertical: 20 }} />
+        ) : null
+      }
+    />
+  )
 }
 
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
+// 2. 추천 피드 리스트 (새로고침 로직 포함)
+function RecommendedFeedList() {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } =
+    useRecommendedFeedQuery()
+  const posts = data.pages.flatMap((page) => page)
+
+  const [refreshing, setRefreshing] = useState(false)
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true)
+    await refetch()
+    setRefreshing(false)
+  }, [refetch])
+
+  return (
+    <FlatList
+      data={posts}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => <FeedCard post={item} />}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      onEndReached={() => {
+        if (hasNextPage && !isFetchingNextPage) fetchNextPage()
+      }}
+      onEndReachedThreshold={0.5}
+      ListFooterComponent={
+        isFetchingNextPage ? (
+          <ActivityIndicator size="small" style={{ marginVertical: 20 }} />
+        ) : null
+      }
+    />
+  )
+}
+
+export default function HomeScreen() {
+  const pagerRef = useRef<PagerView>(null)
+  const [activeTab, setActiveTab] = useState(0) // 0: following, 1: recommended
+
+  const handleTabChange = (tab: TabType) => {
+    const index = tab === "following" ? 0 : 1
+    setActiveTab(index)
+    pagerRef.current?.setPage(index)
+  }
+
+  return (
+    <SafeAreaView
+      style={commonStyles.container}
+      className="bg-semantic-bg-primary"
+      edges={["top", "left", "right"]}
+    >
+      <Header
+        activeTab={activeTab === 0 ? "following" : "recommended"}
+        onTabChange={handleTabChange}
+      />
+
+      <PagerView
+        ref={pagerRef}
+        style={{ flex: 1 }}
+        initialPage={0}
+        onPageSelected={(e) => setActiveTab(e.nativeEvent.position)}
+      >
+        <View key="following" style={{ flex: 1 }}>
+          <Suspense fallback={<ActivityIndicator size="large" style={{ marginTop: 50 }} />}>
+            <FollowingFeedList />
+          </Suspense>
+        </View>
+
+        <View key="recommended" style={{ flex: 1 }}>
+          <Suspense fallback={<ActivityIndicator size="large" style={{ marginTop: 50 }} />}>
+            <RecommendedFeedList />
+          </Suspense>
+        </View>
+      </PagerView>
+
+      {/* <CommentSheet commentSheetRef={commentSheetRef} comments={comments} />
+
+      <BottomSheet ref={additionSheetRef} index={1}>
+        <Text>이제 탭 바 위로 올라옵니다! 🎉</Text>
+      </BottomSheet> */}
+    </SafeAreaView>
+  )
+}

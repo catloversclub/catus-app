@@ -1,25 +1,39 @@
 {
   "expo": {
-    "name": "catus",
+    "name": "Catus",
     "slug": "catus",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/logo/ios-light.png",
     "scheme": "catus",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.catloversclub.catus.app",
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "usesAppleSignIn": true,
+      "infoPlist": {
+        "CFBundleDisplayName": "Catus",
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true,
+          "NSAllowsLocalNetworking": true
+        }
+      },
+      "icon": {
+        "dark": "./assets/images/logo/ios-dark.png",
+        "light": "./assets/images/logo/ios-light.png"
+      }
     },
     "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
-      },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.catloversclub.catus.app",
+      "googleServicesFile": "./google-services.json",
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "output": "static",
@@ -30,15 +44,50 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
+          "backgroundColor": "#FFF",
+          "image": "./assets/images/logo/col-light.png",
           "dark": {
-            "backgroundColor": "#000000"
+            "image": "./assets/images/logo/col-dark.png",
+            "backgroundColor": "#000"
+          },
+          "imageWidth": 200
+        }
+      ],
+      [
+        "@react-native-seoul/kakao-login",
+        {
+          "kakaoAppKey": "510bc3970b990aa960265ab40e5c434b",
+          "kotlinVersion": "1.9.0"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "extraMavenRepos": [
+              "https://devrepo.kakao.com/nexus/content/groups/public/"
+            ]
+          },
+          "ios": {
+            "useFrameworks": "static"
           }
         }
-      ]
+      ],
+      "expo-secure-store",
+      "expo-apple-authentication",
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.173729862302-hijqsljupaf8j2s7608uohn41rek3bnr"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "고양이 사진에 접근하여 친구들과 공유할 수 있습니다."
+        }
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true,
