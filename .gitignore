@@ -8,7 +8,6 @@ node_modules/
 dist/
 web-build/
 expo-env.d.ts
-# app.json
 
 # Native
 .kotlin/
@@ -44,5 +43,3 @@ yarn-error.*
 /android
 
 
-GoogleService-Info.plist
-google-services.json

@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "173729862302",
+    "project_id": "mobile-app-459609",
+    "storage_bucket": "mobile-app-459609.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:173729862302:android:440a1b1b12e5145032218f",
+        "android_client_info": {
+          "package_name": "com.catloversclub.catus.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "173729862302-4fke37quve1m651i9ugbfgj8pu52hvfn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjPa1kfZg-k0GuGGYaQKPtnNj-MyxrSDM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "173729862302-4fke37quve1m651i9ugbfgj8pu52hvfn.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "173729862302-hijqsljupaf8j2s7608uohn41rek3bnr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.catloversclub.catus"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:173729862302:android:c747870def9079e632218f",
+        "android_client_info": {
+          "package_name": "com.catus.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "173729862302-4fke37quve1m651i9ugbfgj8pu52hvfn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjPa1kfZg-k0GuGGYaQKPtnNj-MyxrSDM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "173729862302-4fke37quve1m651i9ugbfgj8pu52hvfn.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "173729862302-hijqsljupaf8j2s7608uohn41rek3bnr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.catloversclub.catus"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
