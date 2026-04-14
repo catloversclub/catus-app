@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Catus",
-    "slug": "catus",
+    "slug": "catus-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo/ios-light.png",
@@ -92,6 +92,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "9ef7cc24-3a82-4f5e-876f-f61d6c693e5a"
+      }
+    },
+    "owner": "minngyuseong"
   }
 }
