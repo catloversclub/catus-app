@@ -1,10 +1,10 @@
-const { hairlineWidth } = require("nativewind/theme")
-const semanticColors = require("./styles/semantic-colors")
-const baseColors = require("./styles/base-colors")
+const { hairlineWidth } = require("nativewind/theme");
+const semanticColors = require("./styles/semantic-colors");
+const baseColors = require("./styles/base-colors");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: "class",
+  darkMode: "media",
   content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
   presets: [require("nativewind/preset")],
   safelist: [
@@ -80,4 +80,4 @@ module.exports = {
     hoverOnlyWhenSupported: true,
   },
   plugins: [require("tailwindcss-animate")],
-}
+};
