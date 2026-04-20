@@ -1,16 +1,16 @@
-import { View, TouchableOpacity, Text } from "react-native"
-import { useRouter } from "expo-router"
-import { cn } from "@/lib/utils"
-import { useOnboardingStore } from "@/app/(onboarding)/store/useOnboardingStore"
-import OnboardingWrapper from "@/app/(onboarding)/components/OnboardingWrapper"
+import OnboardingWrapper from "@/components/OnboardingWrapper";
+import { cn } from "@/lib/utils";
+import { useOnboardingStore } from "@/store/useOnboardingStore";
+import { useRouter } from "expo-router";
+import { Text, TouchableOpacity, View } from "react-native";
 
 export default function Step2() {
-  const router = useRouter()
-  const { isCatOwner, setIsCatOwner } = useOnboardingStore()
+  const router = useRouter();
+  const { isCatOwner, setIsCatOwner } = useOnboardingStore();
 
   const handleNext = () => {
-    router.push("/(onboarding)/step3")
-  }
+    router.push("/(auth)/(onboarding)/step3");
+  };
 
   return (
     <OnboardingWrapper
@@ -47,5 +47,5 @@ export default function Step2() {
         </TouchableOpacity>
       </View>
     </OnboardingWrapper>
-  )
+  );
 }
