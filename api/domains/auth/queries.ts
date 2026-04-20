@@ -56,13 +56,14 @@ export const useLogin = () => {
 
     // 2. onSuccess: mutationFn이 성공적으로 끝났을 때의 후처리
     onSuccess: async (data) => {
+      console.log("login response:", data); // ✅ 응답 확인
       await SecureStore.setItemAsync("accessToken", data.accessToken);
       if (data.refreshToken) {
         await SecureStore.setItemAsync("refreshToken", data.refreshToken);
       }
 
       if (data.onboardingRequired) {
-        router.replace("/(onboarding)/step1");
+        router.replace("/(auth)/(onboarding)/step1");
       } else {
         router.replace("/(tabs)");
       }
@@ -97,7 +98,7 @@ export const useLogout = () => {
       // 모든 캐시 무효화 (다른 유저 정보 노출 방지)
       queryClient.clear();
 
-      router.replace("/");
+      router.replace("/(auth)/login");
     },
   });
 };
