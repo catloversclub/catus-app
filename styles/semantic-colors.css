@@ -14,7 +14,7 @@
 
     /* Icon */
     --semantic-icon-primary: #18181b;
-    --semantic-icon-secondary: #71717a;
+    --semantic-icon-secondary: #6d6d6d;
     --semantic-icon-tertiary: #a1a1aa;
     --semantic-icon-minor: #d4d4d8;
     --semantic-icon-accent: #facc15;
@@ -22,7 +22,7 @@
     --semantic-icon-error: #ef4444;
 
     /* Border */
-    --semantic-border-primary: #e4e4e7;
+    --semantic-border-primary: #e7e7e7;
     --semantic-border-secondary: #f4f4f5;
     --semantic-border-disabled: #f4f4f5;
     --semantic-border-accent: #facc15;
@@ -77,7 +77,7 @@
 
       /* Icon */
       --semantic-icon-primary: #fafafa;
-      --semantic-icon-secondary: #a1a1aa;
+      --semantic-icon-secondary: #bfbfbf;
       --semantic-icon-tertiary: #52525b;
       --semantic-icon-minor: #3f3f46;
       --semantic-icon-accent: #facc15;
@@ -85,7 +85,7 @@
       --semantic-icon-error: #f87171;
 
       /* Border */
-      --semantic-border-primary: #3f3f46;
+      --semantic-border-primary: #444444;
       --semantic-border-secondary: #27272a;
       --semantic-border-disabled: #52525b;
       --semantic-border-accent: #facc15;

@@ -72,7 +72,7 @@ export const light: SemanticColors = {
   },
   icon: {
     primary: "#18181b",
-    secondary: "#71717a",
+    secondary: "#6D6D6D",
     tertiary: "#a1a1aa",
     minor: "#d4d4d8",
     accent: "#facc15",
@@ -80,7 +80,7 @@ export const light: SemanticColors = {
     error: "#ef4444",
   },
   border: {
-    primary: "#e4e4e7",
+    primary: "#e7e7e7",
     secondary: "#f4f4f5",
     disabled: "#f4f4f5",
     accent: "#facc15",
@@ -139,7 +139,7 @@ export const dark: SemanticColors = {
   },
   icon: {
     primary: "#fafafa",
-    secondary: "#a1a1aa",
+    secondary: "#BFBFBF",
     tertiary: "#52525b",
     minor: "#3f3f46",
     accent: "#facc15",
@@ -147,7 +147,7 @@ export const dark: SemanticColors = {
     error: "#f87171",
   },
   border: {
-    primary: "#3f3f46",
+    primary: "#444444",
     secondary: "#27272a",
     disabled: "#52525b",
     accent: "#facc15",
