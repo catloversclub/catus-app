@@ -1,12 +1,7 @@
 export interface AttributeItem {
-  id: number
-  name: string
+  id: number;
+  label: string;
 }
 
-export interface GetAppearanceResponse {
-  items: AttributeItem[]
-}
-
-export interface GetPersonalityResponse {
-  items: AttributeItem[]
-}
+export type GetAppearanceResponse = AttributeItem[];
+export type GetPersonalityResponse = AttributeItem[];
