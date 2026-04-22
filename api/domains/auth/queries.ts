@@ -59,6 +59,7 @@ export const useLogin = () => {
       console.log("login response:", data); // ✅ 응답 확인
       await SecureStore.setItemAsync("accessToken", data.accessToken);
       if (data.refreshToken) {
+        console.log("refreshToken:", data.refreshToken); // ✅ 리프레시 토큰 확인
         await SecureStore.setItemAsync("refreshToken", data.refreshToken);
       }
 
