@@ -1,57 +1,84 @@
+import { Comment } from "@/api/domains/comment/types";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion"
-import { Text } from "@/components/ui/text"
-import { cn, formatRelativeTime } from "@/lib/utils"
-import { View, Pressable } from "react-native"
-import { Comment } from "@/api/domains/comment/types"
-import { Image } from "expo-image"
-import { useState } from "react"
-import Profile from "@/components/user/Profile"
+} from "@/components/ui/accordion";
+import { Text } from "@/components/ui/text";
+import ProfileImage from "@/components/user/profile-image";
+import { cn, formatRelativeTime } from "@/lib/utils";
+import { Image } from "expo-image";
+import { useState } from "react";
+import { Pressable, useColorScheme, View } from "react-native";
 
 const ReplyItem = ({ reply }: { reply: Comment }) => {
-  const authorImage = reply.author.profileImageUrl || require("@/assets/images/default-avatar.png")
+  const scheme = useColorScheme();
+  const defaultAvatar =
+    scheme === "dark"
+      ? require("@/assets/images/avatar/user-dark.png")
+      : require("@/assets/images/avatar/user-light.png");
+  const imageSource = reply.author.profileImageUrl
+    ? { uri: reply.author.profileImageUrl }
+    : defaultAvatar;
 
   return (
     <View className="flex-row items-start gap-3 p-3 pl-12">
       <Image
-        source={authorImage}
+        source={imageSource}
         style={{ width: 36, height: 36, borderRadius: 36 }}
         contentFit="cover"
       />
       <View className="flex-col">
-        <Text className="typo-label1 text-semantic-text-secondary">{reply.author.nickname}</Text>
-        <Text className="typo-body4 mt-1 text-semantic-text-primary">{reply.content}</Text>
+        <Text className="typo-label1 text-semantic-text-secondary">
+          {reply.author.nickname}
+        </Text>
+        <Text className="typo-body4 mt-1 text-semantic-text-primary">
+          {reply.content}
+        </Text>
         <Text className="typo-label1 mt-1.5 text-semantic-text-secondary">
           {formatRelativeTime(reply.createdAt)}
         </Text>
       </View>
     </View>
-  )
-}
+  );
+};
 
 type CommentProps = {
-  comment: Comment
-}
+  comment: Comment;
+};
 
 const CommentItem = ({ comment }: CommentProps) => {
   // 💡 1. undefined 대신 빈 문자열("")을 사용하여 상태 제어 충돌 방지
-  const [expandedValue, setExpandedValue] = useState<string>("")
-  const isExpanded = expandedValue === "replies"
+  const [expandedValue, setExpandedValue] = useState<string>("");
+  const isExpanded = expandedValue === "replies";
 
-  const { id, author, parentId, content, isLikedByMe, createdAt, replies } = comment
-  const authorImage = author.profileImageUrl || require("@/assets/images/default-avatar.png")
-
+  const { id, author, parentId, content, isLikedByMe, createdAt, replies } =
+    comment;
+  const scheme = useColorScheme();
+  const defaultAvatar =
+    scheme === "dark"
+      ? require("@/assets/images/avatar/user-dark.png")
+      : require("@/assets/images/avatar/user-light.png");
+  const imageSource = author.profileImageUrl
+    ? { uri: author.profileImageUrl }
+    : defaultAvatar;
   return (
     <View className="flex-col">
       <View className="flex-row items-start gap-3 p-3">
-        <Profile user={author} />
+        <ProfileImage
+          imageUrl={imageSource}
+          userId={author.id}
+          isUserLink
+          size="sm"
+        />
         <View className="flex-col">
-          <Text className="typo-label1 text-semantic-text-secondary">{author.nickname}</Text>
-          <Text className="typo-body4 mt-1 text-semantic-text-primary">{content}</Text>
+          <Text className="typo-label1 text-semantic-text-secondary">
+            {author.nickname}
+          </Text>
+          <Text className="typo-body4 mt-1 text-semantic-text-primary">
+            {content}
+          </Text>
           <Text className="typo-label1 mt-1.5 text-semantic-text-secondary">
             {formatRelativeTime(createdAt)}
           </Text>
@@ -63,7 +90,9 @@ const CommentItem = ({ comment }: CommentProps) => {
           type="single"
           collapsible
           value={expandedValue}
-          onValueChange={(value: string | undefined) => setExpandedValue(value ?? "")}
+          onValueChange={(value: string | undefined) =>
+            setExpandedValue(value ?? "")
+          }
         >
           <AccordionItem value="replies">
             {/* 유일한 Trigger: 열려있을 땐 공간을 유지한 채 숨김(hidden) */}
@@ -92,7 +121,9 @@ const CommentItem = ({ comment }: CommentProps) => {
                   onPress={() => setExpandedValue("")} // 빈 문자열로 리셋하여 아코디언을 닫음
                 >
                   <View className="h-[1px] w-4 bg-semantic-border-primary" />
-                  <Text className="typo-label1 text-semantic-text-tertiary">답글 닫기</Text>
+                  <Text className="typo-label1 text-semantic-text-tertiary">
+                    답글 닫기
+                  </Text>
                 </Pressable>
               </View>
             </AccordionContent>
@@ -102,7 +133,7 @@ const CommentItem = ({ comment }: CommentProps) => {
         <View className="h-5" />
       )}
     </View>
-  )
-}
+  );
+};
 
-export { CommentItem }
+export { CommentItem };
