@@ -1,88 +1,132 @@
-import { useState, useCallback } from "react"
-import { View, Text, FlatList, useWindowDimensions, ViewToken, Pressable } from "react-native"
-import { Image } from "expo-image"
-import { Link } from "expo-router"
+import { Image } from "expo-image";
+import { Link } from "expo-router";
+import { useCallback, useRef, useState } from "react";
+import {
+  FlatList,
+  Pressable,
+  Text,
+  useColorScheme,
+  useWindowDimensions,
+  View,
+  ViewToken,
+} from "react-native";
 
-import { Post, PostImage } from "@/api/domains/post/types"
-import { CAROUSEL_CONFIG } from "@/constants/config"
-import { formatRelativeTime, getMediaUrl } from "@/lib/utils"
-import { Heart, MessageCircle, Bookmark, MoreVertical } from "@/lib/icons"
 import {
   useBookmarkMutation,
   useLikePostMutation,
   useUnbookmarkMutation,
   useUnlikePostMutation,
-} from "@/api/domains/post/queries"
-import { LinearGradient } from "expo-linear-gradient"
+} from "@/api/domains/post/queries";
+import { Post, PostImage } from "@/api/domains/post/types";
+
+import MoreIcon from "@/assets/icons/more.svg";
+import { CommentSheet } from "@/components/bottom-sheet/comment-sheet";
+import { MoreSheet } from "@/components/bottom-sheet/more-sheet";
+import { CAROUSEL_CONFIG } from "@/constants/config";
+import { Bookmark, Heart, MessageCircle } from "@/lib/icons";
+import { formatRelativeTime, getMediaUrl } from "@/lib/utils";
+import { dark, light } from "@/styles/semantic-colors";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { LinearGradient } from "expo-linear-gradient";
 
 interface FeedCardProps {
-  post: Post
-  isDetail?: boolean // 선택적 prop으로 설정
+  post: Post;
+  isDetail?: boolean; // 선택적 prop으로 설정
+  // CommentSheetModalRef?: React.RefObject<BottomSheetModal | null>;
+  // MoreSheetModalRef: React.RefObject<BottomSheetModal | null>;
 }
 
-export function FeedCard({ post, isDetail = false }: FeedCardProps) {
-  const [current, setCurrent] = useState(0)
+export function FeedCard({
+  post,
+  isDetail = false,
+  // CommentSheetModalRef,
+  // MoreSheetModalRef,
+}: FeedCardProps) {
+  const [current, setCurrent] = useState(0);
 
-  const { width } = useWindowDimensions()
-  const CAROUSEL_WIDTH = width - 32
+  const { width } = useWindowDimensions();
+  const CAROUSEL_WIDTH = width - 32;
 
   // 화면에 보이는 아이템이 바뀔 때 인덱스 업데이트
   const onViewableItemsChanged = useCallback(
     ({ viewableItems }: { viewableItems: ViewToken<PostImage>[] }) => {
       if (viewableItems.length > 0) {
-        setCurrent(viewableItems[0].index || 0)
+        setCurrent(viewableItems[0].index || 0);
       }
     },
     [],
-  )
+  );
 
-  const { mutate: likePost } = useLikePostMutation()
-  const { mutate: unlikePost } = useUnlikePostMutation()
+  const { mutate: likePost } = useLikePostMutation();
+  const { mutate: unlikePost } = useUnlikePostMutation();
 
-  const { mutate: bookmarkPost } = useBookmarkMutation()
-  const { mutate: unbookmarkPost } = useUnbookmarkMutation()
+  const { mutate: bookmarkPost } = useBookmarkMutation();
+  const { mutate: unbookmarkPost } = useUnbookmarkMutation();
 
   const handleLike = () => {
     // 좋아요 여부에 따라 적절한 mutation 호출
     if (post.isLikedByMe) {
-      unlikePost({ postId: post.id })
+      unlikePost({ postId: post.id });
     } else {
-      likePost({ postId: post.id })
+      likePost({ postId: post.id });
     }
-  }
+  };
 
   const handleBookmark = () => {
     if (post.isBookmarkedByMe) {
-      unbookmarkPost({ postId: post.id })
+      unbookmarkPost({ postId: post.id });
     } else {
-      bookmarkPost({ postId: post.id })
+      bookmarkPost({ postId: post.id });
     }
-  }
+  };
 
-  const handleCommentPress = () => {
-    // 댓글창으로 이동
-    // router.push(`/post/${post.id}#comments`)
-  }
+  // ref
+  const CommentSheetModalRef = useRef<BottomSheetModal>(null);
+  const MoreSheetModalRef = useRef<BottomSheetModal>(null);
 
-  const catName = post.cat.name
-  const catImage = post.cat.profileImageUrl || require("@/assets/images/default-avatar.png")
-  const daysAgo = formatRelativeTime(post.createdAt)
+  // callbacks
+  const handleCommentPress = useCallback(() => {
+    CommentSheetModalRef?.current?.present();
+  }, []);
+
+  const handleMorePress = useCallback(() => {
+    MoreSheetModalRef.current?.present();
+  }, []);
+
+  const scheme = useColorScheme();
+  const colors = scheme === "dark" ? dark : light;
+
+  const catName = post.cat.name;
+  const defaultAvatar =
+    scheme === "dark"
+      ? require("@/assets/images/avatar/user-dark.png")
+      : require("@/assets/images/avatar/user-light.png");
+  const imageSource = post.cat.profileImageUrl
+    ? { uri: post.cat.profileImageUrl }
+    : defaultAvatar;
+
+  const daysAgo = formatRelativeTime(post.createdAt);
 
   const ProfileInfo = (
     <View className="flex-row items-center justify-between">
       <View className="flex-row items-center gap-3">
         <Image
-          source={catImage}
+          source={imageSource}
           style={{ width: 36, height: 36, borderRadius: 36 }}
           contentFit="cover"
         />
         <View className="flex-col">
-          <Text className="typo-body3 text-semantic-text-primary">{catName}</Text>
-          <Text className="typo-label1 text-semantic-text-secondary">{daysAgo}</Text>
+          <Text className="typo-body3 text-semantic-text-primary">
+            {catName}
+          </Text>
+          <Text className="typo-label1 text-semantic-text-secondary">
+            {daysAgo}
+          </Text>
         </View>
       </View>
+      <MoreIcon onPress={handleMorePress} color={colors.icon.primary} />
     </View>
-  )
+  );
 
   return (
     <View className="mb-5 flex-col gap-4 px-4">
@@ -110,7 +154,13 @@ export function FeedCard({ post, isDetail = false }: FeedCardProps) {
         />
         <LinearGradient
           colors={["transparent", "rgba(0,0,0,0.6)"]}
-          style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 80 }}
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: 80,
+          }}
           pointerEvents="none" // ✨ 필수
         />
         {post.images.length > 1 && (
@@ -137,8 +187,14 @@ export function FeedCard({ post, isDetail = false }: FeedCardProps) {
               />
             </Pressable>
 
-            <Pressable onPress={handleCommentPress} className="active:opacity-60">
-              <MessageCircle size={20} className="text-semantic-text-tertiary" />
+            <Pressable
+              onPress={handleCommentPress}
+              className="active:opacity-60"
+            >
+              <MessageCircle
+                size={20}
+                className="text-semantic-text-tertiary"
+              />
             </Pressable>
 
             <Pressable onPress={handleBookmark} className="active:opacity-60">
@@ -162,7 +218,9 @@ export function FeedCard({ post, isDetail = false }: FeedCardProps) {
             <View
               key={index}
               className={`h-1.5 w-1.5 rounded-full ${
-                index === current ? "bg-semantic-icon-accent" : "bg-semantic-icon-minor" // 색상은 프로젝트 테마에 맞게 수정 필요
+                index === current
+                  ? "bg-semantic-icon-accent"
+                  : "bg-semantic-icon-minor" // 색상은 프로젝트 테마에 맞게 수정 필요
               }`}
             />
           ))}
@@ -174,7 +232,7 @@ export function FeedCard({ post, isDetail = false }: FeedCardProps) {
       {isDetail && (
         <>
           <View className="typo-body4">
-            <Text>{post.content}</Text>
+            <Text className="text-semantic-text-primary">{post.content}</Text>
           </View>
           <View className="flex-row items-center justify-end gap-4">
             <Pressable onPress={handleLike} className="active:opacity-60">
@@ -201,6 +259,11 @@ export function FeedCard({ post, isDetail = false }: FeedCardProps) {
           </View>
         </>
       )}
+      <CommentSheet
+        CommentSheetModalRef={CommentSheetModalRef}
+        postId={post.id}
+      />
+      <MoreSheet MoreSheetModalRef={MoreSheetModalRef} />
     </View>
-  )
+  );
 }

@@ -1,15 +1,15 @@
 // ... 기존 import에 추가
+import Avatar from "@/components/post/Avatar";
+import CustomDescription from "@/components/post/CustomDescription";
+import CustomSwitch from "@/components/post/CustomSwitch";
+import CustomTextInput from "@/components/post/CustomTextInput";
+import CustomTitle from "@/components/post/CustomTitle";
+import ImagePager from "@/components/post/ImagePager";
 import { router, useLocalSearchParams } from "expo-router";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
-import { View, Text, Switch } from "react-native";
+import { View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import ImagePager from "./components/ImagePager";
-import CustomTextInput from "./components/CustomTextInput";
-import CustomTitle from "./components/CustomTitle";
-import CustomDescription from "./components/CustomDescription";
-import CustomSwitch from "./components/CustomSwitch";
-import Avatar from "./components/Avatar";
 
 export default function EditListScreen() {
   // ... 기존 images 파싱 로직

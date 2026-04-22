@@ -1,83 +1,101 @@
-import { Stack, useLocalSearchParams, useRouter } from "expo-router"
-import { Suspense, useCallback, useState } from "react"
+import { Image } from "expo-image";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { Suspense, useCallback, useState } from "react";
 import {
   ActivityIndicator,
-  RefreshControl,
-  View,
-  Text,
-  Pressable,
   FlatList,
+  Pressable,
+  RefreshControl,
+  Text,
+  useColorScheme,
   useWindowDimensions,
-} from "react-native"
-import { Image } from "expo-image"
+  View,
+} from "react-native";
 
 // 💡 훅 임포트 경로는 프로젝트에 맞게 수정해 주세요.
+import { useUserPostsQuery } from "@/api/domains/post/queries";
 import {
-  useUserDetailQuery, // 특정 유저 조회 훅 (useUserProfileQuery는 /me 이므로 이걸 써야 합니다)
   useFollowUserMutation,
   useUnfollowUserMutation,
-} from "@/api/domains/user/queries"
-import { getMediaUrl } from "@/lib/utils"
-import { useUserPostsQuery } from "@/api/domains/post/queries"
+  useUserDetailQuery, // 특정 유저 조회 훅 (useUserProfileQuery는 /me 이므로 이걸 써야 합니다)
+} from "@/api/domains/user/queries";
+import { getMediaUrl } from "@/lib/utils";
 
 function UserDetailContent({ userId }: { userId: string }) {
-  const router = useRouter()
+  const router = useRouter();
 
   // 💡 3열 그리드를 위해 화면 가로폭을 3으로 나눕니다.
-  const { width } = useWindowDimensions()
-  const GRID_ITEM_SIZE = width / 3
+  const { width } = useWindowDimensions();
+  const GRID_ITEM_SIZE = width / 3;
 
-  console.log(userId)
+  console.log(userId);
 
   // 1. 프로필과 게시물 데이터 병렬 패칭 (Suspense 덕분에 둘 다 로딩 완료되어야 렌더링됨)
-  const { data: profile, refetch: refetchProfile } = useUserDetailQuery(userId)
-  const { data: posts, refetch: refetchPosts } = useUserPostsQuery(userId)
+  const { data: profile, refetch: refetchProfile } = useUserDetailQuery(userId);
+  const { data: posts, refetch: refetchPosts } = useUserPostsQuery(userId);
 
-  const [refreshing, setRefreshing] = useState(false)
+  const [refreshing, setRefreshing] = useState(false);
 
-  const { mutate: followUser } = useFollowUserMutation()
-  const { mutate: unfollowUser } = useUnfollowUserMutation()
+  const { mutate: followUser } = useFollowUserMutation();
+  const { mutate: unfollowUser } = useUnfollowUserMutation();
 
   // 2. 당겨서 새로고침 시 프로필과 게시물을 동시에 리패칭
   const onRefresh = useCallback(async () => {
-    setRefreshing(true)
-    await Promise.all([refetchProfile(), refetchPosts()])
-    setRefreshing(false)
-  }, [refetchProfile, refetchPosts])
+    setRefreshing(true);
+    await Promise.all([refetchProfile(), refetchPosts()]);
+    setRefreshing(false);
+  }, [refetchProfile, refetchPosts]);
 
   // 💡 [확인 필요] 서버에서 내려주는 '팔로우 여부' 필드명으로 수정하세요.
-  const isFollowing = profile.isFollowing || false
+  const isFollowing = profile.isFollowing || false;
 
   // 3. 팔로우 버튼 토글 핸들러
   const handleFollowToggle = () => {
     if (isFollowing) {
-      unfollowUser(userId)
+      unfollowUser(userId);
     } else {
-      followUser(userId)
+      followUser(userId);
     }
-  }
+  };
 
-  const nickname = profile.nickname || "알 수 없는 사용자"
-  const profileImage = profile.profileImageUrl || require("@/assets/images/default-avatar.png")
+  const nickname = profile.nickname || "알 수 없는 사용자";
+  const scheme = useColorScheme();
+  const defaultAvatar =
+    scheme === "dark"
+      ? require("@/assets/images/avatar/user-dark.png")
+      : require("@/assets/images/avatar/user-light.png");
+  const imageSource = profile.profileImageUrl
+    ? { uri: profile.profileImageUrl }
+    : defaultAvatar;
 
   // 4. 프로필 영역 UI (FlatList의 Header로 들어갑니다)
   const renderHeader = () => (
     <View className="flex-col items-center border-b border-semantic-border-primary px-4 py-8">
       <Image
-        source={typeof profileImage === "string" ? { uri: profileImage } : profileImage}
+        source={imageSource}
         style={{ width: 80, height: 80, borderRadius: 40 }}
         contentFit="cover"
       />
-      <Text className="typo-h3 mt-4 text-semantic-text-primary">{nickname}</Text>
+      <Text className="typo-h3 mt-4 text-semantic-text-primary">
+        {nickname}
+      </Text>
 
       <View className="mt-4 flex-row items-center gap-8">
         <View className="flex-col items-center">
-          <Text className="typo-body1 text-semantic-text-primary">{profile.followerCount}</Text>
-          <Text className="typo-label2 text-semantic-text-secondary">팔로워</Text>
+          <Text className="typo-body1 text-semantic-text-primary">
+            {profile.followerCount}
+          </Text>
+          <Text className="typo-label2 text-semantic-text-secondary">
+            팔로워
+          </Text>
         </View>
         <View className="flex-col items-center">
-          <Text className="typo-body1 text-semantic-text-primary">{profile.followingCount}</Text>
-          <Text className="typo-label2 text-semantic-text-secondary">팔로잉</Text>
+          <Text className="typo-body1 text-semantic-text-primary">
+            {profile.followingCount}
+          </Text>
+          <Text className="typo-label2 text-semantic-text-secondary">
+            팔로잉
+          </Text>
         </View>
       </View>
 
@@ -88,12 +106,14 @@ function UserDetailContent({ userId }: { userId: string }) {
           isFollowing ? "bg-semantic-bg-secondary" : "bg-semantic-icon-accent"
         }`}
       >
-        <Text className={`typo-sub1 ${isFollowing ? "text-semantic-text-primary" : "text-white"}`}>
+        <Text
+          className={`typo-sub1 ${isFollowing ? "text-semantic-text-primary" : "text-white"}`}
+        >
           {isFollowing ? "팔로잉" : "팔로우"}
         </Text>
       </Pressable>
     </View>
-  )
+  );
 
   return (
     <>
@@ -106,11 +126,13 @@ function UserDetailContent({ userId }: { userId: string }) {
         keyExtractor={(item) => item.id}
         numColumns={3} // 3열 설정
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
         ListHeaderComponent={renderHeader} // 프로필을 헤더에 부착
         renderItem={({ item }) => {
           // 게시물의 첫 번째 이미지 추출
-          const firstImage = item.images?.[0]?.url
+          const firstImage = item.images?.[0]?.url;
 
           return (
             <Pressable
@@ -132,7 +154,7 @@ function UserDetailContent({ userId }: { userId: string }) {
                 <View style={{ flex: 1, backgroundColor: "#f0f0f0" }} />
               )}
             </Pressable>
-          )
+          );
         }}
         // 게시물이 없을 때 보여줄 UI
         ListEmptyComponent={
@@ -144,18 +166,20 @@ function UserDetailContent({ userId }: { userId: string }) {
         }
       />
     </>
-  )
+  );
 }
 
 // 💡 최상위 래퍼 (Suspense)
 export default function UserDetailScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>()
+  const { id } = useLocalSearchParams<{ id: string }>();
 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <Suspense
         fallback={
-          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
             <ActivityIndicator size="large" color="#000" />
           </View>
         }
@@ -163,5 +187,5 @@ export default function UserDetailScreen() {
         <UserDetailContent userId={id} />
       </Suspense>
     </View>
-  )
+  );
 }

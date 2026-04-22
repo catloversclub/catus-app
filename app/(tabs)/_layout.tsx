@@ -1,38 +1,55 @@
 // app/(tabs)/_layout.tsx (또는 TabsLayout 파일)
-import { Tabs } from "expo-router"
-import { TouchableOpacity, View, useColorScheme } from "react-native"
-import HouseIcon from "@/assets/icons/house.svg"
-import ExploreIcon from "@/assets/icons/explore.svg"
-import CameraIcon from "@/assets/icons/camera.svg"
-import BellIcon from "@/assets/icons/bell.svg"
-import PersonIcon from "@/assets/icons/person.svg"
-import { HapticTab } from "@/components/haptic-tab"
-import { useImagePicker } from "@/hooks/useImagePicker" // 방금 만든 훅 임포트
+import BellIcon from "@/assets/icons/bell.svg";
+import CameraIcon from "@/assets/icons/camera.svg";
+import ExploreIcon from "@/assets/icons/explore.svg";
+import HouseIcon from "@/assets/icons/house.svg";
+import PersonIcon from "@/assets/icons/person.svg";
+import { HapticTab } from "@/components/haptic-tab";
+import { useImagePicker } from "@/hooks/useImagePicker"; // 방금 만든 훅 임포트
+import { dark, light } from "@/styles/semantic-colors";
+import { Tabs } from "expo-router";
+import { TouchableOpacity, View, useColorScheme } from "react-native";
 
 type TabScreenConfig = {
-  name: string
-  title?: string
-  Icon?: React.ElementType
-  width?: number
-  height?: number
-  isCustom?: boolean
-}
+  name: string;
+  title?: string;
+  Icon?: React.ElementType;
+  width?: number;
+  height?: number;
+  isCustom?: boolean;
+};
 
 // 2. 배열에 타입 적용
 const TAB_SCREENS: TabScreenConfig[] = [
   { name: "index", title: "Home", Icon: HouseIcon, width: 20, height: 20 },
-  { name: "explore", title: "Explore", Icon: ExploreIcon, width: 20, height: 20 },
+  {
+    name: "explore",
+    title: "Explore",
+    Icon: ExploreIcon,
+    width: 20,
+    height: 20,
+  },
   { name: "camera", isCustom: true },
-  { name: "notifications", title: "Notifications", Icon: BellIcon, width: 16, height: 20 },
-  { name: "setting", title: "Setting", Icon: PersonIcon, width: 20, height: 20 },
-]
+  {
+    name: "notifications",
+    title: "Notifications",
+    Icon: BellIcon,
+    width: 16,
+    height: 20,
+  },
+  {
+    name: "mypage",
+    title: "My Page",
+    Icon: PersonIcon,
+    width: 20,
+    height: 20,
+  },
+];
 
 export default function TabsLayout() {
-  const { handleCameraPress } = useImagePicker()
-  const colorScheme = useColorScheme()
-
-  const tabActiveIconColor = colorScheme === "dark" ? "#fafafa" : "#18181b"
-  const tabInactiveIconColor = colorScheme === "dark" ? "#fafafa" : "#18181b"
+  const { handleCameraPress } = useImagePicker();
+  const scheme = useColorScheme();
+  const colors = scheme === "dark" ? dark : light;
 
   return (
     <Tabs
@@ -40,14 +57,14 @@ export default function TabsLayout() {
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarShowLabel: false,
-        tabBarActiveTintColor: tabActiveIconColor,
-        tabBarInactiveTintColor: tabInactiveIconColor,
+        tabBarActiveTintColor: colors.icon.primary,
+        tabBarInactiveTintColor: colors.icon.primary,
         tabBarStyle: {
           height: 80,
           paddingTop: 5,
-          backgroundColor: "transparent",
+          backgroundColor: colors.bg.primary,
+          borderTopColor: colors.bg.primary,
         },
-        tabBarBackground: () => <View className="flex-1 bg-semantic-bg-primary" />,
       }}
     >
       {TAB_SCREENS.map((tab) => {
@@ -69,11 +86,11 @@ export default function TabsLayout() {
                 ),
               }}
             />
-          )
+          );
         }
 
         // 3. 렌더링할 컴포넌트를 대문자 변수(Icon)에 할당
-        const Icon = tab.Icon
+        const Icon = tab.Icon;
 
         return (
           <Tabs.Screen
@@ -83,13 +100,15 @@ export default function TabsLayout() {
               title: tab.title,
               tabBarIcon: ({ color }) => {
                 // Icon이 존재할 때만 렌더링하도록 예외 처리 (타입스크립트 에러 방지)
-                if (!Icon) return null
-                return <Icon width={tab.width} height={tab.height} color={color} />
+                if (!Icon) return null;
+                return (
+                  <Icon width={tab.width} height={tab.height} color={color} />
+                );
               },
             }}
           />
-        )
+        );
       })}
     </Tabs>
-  )
+  );
 }

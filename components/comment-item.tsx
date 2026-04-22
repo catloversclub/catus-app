@@ -1,12 +1,11 @@
-import React, { memo } from "react"
-import { View, Text, TouchableOpacity } from "react-native"
-import { Image } from "expo-image"
-import { Comment } from "@catus/constants"
+import { Image } from "expo-image";
+import React, { memo } from "react";
+import { Text, TouchableOpacity, View } from "react-native";
 
 interface CommentItemProps {
-  item: Comment
-  onReply?: (id: string, author: string) => void
-  isReply?: boolean
+  item: Comment;
+  onReply?: (id: string, author: string) => void;
+  isReply?: boolean;
 }
 
 const CommentItem = ({ item, onReply, isReply = false }: CommentItemProps) => {
@@ -29,12 +28,16 @@ const CommentItem = ({ item, onReply, isReply = false }: CommentItemProps) => {
       <View className="ml-3 flex-1">
         {/* 헤더 */}
         <View className="mb-0.5 flex-row items-center">
-          <Text className="mr-2 text-[13px] font-bold text-gray-800">{item?.author}</Text>
+          <Text className="mr-2 text-[13px] font-bold text-gray-800">
+            {item?.author}
+          </Text>
           <Text className="text-[12px] text-gray-400">{item?.timeAgo}</Text>
         </View>
 
         {/* 내용 */}
-        <Text className="text-[14px] leading-5 text-gray-900">{item?.content}</Text>
+        <Text className="text-[14px] leading-5 text-gray-900">
+          {item?.content}
+        </Text>
 
         {/* 푸터 */}
         <View className="mt-2 flex-row items-center">
@@ -42,7 +45,9 @@ const CommentItem = ({ item, onReply, isReply = false }: CommentItemProps) => {
             onPress={() => onReply?.(item?.id, item?.author)}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <Text className="text-[12px] font-semibold text-gray-500">답글 달기</Text>
+            <Text className="text-[12px] font-semibold text-gray-500">
+              답글 달기
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity className="ml-4">
@@ -59,7 +64,7 @@ const CommentItem = ({ item, onReply, isReply = false }: CommentItemProps) => {
         </View>
       </View>
     </View>
-  )
-}
+  );
+};
 
-export default memo(CommentItem)
+export default memo(CommentItem);
