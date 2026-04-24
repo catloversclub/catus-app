@@ -35,7 +35,7 @@ export default function SettingsLayout() {
         }}
       />
       <Stack.Screen
-        name="terms"
+        name="terms-of-service"
         options={{
           title: "서비스 이용약관",
           headerTintColor: colors.text.primary,
