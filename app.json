@@ -19,6 +19,9 @@
         "NSAppTransportSecurity": {
           "NSAllowsArbitraryLoads": true,
           "NSAllowsLocalNetworking": true
+        },
+        "entitlements": {
+          "aps-environment": "development"
         }
       },
       "icon": {
