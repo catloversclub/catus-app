@@ -1,35 +1,38 @@
-import React from "react"
-import { View, Text, TouchableOpacity, useColorScheme } from "react-native"
-import { TabType } from "@/constants/type"
-import { Image } from "expo-image"
+import { FeedType } from "@/constants/tab";
+import { Image } from "expo-image";
+import React from "react";
+import { Text, TouchableOpacity, useColorScheme, View } from "react-native";
 
-const TABS: { label: string; value: TabType }[] = [
+const TABS: { label: string; value: FeedType }[] = [
   { label: "팔로잉", value: "following" },
   { label: "추천", value: "recommended" },
-]
+];
 
 interface TabButtonProps {
-  label: string
-  value: TabType
-  isActive: boolean
-  onPress: (value: TabType) => void
+  label: string;
+  value: FeedType;
+  isActive: boolean;
+  onPress: (value: FeedType) => void;
 }
 
 function TabButton({ label, value, isActive, onPress }: TabButtonProps) {
   return (
-    <TouchableOpacity className={"flex-1 rounded-lg py-3"} onPress={() => onPress(value)}>
+    <TouchableOpacity
+      className={"flex-1 rounded-lg py-3"}
+      onPress={() => onPress(value)}
+    >
       <Text
         className={`typo-title3 text-center ${isActive ? "text-semantic-text-success" : "text-gray-600"}`}
       >
         {label}
       </Text>
     </TouchableOpacity>
-  )
+  );
 }
 
 interface HeaderProps {
-  activeTab: TabType
-  onTabChange: (tab: TabType) => void
+  activeTab: FeedType;
+  onTabChange: (tab: FeedType) => void;
 }
 
 export function Header({ activeTab, onTabChange }: HeaderProps) {
@@ -51,11 +54,11 @@ export function Header({ activeTab, onTabChange }: HeaderProps) {
         ))}
       </View>
     </View>
-  )
+  );
 }
 
 function LogoText() {
-  let colorScheme = useColorScheme()
+  let colorScheme = useColorScheme();
   return (
     <Image
       style={{ width: 82, height: 26 }}
@@ -66,5 +69,5 @@ function LogoText() {
       }
       contentFit="cover"
     />
-  )
+  );
 }
