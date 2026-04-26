@@ -1,6 +1,8 @@
 import { testNotification } from "@/api/domains/notification/api";
-import { Link } from "expo-router";
-import { Pressable, Share, Text, View } from "react-native";
+import Button from "@/components/common/button";
+
+import { router } from "expo-router";
+import { Share, View } from "react-native";
 
 const ProfileActions = () => {
   const handleShare = async () => {
@@ -15,31 +17,30 @@ const ProfileActions = () => {
   };
   return (
     <View className="flex-row gap-1.5 w-full mb-[26px] px-5">
-      <Link href={`/mypage/update`} asChild>
-        <Pressable className="active:opacity-60 flex-1">
-          <View className="justify-center items-center border border-semantic-border-primary py-2 rounded-sm">
-            <Text className="text-semantic-text-primary typo-body3">
-              프로필 수정
-            </Text>
-          </View>
-        </Pressable>
-      </Link>
-      <Pressable
-        onPress={handleShare}
-        className="active:opacity-60 flex-1 justify-center items-center border border-semantic-border-primary py-2 rounded-sm"
-      >
-        <Text className="text-semantic-text-primary typo-body3">
-          프로필 공유
-        </Text>
-      </Pressable>
-      <Pressable
-        onPress={handleNotificationTest}
-        className="active:opacity-60 flex-1 justify-center items-center border border-semantic-border-primary py-2 rounded-sm"
-      >
-        <Text className="text-semantic-text-primary typo-body3">
-          푸시 알림 테스트
-        </Text>
-      </Pressable>
+      <Button
+        button={{
+          label: "프로필 수정",
+          onPress: () => router.push(`/mypage/update`),
+          variant: "secondary",
+          size: "md",
+        }}
+      />
+      <Button
+        button={{
+          label: "프로필 공유",
+          onPress: handleShare,
+          variant: "secondary",
+          size: "md",
+        }}
+      />
+      <Button
+        button={{
+          label: "푸시 알림 테스트",
+          onPress: handleNotificationTest,
+          variant: "secondary",
+          size: "md",
+        }}
+      />
     </View>
   );
 };
