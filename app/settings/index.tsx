@@ -80,32 +80,36 @@ const Follower = () => {
             현재 계정에서 로그아웃할까요?
           </Text>
           <View className="flex-row gap-1.5">
-            <Button
-              button={{
-                label: "취소",
-                onPress: () => setIsLogoutModalVisible(false),
-                variant: "secondary",
-                size: "lg",
-              }}
-            />
-            <Button
-              button={{
-                label: "로그아웃",
-                onPress: async () => {
-                  const refreshToken =
-                    await SecureStore.getItemAsync("refreshToken");
-                  if (refreshToken) {
-                    await logoutUser(refreshToken);
-                    await SecureStore.deleteItemAsync("accessToken");
-                    await SecureStore.deleteItemAsync("refreshToken");
-                    router.replace("/(auth)/login");
-                  }
-                  setIsLogoutModalVisible(false);
-                },
-                variant: "primary",
-                size: "lg",
-              }}
-            />
+            <View className="flex-1">
+              <Button
+                button={{
+                  label: "취소",
+                  onPress: () => setIsLogoutModalVisible(false),
+                  variant: "secondary",
+                  size: "lg",
+                }}
+              />
+            </View>
+            <View className="flex-1">
+              <Button
+                button={{
+                  label: "로그아웃",
+                  onPress: async () => {
+                    const refreshToken =
+                      await SecureStore.getItemAsync("refreshToken");
+                    if (refreshToken) {
+                      await logoutUser(refreshToken);
+                      await SecureStore.deleteItemAsync("accessToken");
+                      await SecureStore.deleteItemAsync("refreshToken");
+                      router.replace("/(auth)/login");
+                    }
+                    setIsLogoutModalVisible(false);
+                  },
+                  variant: "primary",
+                  size: "lg",
+                }}
+              />
+            </View>
           </View>
         </View>
       </CenterModal>
