@@ -42,7 +42,11 @@ export default function SettingsLayout() {
         }}
       />
       <Stack.Screen
-        name="delete-account"
+        name="delete-account/index"
+        options={{ title: "회원탈퇴", headerTintColor: colors.text.primary }}
+      />
+      <Stack.Screen
+        name="delete-account/reason"
         options={{
           title: "회원탈퇴",
           headerTintColor: colors.text.primary,

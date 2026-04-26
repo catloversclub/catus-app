@@ -17,30 +17,37 @@ const ProfileActions = () => {
   };
   return (
     <View className="flex-row gap-1.5 w-full mb-[26px] px-5">
-      <Button
-        button={{
-          label: "프로필 수정",
-          onPress: () => router.push(`/mypage/update`),
-          variant: "secondary",
-          size: "md",
-        }}
-      />
-      <Button
-        button={{
-          label: "프로필 공유",
-          onPress: handleShare,
-          variant: "secondary",
-          size: "md",
-        }}
-      />
-      <Button
-        button={{
-          label: "푸시 알림 테스트",
-          onPress: handleNotificationTest,
-          variant: "secondary",
-          size: "md",
-        }}
-      />
+      <View className="flex-1">
+        <Button
+          button={{
+            label: "프로필 수정",
+            onPress: () => router.push(`/mypage/update`),
+            variant: "secondary",
+            size: "md",
+          }}
+        />
+      </View>
+      <View className="flex-1">
+        <Button
+          button={{
+            label: "프로필 공유",
+            onPress: handleShare,
+            variant: "secondary",
+            size: "md",
+          }}
+        />
+      </View>
+      <View className="flex-1">
+        {" "}
+        <Button
+          button={{
+            label: "푸시 알림 테스트",
+            onPress: handleNotificationTest,
+            variant: "secondary",
+            size: "md",
+          }}
+        />
+      </View>
     </View>
   );
 };

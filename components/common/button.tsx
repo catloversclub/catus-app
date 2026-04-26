@@ -18,7 +18,7 @@ const Button = ({ button }: ButtonProps) => {
       key={button.label}
       onPress={button.onPress}
       disabled={button.disabled}
-      className={`rounded items-center flex-1 ${button.size === "lg" ? "py-3" : "py-2"} ${
+      className={`rounded items-center ${button.size === "lg" ? "py-3" : "py-2"} ${
         button.variant === "secondary"
           ? "bg-transparent border border-semantic-border-primary"
           : button.disabled
