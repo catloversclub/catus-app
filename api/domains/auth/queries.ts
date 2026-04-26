@@ -64,7 +64,7 @@ export const useLogin = () => {
       }
 
       if (data.onboardingRequired) {
-        router.replace("/(auth)/(onboarding)/step1");
+        router.replace("/(auth)/(onboarding)");
       } else {
         router.replace("/(tabs)");
       }
