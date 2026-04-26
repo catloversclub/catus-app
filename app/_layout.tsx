@@ -83,18 +83,13 @@ export default function RootLayout() {
       try {
         const accessToken = await SecureStore.getItemAsync("accessToken");
         const refreshToken = await SecureStore.getItemAsync("refreshToken");
-        const savedToken = await SecureStore.getItemAsync("pushToken");
 
         const { status } = await Notifications.requestPermissionsAsync();
 
         if (accessToken && refreshToken) {
           // 로그인 상태일 때만 푸시 토큰 등록
           if (status === "granted" && expoPushToken) {
-            if (savedToken !== expoPushToken) {
-              // 토큰이 바뀐 경우에만 서버에 등록
-              await registerPushToken(expoPushToken);
-              await SecureStore.setItemAsync("pushToken", expoPushToken);
-            }
+            await registerPushToken(expoPushToken);
           }
           router.replace("/(tabs)");
         } else {
@@ -108,7 +103,7 @@ export default function RootLayout() {
     }
 
     if (fontsLoaded) doAsyncStuff();
-  }, [fontsLoaded]);
+  }, [fontsLoaded, expoPushToken]);
 
   // isReady 제거, fontsLoaded만 체크
   if (!fontsLoaded) {
