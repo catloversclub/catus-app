@@ -10,7 +10,7 @@ const ProfileActions = () => {
   };
 
   return (
-    <View className="flex-row gap-1.5 w-full mb-[26px] px-3">
+    <View className="flex-row gap-1.5 w-full mb-[26px] px-5">
       <Link href={`/mypage/update`} asChild>
         <Pressable className="active:opacity-60 flex-1">
           <View className="justify-center items-center border border-semantic-border-primary py-2 rounded-sm">

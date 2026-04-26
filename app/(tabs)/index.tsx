@@ -3,8 +3,8 @@ import {
   useRecommendedFeedQuery,
 } from "@/api/domains/post/queries";
 import { FeedCard } from "@/components/feed/FeedCard";
-import { Header } from "@/components/layout/header";
-import { TabType } from "@/constants/type";
+import { Header } from "@/components/layout/text-header";
+import { FeedType } from "@/constants/tab";
 import { commonStyles } from "@/styles/common-styles";
 import { Suspense, useCallback, useRef, useState } from "react";
 import {
@@ -92,7 +92,7 @@ export default function HomeScreen() {
   const pagerRef = useRef<PagerView>(null);
   const [activeTab, setActiveTab] = useState(0); // 0: following, 1: recommended
 
-  const handleTabChange = (tab: TabType) => {
+  const handleTabChange = (tab: FeedType) => {
     const index = tab === "following" ? 0 : 1;
     setActiveTab(index);
     pagerRef.current?.setPage(index);

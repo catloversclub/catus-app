@@ -26,7 +26,7 @@ const ChipsSelect = ({
             }`}
           >
             <Text
-              className={`typo-label1 ${
+              className={`typo-body4 ${
                 isChipSelected
                   ? "text-semantic-chips-primary-selectedText"
                   : "text-semantic-chips-primary-text"
