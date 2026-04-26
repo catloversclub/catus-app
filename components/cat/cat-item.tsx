@@ -1,13 +1,10 @@
 // components/cat/cat-item.tsx
+import { Cat } from "@/api/domains/cat/types";
 import { Image } from "expo-image";
 import { Text, useColorScheme, View } from "react-native";
 
 interface CatItemProps {
-  cat: {
-    id: string;
-    name: string;
-    profileImageUrl: string | null;
-  };
+  cat: Cat;
 }
 
 const CatItem = ({ cat }: CatItemProps) => {
@@ -19,16 +16,19 @@ const CatItem = ({ cat }: CatItemProps) => {
   const imageSource = cat.profileImageUrl
     ? { uri: cat.profileImageUrl }
     : defaultAvatar;
+
   return (
-    <View className="items-center gap-1.5 mr-3">
-      <View className="w-16 h-16 rounded-full overflow-hidden border-2 border-semantic-border-primary">
+    <View className="items-center flex-col gap-1">
+      <View className="size-[54px] rounded-full border border-semantic-border-primary overflow-hidden">
         <Image
           source={imageSource}
           style={{ width: "100%", height: "100%" }}
           contentFit="cover"
         />
       </View>
-      <Text className="text-semantic-text-primary typo-body4">{cat.name}</Text>
+      <Text className="text-semantic-text-secondary typo-label1">
+        {cat.name}
+      </Text>
     </View>
   );
 };
