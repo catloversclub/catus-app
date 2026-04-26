@@ -39,9 +39,10 @@ const SettingsLinkItem = ({
   const scheme = useColorScheme();
   const colors = scheme === "dark" ? dark : light;
   return (
-    <View className="flex-row justify-between items-center py-4 px-3">
-      <Text className="text-semantic-text-primary typo-body3">{label}</Text>
-      <Pressable onPress={onPress}>
+    <Pressable onPress={onPress}>
+      <View className="flex-row justify-between items-center py-4 px-3">
+        <Text className="text-semantic-text-primary typo-body3">{label}</Text>
+
         <View className="flex-row gap-1.5 items-center">
           <Text className="text-semantic-text-tertiary typo-body4">
             {value}
@@ -50,12 +51,12 @@ const SettingsLinkItem = ({
             <ChevronRightIcon
               width={16}
               height={16}
-              color={colors.icon.secondary}
+              stroke={colors.icon.secondary}
             />
           )}
         </View>
-      </Pressable>
-    </View>
+      </View>
+    </Pressable>
   );
 };
 

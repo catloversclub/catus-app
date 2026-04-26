@@ -16,7 +16,7 @@ const DeleteAccount = () => {
             <AlertLogo
               height={16}
               width={16}
-              className="fill-semantic-text-error"
+              className="text-semantic-text-error"
             />
             <Text className="typo-title3 text-semantic-text-error">
               탈퇴 전 꼭 확인해주세요!
