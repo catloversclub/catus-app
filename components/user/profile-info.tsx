@@ -2,14 +2,49 @@ import { useMyPostsQuery } from "@/api/domains/post/queries";
 import { useUserProfileQuery } from "@/api/domains/user/queries";
 import ProfileImage from "@/components/user/profile-image";
 import { Link } from "expo-router";
+import { Skeleton } from "moti/skeleton";
 import { Suspense } from "react";
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 export const ProfileInfo = () => {
   return (
-    <Suspense fallback={<ActivityIndicator />}>
+    <Suspense fallback={<ProfileInfoSkeleton />}>
       <ProfileInfoContent />
     </Suspense>
+  );
+};
+
+const ProfileInfoSkeleton = () => {
+  return (
+    <Skeleton.Group show={true}>
+      <View className="flex-col items-center">
+        {/* ProfileImage size="lg" 에 맞춤 */}
+        <Skeleton colorMode="light" radius="round" height={80} width={80} />
+
+        {/* nickname */}
+        <View className="mt-3 mb-1">
+          <Skeleton colorMode="light" height={22} width={100} radius={4} />
+        </View>
+
+        {/* 고양이 집사 / 랜선 집사 */}
+        <View className="mb-3">
+          <Skeleton colorMode="light" height={16} width={72} radius={4} />
+        </View>
+
+        {/* 게시글 / 팔로워 / 팔로잉 */}
+        <View className="flex-row mb-6">
+          <View className="flex-row gap-1 px-3 py-1.5">
+            <Skeleton colorMode="light" height={16} width={60} radius={4} />
+          </View>
+          <View className="flex-row gap-1 px-3 py-1.5">
+            <Skeleton colorMode="light" height={16} width={60} radius={4} />
+          </View>
+          <View className="flex-row gap-1 px-3 py-1.5">
+            <Skeleton colorMode="light" height={16} width={60} radius={4} />
+          </View>
+        </View>
+      </View>
+    </Skeleton.Group>
   );
 };
 
