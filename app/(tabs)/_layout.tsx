@@ -34,7 +34,7 @@ const TAB_SCREENS: TabScreenConfig[] = [
     name: "notifications",
     title: "Notifications",
     Icon: BellIcon,
-    width: 16,
+    width: 20,
     height: 20,
   },
   {

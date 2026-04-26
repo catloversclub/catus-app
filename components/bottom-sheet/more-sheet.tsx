@@ -1,5 +1,5 @@
 import BanIcon from "@/assets/icons/ban.svg";
-import BellIcon from "@/assets/icons/bell.svg";
+import BlockIcon from "@/assets/icons/block.svg";
 import ShareIcon from "@/assets/icons/share.svg";
 import { BaseBottomSheet } from "@/components/bottom-sheet/base-bottom-sheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
@@ -12,7 +12,7 @@ interface MoreSheetProps {
 
 const MORE_SHEET_ITEMS = [
   { Icon: BanIcon, label: "신고하기", onPress: () => {} },
-  { Icon: BellIcon, label: "차단하기", onPress: () => {} },
+  { Icon: BlockIcon, label: "차단하기", onPress: () => {} },
   { Icon: ShareIcon, label: "공유하기", onPress: () => {} },
   { Icon: null, label: "집사 프로필 방문하기", onPress: () => {} },
 ] as const;
@@ -27,7 +27,7 @@ export const MoreSheet = ({ MoreSheetModalRef }: MoreSheetProps) => {
             onPress={onPress}
             className="flex-row gap-1.5 py-[14px] items-center justify-center active:opacity-60"
           >
-            {Icon && <Icon />}
+            {Icon && <Icon height={20} width={20} />}
             <Text className="typo-body1 text-semantic-text-primary">
               {label}
             </Text>
