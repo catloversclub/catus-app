@@ -1,3 +1,4 @@
+import { testNotification } from "@/api/domains/notification/api";
 import { Link } from "expo-router";
 import { Pressable, Share, Text, View } from "react-native";
 
@@ -9,6 +10,9 @@ const ProfileActions = () => {
     });
   };
 
+  const handleNotificationTest = async () => {
+    await testNotification();
+  };
   return (
     <View className="flex-row gap-1.5 w-full mb-[26px] px-5">
       <Link href={`/mypage/update`} asChild>
@@ -26,6 +30,14 @@ const ProfileActions = () => {
       >
         <Text className="text-semantic-text-primary typo-body3">
           프로필 공유
+        </Text>
+      </Pressable>
+      <Pressable
+        onPress={handleNotificationTest}
+        className="active:opacity-60 flex-1 justify-center items-center border border-semantic-border-primary py-2 rounded-sm"
+      >
+        <Text className="text-semantic-text-primary typo-body3">
+          푸시 알림 테스트
         </Text>
       </Pressable>
     </View>
