@@ -11,6 +11,7 @@ export default function OnboardingLayout() {
     <Stack
       screenOptions={{
         headerShown: true,
+        title: "",
         headerShadowVisible: false,
         headerStyle: {
           backgroundColor: colors.bg.primary,
@@ -22,38 +23,14 @@ export default function OnboardingLayout() {
         ),
       }}
     >
-      <Stack.Screen
-        name="index"
-        options={{ headerTintColor: colors.text.primary }}
-      />
-      <Stack.Screen
-        name="step1"
-        options={{ headerTintColor: colors.text.primary }}
-      />
-      <Stack.Screen
-        name="step2"
-        options={{ headerTintColor: colors.text.primary }}
-      />
-      <Stack.Screen
-        name="step3"
-        options={{ headerTintColor: colors.text.primary }}
-      />
-      <Stack.Screen
-        name="step4"
-        options={{ headerTintColor: colors.text.primary }}
-      />
-      <Stack.Screen
-        name="step5"
-        options={{ headerTintColor: colors.text.primary }}
-      />
-      <Stack.Screen
-        name="step6"
-        options={{ headerTintColor: colors.text.primary }}
-      />
-      <Stack.Screen
-        name="step7"
-        options={{ headerTintColor: colors.text.primary }}
-      />
+      <Stack.Screen name="index" />
+      <Stack.Screen name="step1" />
+      <Stack.Screen name="step2" />
+      <Stack.Screen name="step3" />
+      <Stack.Screen name="step4" />
+      <Stack.Screen name="step5" />
+      <Stack.Screen name="step6" />
+      <Stack.Screen name="step7" />
     </Stack>
   );
 }
