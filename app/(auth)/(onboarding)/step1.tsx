@@ -1,47 +1,91 @@
-import OnboardingWrapper from "@/components/OnboardingWrapper";
-import { useOnboardingStore } from "@/store/useOnboardingStore";
-import { useRouter } from "expo-router";
+import { useCheckNicknameQuery } from "@/api/domains/user/queries";
+import Input from "@/components/common/input";
+import BottomActionBar from "@/components/layout/bottom-action-bar";
+import ProgressBar from "@/components/onboarding/progress-bar";
+import { cn } from "@/lib/utils";
+import { router } from "expo-router";
 import { useState } from "react";
-import { Text, TextInput, View } from "react-native";
+import { KeyboardAvoidingView, Platform, Text, View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function Step1() {
-  const router = useRouter();
-  const { nickname, setNickname } = useOnboardingStore();
-  const [error, setError] = useState("");
+  const insets = useSafeAreaInsets();
 
-  const handleNext = () => {
-    // 중복 검사 등 로직 수행...
-    router.push("/(auth)/(onboarding)/step2");
-  };
+  const [nickname, setNickname] = useState("");
+  const [checkedNickname, setCheckedNickname] = useState("");
 
-  const isValid = nickname.length > 0 && nickname.length <= 16;
+  const checkNickname = useCheckNicknameQuery(nickname);
+
+  const hasChecked = checkedNickname.length > 0;
+  const isValidNickname = checkNickname.data?.available ?? false;
+  const isDirty = nickname !== checkedNickname;
+
+  const statusText =
+    !hasChecked || isDirty
+      ? "중복 여부를 확인해주세요"
+      : isValidNickname
+        ? "사용할 수 있는 닉네임이에요"
+        : "다른 집사가 이미 사용하고 있는 닉네임이에요";
 
   return (
-    <OnboardingWrapper
-      step={1}
-      title="닉네임을 입력해주세요"
-      onNext={handleNext}
-      isNextEnabled={isValid}
-      nextButtonText={isValid ? "다음으로" : "확인"} // 시안 반영
+    <KeyboardAvoidingView
+      className="flex-1 bg-semantic-bg-primary"
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={insets.top + 44}
     >
-      <View>
-        <TextInput
+      <ScrollView className="py-6 px-5" contentContainerStyle={{ flexGrow: 1 }}>
+        <ProgressBar progress={1} />
+        <View className="h-10" />
+        <Text className="typo-title2 text-semantic-text-primary">
+          닉네임을 입력해주세요
+        </Text>
+        <View className="h-6" />
+        <Input
           value={nickname}
-          onChangeText={setNickname}
-          placeholder="캣러버스클럽"
+          onChangeText={(text) => {
+            setNickname(text);
+            setCheckedNickname("");
+          }}
           maxLength={16}
-          className="text-body1 rounded-xl bg-semantic-bg-secondary p-4"
-          autoFocus
+          placeholder="닉네임"
+          isError={hasChecked && !isValidNickname}
         />
-        <View className="mt-2 flex-row justify-between">
-          <Text className="text-label1 text-semantic-text-secondary">
-            중복 여부를 확인해주세요
+        <View className="h-1.5" />
+        <View className="flex-row justify-end w-full">
+          <Text
+            className={cn(
+              "flex-1 typo-label2",
+              hasChecked
+                ? isValidNickname
+                  ? "text-semantic-text-success"
+                  : "text-semantic-text-error"
+                : "text-semantic-text-tertiary",
+            )}
+          >
+            {statusText}
           </Text>
-          <Text className="text-label1 text-semantic-text-secondary">
+          <Text className="typo-label1 text-semantic-text-tertiary">
             {nickname.length}/16
           </Text>
         </View>
-      </View>
-    </OnboardingWrapper>
+      </ScrollView>
+      <BottomActionBar
+        buttons={[
+          {
+            label: hasChecked && isValidNickname ? "다음으로" : "중복 확인",
+            onPress: () => {
+              if (hasChecked && isValidNickname && !isDirty) {
+                router.push("/(auth)/(onboarding)/step2");
+              } else {
+                setCheckedNickname(nickname); // 쿼리 트리거
+              }
+            },
+            disabled:
+              !nickname.trim() || (hasChecked && !isDirty && !isValidNickname),
+          },
+        ]}
+      />
+    </KeyboardAvoidingView>
   );
 }
