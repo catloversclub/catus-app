@@ -14,7 +14,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "173729862302-4fke37quve1m651i9ugbfgj8pu52hvfn.apps.googleusercontent.com",
+          "client_id": "173729862302-ukj7gs49a823onoi6lfpsp14v7h4nbn7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.catloversclub.catus.app",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "173729862302-di9rp7rmi5l8nkm7lm6s60gnoavnp8pc.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -31,10 +39,10 @@
               "client_type": 3
             },
             {
-              "client_id": "173729862302-hijqsljupaf8j2s7608uohn41rek3bnr.apps.googleusercontent.com",
+              "client_id": "173729862302-c6vi9tid1blkm26l7quonckoib8p8ubt.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.catloversclub.catus"
+                "bundle_id": "com.catloversclub.catus.app"
               }
             }
           ]
@@ -50,7 +58,7 @@
       },
       "oauth_client": [
         {
-          "client_id": "173729862302-4fke37quve1m651i9ugbfgj8pu52hvfn.apps.googleusercontent.com",
+          "client_id": "173729862302-di9rp7rmi5l8nkm7lm6s60gnoavnp8pc.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -67,10 +75,10 @@
               "client_type": 3
             },
             {
-              "client_id": "173729862302-hijqsljupaf8j2s7608uohn41rek3bnr.apps.googleusercontent.com",
+              "client_id": "173729862302-c6vi9tid1blkm26l7quonckoib8p8ubt.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.catloversclub.catus"
+                "bundle_id": "com.catloversclub.catus.app"
               }
             }
           ]
