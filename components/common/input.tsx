@@ -1,13 +1,14 @@
 import XLogo from "@/assets/icons/x-circle.svg";
+import { cn } from "@/lib/utils";
 import { dark, light } from "@/styles/semantic-colors";
 import { Pressable, TextInput, useColorScheme, View } from "react-native";
 
-// components/common/text-input.tsx
 interface InputProps {
   value: string;
   onChangeText: (text: string) => void;
   maxLength?: number;
   placeholder?: string;
+  isError?: boolean;
 }
 
 const Input = ({
@@ -15,12 +16,18 @@ const Input = ({
   onChangeText,
   maxLength = 50,
   placeholder,
+  isError = false,
 }: InputProps) => {
   const scheme = useColorScheme();
   const colors = scheme === "dark" ? dark : light;
 
   return (
-    <View className="bg-semantic-bg-secondary rounded px-3 py-[13px] flex-row items-center">
+    <View
+      className={cn(
+        "bg-semantic-bg-secondary rounded px-3 py-[13px] flex-row items-center",
+        isError && "border border-semantic-border-error",
+      )}
+    >
       <TextInput
         editable
         numberOfLines={1}
@@ -29,7 +36,8 @@ const Input = ({
         value={value}
         placeholder={placeholder}
         placeholderTextColor={colors.text.tertiary}
-        className="flex-1 text-semantic-text-primary typo-body3"
+        placeholderClassName="flex-1 text-semantic-text-tertiary typo-body4 h-5"
+        className="flex-1 text-semantic-text-primary typo-body h-5"
         style={{ lineHeight: undefined }}
       />
       {value.length > 0 && (
