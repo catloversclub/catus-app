@@ -1,9 +1,9 @@
-import { Icon } from "@/components/ui/icon"
-import { TextClassContext } from "@/components/ui/text"
-import { cn } from "@/lib/utils"
-import * as AccordionPrimitive from "@rn-primitives/accordion"
-import { ChevronDown } from "lucide-react-native"
-import { Platform, Pressable, View } from "react-native"
+import ChevronRightIcon from "@/assets/icons/chevron-right.svg";
+import { TextClassContext } from "@/components/ui/text";
+import { cn } from "@/lib/utils";
+import { dark, light } from "@/styles/semantic-colors";
+import * as AccordionPrimitive from "@rn-primitives/accordion";
+import { Platform, Pressable, useColorScheme, View } from "react-native";
 import Animated, {
   FadeOutUp,
   LayoutAnimationConfig,
@@ -11,7 +11,7 @@ import Animated, {
   useAnimatedStyle,
   useDerivedValue,
   withTiming,
-} from "react-native-reanimated"
+} from "react-native-reanimated";
 
 function Accordion({
   children,
@@ -24,10 +24,12 @@ function Accordion({
         {...(props as AccordionPrimitive.RootProps)}
         asChild={Platform.OS !== "web"}
       >
-        <Animated.View layout={LinearTransition.duration(200)}>{children}</Animated.View>
+        <Animated.View layout={LinearTransition.duration(200)}>
+          {children}
+        </Animated.View>
       </AccordionPrimitive.Root>
     </LayoutAnimationConfig>
-  )
+  );
 }
 
 function AccordionItem({
@@ -35,7 +37,8 @@ function AccordionItem({
   className,
   value,
   ...props
-}: AccordionPrimitive.ItemProps & React.RefAttributes<AccordionPrimitive.ItemRef>) {
+}: AccordionPrimitive.ItemProps &
+  React.RefAttributes<AccordionPrimitive.ItemRef>) {
   return (
     <AccordionPrimitive.Item
       className={cn(Platform.select({ web: "last:border-b-0" }), className)}
@@ -50,34 +53,38 @@ function AccordionItem({
         {children}
       </Animated.View>
     </AccordionPrimitive.Item>
-  )
+  );
 }
 
-const Trigger = Platform.OS === "web" ? View : Pressable
+const Trigger = Platform.OS === "web" ? View : Pressable;
 
 function AccordionTrigger({
   className,
   children,
   ...props
 }: AccordionPrimitive.TriggerProps & {
-  children?: React.ReactNode
+  children?: React.ReactNode;
 } & React.RefAttributes<AccordionPrimitive.TriggerRef>) {
-  const { isExpanded } = AccordionPrimitive.useItemContext()
+  const { isExpanded } = AccordionPrimitive.useItemContext();
 
   const progress = useDerivedValue(
-    () => (isExpanded ? withTiming(1, { duration: 250 }) : withTiming(0, { duration: 200 })),
+    () =>
+      isExpanded
+        ? withTiming(1, { duration: 250 })
+        : withTiming(0, { duration: 200 }),
     [isExpanded],
-  )
-  const chevronStyle = useAnimatedStyle(
-    () => ({
-      transform: [{ rotate: `${progress.value * 180}deg` }],
-    }),
-    [progress],
-  )
-
+  );
+  const chevronStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${90 + progress.value * 180}deg` }],
+  }));
+  const scheme = useColorScheme();
+  const colors = scheme === "dark" ? dark : light;
   return (
     <TextClassContext.Provider
-      value={cn("text-left text-sm font-medium", Platform.select({ web: "group-hover:underline" }))}
+      value={cn(
+        "text-left text-sm font-medium",
+        Platform.select({ web: "group-hover:underline" }),
+      )}
     >
       <AccordionPrimitive.Header>
         <AccordionPrimitive.Trigger {...props} asChild>
@@ -91,19 +98,27 @@ function AccordionTrigger({
             )}
           >
             <>{children}</>
+            <Animated.View style={chevronStyle}>
+              <ChevronRightIcon
+                width={20}
+                height={20}
+                color={colors.icon.primary}
+              />
+            </Animated.View>
           </Trigger>
         </AccordionPrimitive.Trigger>
       </AccordionPrimitive.Header>
     </TextClassContext.Provider>
-  )
+  );
 }
 
 function AccordionContent({
   className,
   children,
   ...props
-}: AccordionPrimitive.ContentProps & React.RefAttributes<AccordionPrimitive.ContentRef>) {
-  const { isExpanded } = AccordionPrimitive.useItemContext()
+}: AccordionPrimitive.ContentProps &
+  React.RefAttributes<AccordionPrimitive.ContentRef>) {
+  const { isExpanded } = AccordionPrimitive.useItemContext();
   return (
     <TextClassContext.Provider value="text-sm">
       <AccordionPrimitive.Content
@@ -123,7 +138,7 @@ function AccordionContent({
         </Animated.View>
       </AccordionPrimitive.Content>
     </TextClassContext.Provider>
-  )
+  );
 }
 
-export { Accordion, AccordionContent, AccordionItem, AccordionTrigger }
+export { Accordion, AccordionContent, AccordionItem, AccordionTrigger };
