@@ -1,8 +1,11 @@
 import { registerPushToken } from "@/api/domains/notification/api";
+import ErrorModal from "@/components/modal/error-modal";
+import { useErrorStore } from "@/store/error-store";
 import { useReactQueryDevTools } from "@dev-plugins/react-query";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { PortalHost } from "@rn-primitives/portal";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import Constants from "expo-constants";
 import * as Device from "expo-device";
 import { useFonts } from "expo-font";
@@ -14,15 +17,6 @@ import { useEffect, useState } from "react";
 import { Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "../styles/global.css";
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -36,6 +30,27 @@ Notifications.setNotificationHandler({
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const showError = useErrorStore((s) => s.showError);
+
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      mutations: {
+        onError: (error: Error) => {
+          const message =
+            error instanceof AxiosError
+              ? (error.response?.data?.message ?? error.message)
+              : error.message;
+
+          showError("오류가 발생했어요", message);
+        },
+      },
+      queries: {
+        retry: 1,
+        refetchOnWindowFocus: false,
+      },
+    },
+  });
+
   useReactQueryDevTools(queryClient);
   const router = useRouter();
 
@@ -119,6 +134,7 @@ export default function RootLayout() {
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="post" />
           </Stack>
+          <ErrorModal />
         </BottomSheetModalProvider>
         <PortalHost />
       </GestureHandlerRootView>
