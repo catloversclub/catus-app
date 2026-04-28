@@ -8,7 +8,6 @@ import * as AppleAuthentication from "expo-apple-authentication";
 import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 
-import { useErrorStore } from "@/store/error-store";
 import { exchangeOidcToken, logoutUser } from "./api";
 import { AuthProvider } from "./types";
 
@@ -71,15 +70,15 @@ export const useLogin = () => {
     },
 
     // 3. onError: 에러 발생 시 처리
-    onError: (error: any) => {
-      console.error(
-        "[Login Mutation Error]:",
-        error.response?.data || error.message,
-      );
-      useErrorStore
-        .getState()
-        .showError("로그인 실패", error.response?.data || error.message);
-    },
+    // onError: (error: any) => {
+    //   console.error(
+    //     "[Login Mutation Error]:",
+    //     error.response?.data || error.message,
+    //   );
+    //   useErrorStore
+    //     .getState()
+    //     .showError("로그인 실패", error.response?.data || error.message);
+    // },
   });
 };
 
