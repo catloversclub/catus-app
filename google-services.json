@@ -14,6 +14,30 @@
       },
       "oauth_client": [
         {
+          "client_id": "173729862302-5hi34v8cgcm8isu5qp8blqoac5f1bkts.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.catloversclub.catus.app",
+            "certificate_hash": "c8ab4d2eb30d77e0e1a63f8bcde9efca564135ce"
+          }
+        },
+        {
+          "client_id": "173729862302-olorgm46ht3pu6utuoqlug0h1vg5doii.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.catloversclub.catus.app",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "173729862302-skikuhn8qrlrv4766n40lu9mrhvedqs9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.catloversclub.catus.app",
+            "certificate_hash": "dfbfc5758338ac804735c180fd77823112814dcf"
+          }
+        },
+        {
           "client_id": "173729862302-ukj7gs49a823onoi6lfpsp14v7h4nbn7.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
