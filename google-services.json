@@ -18,45 +18,9 @@
           "client_type": 1,
           "android_info": {
             "package_name": "com.catloversclub.catus.app",
-            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+            "certificate_hash": "ee2dedbd7f9c61630c2c559731adc1ed7a2fd6f8"
           }
         },
-        {
-          "client_id": "173729862302-di9rp7rmi5l8nkm7lm6s60gnoavnp8pc.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDjPa1kfZg-k0GuGGYaQKPtnNj-MyxrSDM"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "173729862302-4fke37quve1m651i9ugbfgj8pu52hvfn.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "173729862302-c6vi9tid1blkm26l7quonckoib8p8ubt.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.catloversclub.catus.app"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:173729862302:android:c747870def9079e632218f",
-        "android_client_info": {
-          "package_name": "com.catus.app"
-        }
-      },
-      "oauth_client": [
         {
           "client_id": "173729862302-di9rp7rmi5l8nkm7lm6s60gnoavnp8pc.apps.googleusercontent.com",
           "client_type": 3
