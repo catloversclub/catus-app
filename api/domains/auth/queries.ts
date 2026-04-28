@@ -78,7 +78,7 @@ export const useLogin = () => {
       );
       useErrorStore
         .getState()
-        .showError("로그인 실패", "구글 계정을 확인해주세요");
+        .showError("로그인 실패", error.response?.data || error.message);
     },
   });
 };
