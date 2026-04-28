@@ -2,13 +2,14 @@
   "name": "catus",
   "main": "expo-router/entry",
   "version": "1.0.0",
+  "packageManager": "pnpm@10.20.0",
   "scripts": {
     "start": "npx expo start --dev-client",
     "prebuild": "npx expo prebuild --clean",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "ios:device": "npx expo run:ios --device 00008140-001E04E60413C01C",
+    "device": "npx expo run:ios --device 00008140-001E04E60413C01C",
     "web": "expo start --web",
     "lint": "expo lint"
   },
