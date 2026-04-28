@@ -7,8 +7,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import * as AppleAuthentication from "expo-apple-authentication";
 import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
-import { Alert } from "react-native";
 
+import { useErrorStore } from "@/store/error-store";
 import { exchangeOidcToken, logoutUser } from "./api";
 import { AuthProvider } from "./types";
 
@@ -76,7 +76,9 @@ export const useLogin = () => {
         "[Login Mutation Error]:",
         error.response?.data || error.message,
       );
-      Alert.alert("로그인 실패", "다시 시도해주세요.");
+      useErrorStore
+        .getState()
+        .showError("로그인 실패", "구글 계정을 확인해주세요");
     },
   });
 };
