@@ -8,6 +8,7 @@ import * as AppleAuthentication from "expo-apple-authentication";
 import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 
+import { useErrorStore } from "@/store/error-store";
 import { exchangeOidcToken, logoutUser } from "./api";
 import { AuthProvider } from "./types";
 
@@ -18,6 +19,7 @@ GoogleSignin.configure({
 });
 
 export const useLogin = () => {
+  const showError = useErrorStore((s) => s.showError);
   return useMutation({
     // 1. mutationFn: 핵심 로직 실행 (토큰 발급 및 서버 교환)
     mutationFn: async (provider: AuthProvider) => {
@@ -31,8 +33,10 @@ export const useLogin = () => {
         case "google":
           await GoogleSignin.hasPlayServices();
           const googleRes = await GoogleSignin.signIn();
+
           if (isSuccessResponse(googleRes)) {
             idToken = googleRes.data.idToken;
+            showError("Google 로그인 실패", JSON.stringify(googleRes));
           }
           break;
         case "apple":
