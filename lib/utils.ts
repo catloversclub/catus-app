@@ -1,9 +1,9 @@
-import { STORAGE_BAEE_URL } from "@/constants/api"
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { STORAGE_BAEE_URL } from "@/constants/api";
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 /**
@@ -12,18 +12,18 @@ function cn(...inputs: ClassValue[]) {
  * @returns - "3분 전", "8시간 전", "1일 전" 등
  */
 const formatRelativeTime = (dateString: string): string => {
-  const now = new Date()
-  const past = new Date(dateString)
+  const now = new Date();
+  const past = new Date(dateString);
 
   // 유효하지 않은 날짜 처리
   if (isNaN(past.getTime())) {
-    return "유효하지 않은 날짜"
+    return "유효하지 않은 날짜";
   }
 
-  const diffInSeconds = Math.floor((now.getTime() - past.getTime()) / 1000)
+  const diffInSeconds = Math.floor((now.getTime() - past.getTime()) / 1000);
 
   // 미래 시간 처리 (필요한 경우)
-  if (diffInSeconds < 0) return "방금 전"
+  if (diffInSeconds < 0) return "방금 전";
 
   // 단위 정의 (초 단위 기준)
   const units: { label: string; seconds: number }[] = [
@@ -31,18 +31,18 @@ const formatRelativeTime = (dateString: string): string => {
     { label: "시간", seconds: 3600 },
     { label: "분", seconds: 60 },
     { label: "초", seconds: 1 },
-  ]
+  ];
 
   for (const unit of units) {
-    const interval = Math.floor(diffInSeconds / unit.seconds)
+    const interval = Math.floor(diffInSeconds / unit.seconds);
 
     if (interval >= 1) {
-      return `${interval}${unit.label} 전`
+      return `${interval}${unit.label} 전`;
     }
   }
 
-  return "방금 전"
-}
+  return "방금 전";
+};
 
 /**
  * 이미지 경로(url)를 받아 전체 스토리지 URL을 반환합니다.
@@ -50,13 +50,23 @@ const formatRelativeTime = (dateString: string): string => {
  * @returns - 전체 URL 문자열
  */
 const getMediaUrl = (path: string | undefined | null): string => {
-  if (!path) return "" // 경로가 없을 경우 빈 문자열 반환 (필요시 기본 이미지 URL 반환 가능)
+  if (!path) return ""; // 경로가 없을 경우 빈 문자열 반환 (필요시 기본 이미지 URL 반환 가능)
 
   // 중복된 슬래시(//) 방지 및 결합
-  const baseUrl = STORAGE_BAEE_URL.replace(/\/$/, "") // 끝의 / 제거
-  const relativePath = path.replace(/^\//, "") // 앞의 / 제거
+  const baseUrl = STORAGE_BAEE_URL.replace(/\/$/, ""); // 끝의 / 제거
+  const relativePath = path.replace(/^\//, ""); // 앞의 / 제거
 
-  return `${baseUrl}/${relativePath}`
-}
+  return `${baseUrl}/${relativePath}`;
+};
 
-export { cn, formatRelativeTime, getMediaUrl }
+const formatDate = (date: Date | null): string => {
+  if (!date) return "YYYY-MM-DD";
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+};
+
+export { cn, formatDate, formatRelativeTime, getMediaUrl };
