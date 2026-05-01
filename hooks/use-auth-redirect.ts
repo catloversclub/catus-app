@@ -17,7 +17,7 @@ export function useAuthRedirect(fontsLoaded: boolean) {
         if (accessToken && refreshToken) {
           router.replace("/(tabs)");
         } else {
-          router.replace("/(auth)/login");
+          router.replace("/(auth)");
         }
       } catch (e) {
         console.warn(e);

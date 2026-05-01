@@ -104,7 +104,7 @@ export const useLogout = () => {
       // 모든 캐시 무효화 (다른 유저 정보 노출 방지)
       queryClient.clear();
 
-      router.replace("/(auth)/login");
+      router.replace("/(auth)");
     },
   });
 };

@@ -87,7 +87,7 @@ const refreshToken = async () => {
   } catch (e) {
     await SecureStore.deleteItemAsync("accessToken");
     await SecureStore.deleteItemAsync("refreshToken");
-    router.replace("/(auth)/login");
+    router.replace("/(auth)");
     throw e;
   } finally {
     isRefreshing = false;

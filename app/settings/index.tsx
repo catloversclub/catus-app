@@ -101,7 +101,7 @@ const Follower = () => {
                       await logoutUser(refreshToken);
                       await SecureStore.deleteItemAsync("accessToken");
                       await SecureStore.deleteItemAsync("refreshToken");
-                      router.replace("/(auth)/login");
+                      router.replace("/(auth)");
                     }
                     setIsLogoutModalVisible(false);
                   },
