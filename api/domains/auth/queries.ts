@@ -8,20 +8,18 @@ import * as AppleAuthentication from "expo-apple-authentication";
 import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 
-import { useErrorStore } from "@/store/error-store";
 import { exchangeOidcToken, logoutUser } from "./api";
 import { AuthProvider } from "./types";
 
-// 앱 최상단이나 초기화 파일에 위치하는 것이 좋지만, 응집도를 위해 여기에 둘 수도 있습니다.
 GoogleSignin.configure({
   webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
   iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
 });
 
 export const useLogin = () => {
-  const showError = useErrorStore((s) => s.showError);
+  // const showError = useErrorStore((s) => s.showError);
+
   return useMutation({
-    // 1. mutationFn: 핵심 로직 실행 (토큰 발급 및 서버 교환)
     mutationFn: async (provider: AuthProvider) => {
       let idToken: string | null = null;
 
@@ -33,10 +31,10 @@ export const useLogin = () => {
         case "google":
           await GoogleSignin.hasPlayServices();
           const googleRes = await GoogleSignin.signIn();
-
           if (isSuccessResponse(googleRes)) {
             idToken = googleRes.data.idToken;
-            showError("Google 로그인 실패", JSON.stringify(googleRes));
+            // 디버깅용
+            // showError("Google 로그인 실패", JSON.stringify(googleRes));
           }
           break;
         case "apple":
@@ -50,39 +48,30 @@ export const useLogin = () => {
           break;
       }
 
-      if (!idToken)
-        throw new Error(`${provider}의 idToken을 가져오지 못했습니다.`);
+      if (!idToken) return;
+      // throw new Error(`${provider}의 idToken을 가져오지 못했습니다.`);
 
-      // API 호출 (api.ts에 정의된 함수 사용)
       return await exchangeOidcToken({ idToken, provider });
     },
 
-    // 2. onSuccess: mutationFn이 성공적으로 끝났을 때의 후처리
     onSuccess: async (data) => {
-      console.log("login response:", data); // ✅ 응답 확인
+      if (!data) throw new Error("로그인이 실패하였습니다. 다시 시도해주세요.");
+
       await SecureStore.setItemAsync("accessToken", data.accessToken);
       if (data.refreshToken) {
-        console.log("refreshToken:", data.refreshToken); // ✅ 리프레시 토큰 확인
         await SecureStore.setItemAsync("refreshToken", data.refreshToken);
       }
 
       if (data.onboardingRequired) {
-        router.replace("/(auth)/(onboarding)");
+        router.push("/(auth)/(onboarding)");
       } else {
         router.replace("/(tabs)");
       }
     },
 
-    // 3. onError: 에러 발생 시 처리
-    // onError: (error: any) => {
-    //   console.error(
-    //     "[Login Mutation Error]:",
-    //     error.response?.data || error.message,
-    //   );
-    //   useErrorStore
-    //     .getState()
-    //     .showError("로그인 실패", error.response?.data || error.message);
-    // },
+    onError: () => {
+      return;
+    },
   });
 };
 
@@ -96,7 +85,7 @@ export const useLogout = () => {
         await logoutUser(refreshToken);
       }
     },
-    // 🌟 onSettled: 성공하든 실패하든(백엔드 서버가 죽어있더라도) 무조건 실행됨
+
     onSettled: async () => {
       await SecureStore.deleteItemAsync("accessToken");
       await SecureStore.deleteItemAsync("refreshToken");
