@@ -1,16 +1,20 @@
 import { useCheckNicknameQuery } from "@/api/domains/user/queries";
-import Input from "@/components/common/input";
 import BottomActionBar from "@/components/layout/bottom-action-bar";
 import ProgressBar from "@/components/onboarding/progress-bar";
+import NameField from "@/components/settings/name-field";
+import { ROUTES } from "@/constants/route";
+import { useKeyboardAvoidingView } from "@/hooks/use-keyboard-avoiding-view";
 import { cn } from "@/lib/utils";
+import { useOnboardingStore } from "@/store/onboarding-store";
 import { router } from "expo-router";
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform, Text, View } from "react-native";
+import { KeyboardAvoidingView, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function Step1() {
-  const insets = useSafeAreaInsets();
+  const keyboardAvoidingViewProps = useKeyboardAvoidingView();
+
+  const { setUser } = useOnboardingStore();
 
   const [nickname, setNickname] = useState("");
   const [checkedNickname, setCheckedNickname] = useState("");
@@ -30,24 +34,22 @@ export default function Step1() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-semantic-bg-primary"
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={insets.top + 44}
+      className="flex-1 bg-semantic-bg-primary py-6"
+      {...keyboardAvoidingViewProps}
     >
-      <ScrollView className="py-6 px-5" contentContainerStyle={{ flexGrow: 1 }}>
-        <ProgressBar progress={1} />
+      <ProgressBar progress={1} />
+      <ScrollView className="px-5" contentContainerStyle={{ flexGrow: 1 }}>
         <View className="h-10" />
         <Text className="typo-title2 text-semantic-text-primary">
           닉네임을 입력해주세요
         </Text>
         <View className="h-6" />
-        <Input
-          value={nickname}
-          onChangeText={(text) => {
+        <NameField
+          name={nickname}
+          setName={(text) => {
             setNickname(text);
             setCheckedNickname("");
           }}
-          maxLength={16}
           placeholder="닉네임"
           isError={hasChecked && !isValidNickname}
         />
@@ -76,7 +78,8 @@ export default function Step1() {
             label: hasChecked && isValidNickname ? "다음으로" : "중복 확인",
             onPress: () => {
               if (hasChecked && isValidNickname && !isDirty) {
-                router.push("/(auth)/(onboarding)/step2");
+                setUser({ nickname: nickname });
+                router.push(ROUTES.AUTH.ONBOARDING.STEP2);
               } else {
                 setCheckedNickname(nickname); // 쿼리 트리거
               }

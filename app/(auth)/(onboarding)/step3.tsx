@@ -1,23 +1,53 @@
-import { View, Text, TouchableOpacity } from "react-native";
-import { useRouter } from "expo-router";
+import Select from "@/components/common/select";
+import BottomActionBar from "@/components/layout/bottom-action-bar";
+import ProgressBar from "@/components/onboarding/progress-bar";
+import { ROUTES } from "@/constants/route";
+import { useOnboardingStore } from "@/store/onboarding-store";
+import { router } from "expo-router";
+import { useState } from "react";
+import { Text, View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 
-export default function OnboardingScreen() {
-  const router = useRouter();
+export default function Step3() {
+  const { setUser } = useOnboardingStore();
+  const [isLivingWithCat, setIsLivingWithCat] = useState(
+    null as null | boolean,
+  );
 
   return (
-    <View className="flex-1 items-center justify-center gap-6 bg-white">
-      <Text className="text-2xl font-bold text-gray-800">환영합니다! 🎉</Text>
-      <Text className="text-base text-gray-500">
-        초기 프로필 설정을 진행해 주세요.
-      </Text>
-
-      {/* 테스트용: 온보딩 끝내고 홈으로 넘어가는 버튼 */}
-      <TouchableOpacity
-        onPress={() => router.replace("/(tabs)")}
-        className="rounded-xl bg-blue-500 px-8 py-4"
-      >
-        <Text className="font-bold text-white">설정 완료하고 홈으로 가기</Text>
-      </TouchableOpacity>
+    <View className="flex-1 bg-semantic-bg-primary pt-6">
+      <ProgressBar progress={3} />
+      <ScrollView className="px-5" contentContainerStyle={{ flexGrow: 1 }}>
+        <View className="h-10" />
+        <Text className="typo-title2 text-semantic-text-primary">
+          지금 고양이와 살고 있나요?
+        </Text>
+        <View className="h-6" />
+        <Select
+          options={[
+            { label: "네", value: true },
+            { label: "아니오", value: false },
+          ]}
+          value={isLivingWithCat}
+          onChange={setIsLivingWithCat}
+        />
+      </ScrollView>
+      <BottomActionBar
+        buttons={[
+          {
+            label: "다음으로",
+            onPress: () => {
+              setUser({ isLivingWithCat: isLivingWithCat! });
+              if (isLivingWithCat) {
+                router.push(ROUTES.AUTH.ONBOARDING.STEP4);
+              } else {
+                router.push(ROUTES.AUTH.ONBOARDING.STEP7);
+              }
+            },
+            disabled: isLivingWithCat === null,
+          },
+        ]}
+      />
     </View>
   );
 }
