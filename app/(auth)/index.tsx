@@ -9,6 +9,7 @@ import { Image } from "expo-image";
 import {
   Dimensions,
   ImageSourcePropType,
+  Platform,
   Text,
   TouchableOpacity,
   View,
@@ -38,13 +39,17 @@ const LOGIN_OPTIONS: LoginOption[] = [
     containerClass: "bg-[#F2F2F2]",
     Icon: GoogleLogo,
   },
-  {
-    id: "apple",
-    label: "Apple 로그인",
-    containerClass: "bg-black dark:bg-gray-0",
-    textClass: "text-white dark:text-black",
-    Icon: AppleLogo,
-  },
+  ...(Platform.OS === "ios"
+    ? [
+        {
+          id: "apple" as Provider,
+          label: "Apple 로그인",
+          containerClass: "bg-black dark:bg-gray-0",
+          textClass: "text-white dark:text-black",
+          Icon: AppleLogo,
+        },
+      ]
+    : []),
 ];
 
 export default function Index() {
