@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   FlatList,
   ImageSourcePropType,
@@ -7,13 +7,29 @@ import {
   ViewToken,
 } from "react-native";
 
+const AUTO_PLAY_INTERVAL = 5000;
+
 interface CarouselProps {
   images: ImageSourcePropType[];
   renderItem: ListRenderItem<ImageSourcePropType> | null | undefined;
+  autoPlay?: boolean;
 }
 
-const Carousel = ({ images, renderItem }: CarouselProps) => {
+const Carousel = ({ images, renderItem, autoPlay }: CarouselProps) => {
   const [current, setCurrent] = useState(0);
+  const flatListRef = useRef<FlatList>(null);
+
+  useEffect(() => {
+    if (!autoPlay) return;
+
+    const interval = setInterval(() => {
+      const next = (current + 1) % images.length;
+      flatListRef.current?.scrollToIndex({ index: next, animated: true });
+      setCurrent(next);
+    }, AUTO_PLAY_INTERVAL);
+
+    return () => clearInterval(interval);
+  }, [autoPlay, current, images.length]);
 
   const onViewableItemsChanged = useRef(
     ({
@@ -30,6 +46,7 @@ const Carousel = ({ images, renderItem }: CarouselProps) => {
   return (
     <View className="flex-col items-center gap-3">
       <FlatList
+        ref={flatListRef}
         data={images}
         keyExtractor={(_, index) => String(index)}
         horizontal

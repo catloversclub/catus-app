@@ -43,6 +43,7 @@ const FeatureCarousel = () => {
           />
         </View>
       )}
+      autoPlay
     />
   );
 };
