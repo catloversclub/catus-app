@@ -6,6 +6,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { ROUTES } from "@/constants/route";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Text, View } from "react-native";
@@ -27,8 +28,13 @@ export default function Step0() {
           <Checkbox
             isChecked={hasAgreed1 && hasAgreed2}
             onToggle={() => {
-              setHasAgreed1((prev) => !prev);
-              setHasAgreed2((prev) => !prev);
+              if (!(hasAgreed1 && hasAgreed2)) {
+                setHasAgreed1(true);
+                setHasAgreed2(true);
+              } else {
+                setHasAgreed1(false);
+                setHasAgreed2(false);
+              }
             }}
             label={"이용 약관 전체 동의"}
           />
@@ -36,12 +42,14 @@ export default function Step0() {
           <View className="flex-col gap-1.5">
             <Accordion type="multiple" collapsible>
               <AccordionItem value="item-1">
-                <AccordionTrigger className="flex-row justify-between">
-                  <Checkbox
-                    isChecked={hasAgreed1}
-                    onToggle={() => setHasAgreed1((prev) => !prev)}
-                    label={"(필수) 서비스 이용 약관"}
-                  />
+                <AccordionTrigger>
+                  <View className="flex-1">
+                    <Checkbox
+                      isChecked={hasAgreed1}
+                      onToggle={() => setHasAgreed1((prev) => !prev)}
+                      label={"(필수) 서비스 이용 약관"}
+                    />
+                  </View>
                 </AccordionTrigger>
                 <AccordionContent>
                   <Text>Yes. It adheres to the WAI-ARIA design pattern.</Text>
@@ -49,11 +57,13 @@ export default function Step0() {
               </AccordionItem>
               <AccordionItem value="item-2">
                 <AccordionTrigger>
-                  <Checkbox
-                    isChecked={hasAgreed2}
-                    onToggle={() => setHasAgreed2((prev) => !prev)}
-                    label={"(필수) 개인정보 수집 및 이용 동의"}
-                  />
+                  <View className="flex-1">
+                    <Checkbox
+                      isChecked={hasAgreed2}
+                      onToggle={() => setHasAgreed2((prev) => !prev)}
+                      label={"(필수) 개인정보 수집 및 이용 동의"}
+                    />
+                  </View>
                 </AccordionTrigger>
                 <AccordionContent>
                   <Text>Yes. It adheres to the WAI-ARIA design pattern.</Text>
@@ -67,7 +77,7 @@ export default function Step0() {
         buttons={[
           {
             label: "다음으로",
-            onPress: () => router.push("/(auth)/(onboarding)/step1"),
+            onPress: () => router.push(ROUTES.AUTH.ONBOARDING.STEP1),
             disabled: !(hasAgreed1 && hasAgreed2),
           },
         ]}
