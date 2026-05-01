@@ -1,7 +1,7 @@
 import { useUserProfileQuery } from "@/api/domains/user/queries";
-import Input from "@/components/common/input";
 import Select from "@/components/common/select";
 import BottomActionBar from "@/components/layout/bottom-action-bar";
+import NameField from "@/components/settings/name-field";
 import ProfileImage from "@/components/user/profile-image";
 import { Link } from "expo-router";
 import { useState } from "react";
@@ -11,15 +11,7 @@ const UpdateNickname = () => {
   const { data: userData } = useUserProfileQuery();
   const [nickname, setNickname] = useState(userData.nickname);
   return (
-    <View className="flex-col gap-1.5">
-      <Text className="typo-label1 text-semantic-text-primary">이름</Text>
-      <Input
-        value={nickname}
-        onChangeText={setNickname}
-        maxLength={16}
-        placeholder="이름을 입력하세요."
-      />
-    </View>
+    <NameField name={nickname} setName={setNickname} />
   );
 };
 
