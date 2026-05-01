@@ -1,65 +1,39 @@
-// src/api/client.ts
-import { API_BASE_URL } from "@/constants/api";
-
+import { API_BASE_URL, STORAGE_BASE_URL } from "@/constants/api";
 import axios from "axios";
 import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 
-// 🌟 1. 토큰이 필요 없는 공개 API용 인스턴스 (로그인, 회원가입 등)
+const TIMEOUT = 10000; // 10초
+const STORAGE_TIMEOUT = 30000; // 30초
+
+// ─── 클라이언트 생성 ───────────────────────────────────────
+
 export const publicClient = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
-  headers: {
-    "Content-Type": "application/json",
-  },
+  timeout: TIMEOUT,
+  headers: { "Content-Type": "application/json" },
 });
 
-// 🌟 2. 토큰이 필요한 인증 API용 인스턴스 (기존 코드와 동일)
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
-  headers: {
-    "Content-Type": "application/json",
-  },
+  timeout: TIMEOUT,
+  headers: { "Content-Type": "application/json" },
 });
 
-// 1. Request Interceptor (요청 시 토큰 삽입)
-apiClient.interceptors.request.use(async (config) => {
-  const token = await SecureStore.getItemAsync("accessToken");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
+export const storageClient = axios.create({
+  baseURL: STORAGE_BASE_URL,
+  timeout: STORAGE_TIMEOUT,
 });
 
-apiClient.interceptors.response.use(undefined, async (error) => {
-  if (error.response?.status === 401) {
-    console.log("401 에러 발생, 어떤 API:", error.config.url); // ✅ 추가
-    const newToken = await refreshToken();
-    error.config.headers.Authorization = `Bearer ${newToken}`;
-    return apiClient(error.config);
-  }
-  throw error;
-});
+// ─── 토큰 갱신 ────────────────────────────────────────────
 
-// 토큰 갱신 진행 여부 및 대기열 관리
 let isRefreshing = false;
 let refreshSubscribers: ((token: string) => void)[] = [];
 
-const onTokenRefreshed = (token: string) => {
-  refreshSubscribers.forEach((callback) => callback(token));
-  refreshSubscribers = [];
-};
-
-const addRefreshSubscriber = (callback: (token: string) => void) => {
-  refreshSubscribers.push(callback);
-};
-
-const refreshToken = async () => {
+const getNewAccessToken = async (): Promise<string> => {
   if (isRefreshing) {
-    // 이미 갱신 중이면 완료될 때까지 대기
     return new Promise<string>((resolve) => {
-      addRefreshSubscriber(resolve);
+      refreshSubscribers.push(resolve);
     });
   }
 
@@ -67,23 +41,19 @@ const refreshToken = async () => {
 
   try {
     const storedRefreshToken = await SecureStore.getItemAsync("refreshToken");
-
     if (!storedRefreshToken) throw new Error("Refresh Token이 없습니다.");
 
     const { data } = await axios.post(`${API_BASE_URL}/auth/refresh`, {
       refreshToken: storedRefreshToken,
     });
 
-    const newAccessToken = data.accessToken;
-    const newRefreshToken = data.refreshToken;
-
-    await SecureStore.setItemAsync("accessToken", newAccessToken);
-    if (newRefreshToken) {
-      await SecureStore.setItemAsync("refreshToken", newRefreshToken);
+    await SecureStore.setItemAsync("accessToken", data.accessToken);
+    if (data.refreshToken) {
+      await SecureStore.setItemAsync("refreshToken", data.refreshToken);
     }
 
-    onTokenRefreshed(newAccessToken);
-    return newAccessToken;
+    refreshSubscribers.forEach((cb) => cb(data.accessToken));
+    return data.accessToken;
   } catch (e) {
     await SecureStore.deleteItemAsync("accessToken");
     await SecureStore.deleteItemAsync("refreshToken");
@@ -91,5 +61,38 @@ const refreshToken = async () => {
     throw e;
   } finally {
     isRefreshing = false;
+    refreshSubscribers = [];
   }
 };
+
+// ─── apiClient 인터셉터 ───────────────────────────────────
+
+apiClient.interceptors.request.use(async (config) => {
+  const token = await SecureStore.getItemAsync("accessToken");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
+apiClient.interceptors.response.use(undefined, async (error) => {
+  console.error("API 요청 에러:", {
+    url: error.config?.url,
+    method: error.config?.method,
+    status: error.response?.status,
+    data: error.response?.data,
+  });
+  if (error.response?.status !== 401) throw error;
+
+  const newToken = await getNewAccessToken();
+  error.config.headers.Authorization = `Bearer ${newToken}`;
+  return apiClient(error.config);
+});
+
+storageClient.interceptors.response.use(undefined, async (error) => {
+  console.error("Storage 요청 에러:", {
+    url: error.config?.url,
+    method: error.config?.method,
+    status: error.response?.status,
+    data: error.response?.data,
+  });
+  throw error;
+});
