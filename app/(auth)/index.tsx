@@ -68,7 +68,7 @@ export default function Index() {
           >
             <Icon
               className="size-10"
-              color={id === "apple" ? colors.text : undefined}
+              color={id === "apple" ? colors.bg.primary : undefined}
             />
             <Text className={cn("typo-body1", textClass)}>{label}</Text>
           </TouchableOpacity>
