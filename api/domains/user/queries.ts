@@ -11,8 +11,10 @@ import {
   followUser,
   getUserById,
   getUserProfile,
+  getUserProfileImageUploadUrl,
   unfollowUser,
   updateUser,
+  uploadProfileImage,
 } from "./api";
 
 // 💡 1. 체계적인 Query Key 관리
@@ -95,6 +97,24 @@ export const useUnfollowUserMutation = () => {
     mutationFn: (userId: string) => unfollowUser(userId),
     onSuccess: (_, userId) => {
       queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
+    },
+  });
+};
+
+export const useGetProfileImageUploadUrlMutation = () => {
+  return useMutation({
+    mutationKey: [...userKeys.all, "profileImageUploadUrl"] as const,
+    mutationFn: getUserProfileImageUploadUrl,
+  });
+};
+
+export const useUploadProfileImageMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: [...userKeys.all, "uploadProfileImage"] as const,
+    mutationFn: uploadProfileImage,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: userKeys.me() });
     },
   });
 };
