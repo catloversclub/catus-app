@@ -52,11 +52,11 @@ export default function Index() {
   const { colors } = useColors();
 
   return (
-    <SafeAreaView className="flex-1 items-center bg-semantic-bg-primary px-4">
+    <SafeAreaView className="flex-1 items-center bg-semantic-bg-primary ">
       <View className="items-center justify-center flex-1">
         <FeatureCarousel />
       </View>
-      <View className="w-full flex-col gap-2 pb-16">
+      <View className="w-full flex-col gap-2 pb-16 px-4">
         {LOGIN_OPTIONS.map(({ id, label, containerClass, textClass, Icon }) => (
           <TouchableOpacity
             key={id}
@@ -116,7 +116,7 @@ const FeatureCarousel = () => {
           </Text>
           <Image
             source={item}
-            style={{ width: width - 32, height: 300 }}
+            style={{ width, height: 300 }}
             contentFit="contain"
           />
         </View>
