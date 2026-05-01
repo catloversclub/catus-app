@@ -1,27 +1,29 @@
-import { bottomSheet } from "@/constants";
 import { dark, light } from "@/styles/semantic-colors";
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
-import React, { useCallback } from "react";
+import React from "react";
 import { StyleSheet, useColorScheme } from "react-native";
+
+const INDICATOR_WIDTH = 120;
+const INDICATOR_HEIGHT = 6;
+
 interface BaseBottomSheetProps {
   BaseBottomSheetModalRef: React.RefObject<BottomSheetModal | null>;
   children: React.ReactNode;
+  onDismiss?: () => void;
 }
 
 export const BaseBottomSheet = ({
   BaseBottomSheetModalRef,
   children,
+  onDismiss,
 }: BaseBottomSheetProps) => {
   const scheme = useColorScheme();
   const colors = scheme === "dark" ? dark : light;
 
-  const handleBaseBottomSheetChanges = useCallback((index: number) => {
-    console.log("handleSheetChanges", index);
-  }, []);
   return (
     <BottomSheetModal
       backdropComponent={(props) => (
@@ -34,12 +36,12 @@ export const BaseBottomSheet = ({
       )}
       backgroundStyle={{ backgroundColor: colors.bg.secondary }}
       handleIndicatorStyle={{
-        width: bottomSheet.indicatorWidth,
-        height: bottomSheet.indicatorHeight,
+        width: INDICATOR_WIDTH,
+        height: INDICATOR_HEIGHT,
         backgroundColor: colors.icon.secondary,
       }}
       ref={BaseBottomSheetModalRef}
-      onChange={handleBaseBottomSheetChanges}
+      onDismiss={onDismiss}
     >
       <BottomSheetView style={styles.contentContainer}>
         {children}
