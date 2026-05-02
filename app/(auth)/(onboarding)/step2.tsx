@@ -1,12 +1,8 @@
-import {
-  useGetProfileImageUploadUrlMutation,
-  useUploadProfileImageMutation,
-} from "@/api/domains/user/queries";
 import BottomActionBar from "@/components/layout/bottom-action-bar";
 import ProgressBar from "@/components/onboarding/progress-bar";
 import ProfileImage from "@/components/user/profile-image";
 import { ROUTES } from "@/constants/route";
-import { useOnboardingStore } from "@/store/onboarding-store";
+import { useUpdateUser } from "@/hooks/user/use-update-user";
 import { router } from "expo-router";
 
 import { useState } from "react";
@@ -14,36 +10,14 @@ import { Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 const Step2 = () => {
-  const { setUser } = useOnboardingStore();
+  const { submitProfileImage, isPending } = useUpdateUser();
+
   const [imageUri, setImageUri] = useState<string | null>(null);
-  const {
-    mutate: getProfileImageUploadUrl,
-    isPending: isGetProfileImageUploadUrlPending,
-  } = useGetProfileImageUploadUrlMutation();
-  const { mutate: uploadProfileImage, isPending: isUploadProfileImagePending } =
-    useUploadProfileImageMutation();
 
   const handlePressNext = async () => {
-    if (!imageUri) {
-      return;
-    }
-
-    getProfileImageUploadUrl(undefined, {
-      onSuccess: ({ fields }) => {
-        uploadProfileImage(
-          { fields, fileUri: imageUri },
-          {
-            onSuccess: () => {
-              setUser({ profileImageUrl: fields.key });
-              router.push(ROUTES.AUTH.ONBOARDING.STEP3);
-            },
-          },
-        );
-      },
-      onError: (error) => {
-        console.error(error);
-      },
-    });
+    if (!imageUri) return;
+    await submitProfileImage(imageUri);
+    router.push(ROUTES.AUTH.ONBOARDING.STEP3);
   };
 
   const handlePressSkip = () => {
@@ -74,8 +48,7 @@ const Step2 = () => {
             label: "다음으로",
             onPress: handlePressNext,
             disabled: imageUri === null,
-            isPending:
-              isGetProfileImageUploadUrlPending || isUploadProfileImagePending,
+            isPending: isPending,
           },
           {
             label: "건너뛰기",
