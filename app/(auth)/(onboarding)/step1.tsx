@@ -1,36 +1,36 @@
-import { useCheckNicknameQuery } from "@/api/domains/user/queries";
 import BottomActionBar from "@/components/layout/bottom-action-bar";
 import ProgressBar from "@/components/onboarding/progress-bar";
 import NameField from "@/components/settings/name-field";
 import { ROUTES } from "@/constants/route";
+import { useNicknameCheck } from "@/hooks/auth/use-nickname-check";
 import { useKeyboardAvoidingView } from "@/hooks/use-keyboard-avoiding-view";
+import { useCreateUser } from "@/hooks/user/use-create-user";
 import { cn } from "@/lib/utils";
-import { useOnboardingStore } from "@/store/onboarding-store";
 import { router } from "expo-router";
-import { useState } from "react";
 import { KeyboardAvoidingView, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
-export default function Step1() {
+const Step1 = () => {
   const keyboardAvoidingViewProps = useKeyboardAvoidingView();
+  const {
+    nickname,
+    hasChecked,
+    isValidNickname,
+    isDirty,
+    statusText,
+    handleChangeNickname,
+    confirmCheck,
+  } = useNicknameCheck();
+  const { submit, isPending } = useCreateUser();
 
-  const { setUser } = useOnboardingStore();
-
-  const [nickname, setNickname] = useState("");
-  const [checkedNickname, setCheckedNickname] = useState("");
-
-  const checkNickname = useCheckNicknameQuery(nickname);
-
-  const hasChecked = checkedNickname.length > 0;
-  const isValidNickname = checkNickname.data?.available ?? false;
-  const isDirty = nickname !== checkedNickname;
-
-  const statusText =
-    !hasChecked || isDirty
-      ? "중복 여부를 확인해주세요"
-      : isValidNickname
-        ? "사용할 수 있는 닉네임이에요"
-        : "다른 집사가 이미 사용하고 있는 닉네임이에요";
+  const handlePressNext = async () => {
+    if (hasChecked && isValidNickname && !isDirty) {
+      await submit(nickname);
+      router.push(ROUTES.AUTH.ONBOARDING.STEP2);
+    } else {
+      confirmCheck();
+    }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -46,10 +46,7 @@ export default function Step1() {
         <View className="h-6" />
         <NameField
           name={nickname}
-          setName={(text) => {
-            setNickname(text);
-            setCheckedNickname("");
-          }}
+          setName={handleChangeNickname}
           placeholder="닉네임"
           isError={hasChecked && !isValidNickname}
         />
@@ -76,19 +73,15 @@ export default function Step1() {
         buttons={[
           {
             label: hasChecked && isValidNickname ? "다음으로" : "중복 확인",
-            onPress: () => {
-              if (hasChecked && isValidNickname && !isDirty) {
-                setUser({ nickname: nickname });
-                router.push(ROUTES.AUTH.ONBOARDING.STEP2);
-              } else {
-                setCheckedNickname(nickname); // 쿼리 트리거
-              }
-            },
+            onPress: handlePressNext,
             disabled:
               !nickname.trim() || (hasChecked && !isDirty && !isValidNickname),
+            isPending: isPending,
           },
         ]}
       />
     </KeyboardAvoidingView>
   );
-}
+};
+
+export default Step1;
