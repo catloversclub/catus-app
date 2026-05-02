@@ -1,36 +1,27 @@
-export interface Cat {
+import { Gender } from "@/store/auth/onboarding-store";
+
+interface Cat {
   id: string;
   name: string;
-  gender: "MALE" | "FEMALE";
+  gender: Gender;
   profileImageUrl: string | null;
   birthDate: string | null;
   breed: string | null;
+  personalities: number[];
+  appearances: number[];
   type: string | null;
   createdAt: string;
   butlerId: string;
 }
 
+type CreateCatRequest = Partial<Omit<Cat, "id">>;
+type UpdateCatRequest = Partial<Omit<Cat, "id">>;
+type CreateCatResponse = Omit<Cat, "personalities" | "appearances">;
+
 export type GetMyCatsResponse = Cat[];
 
 export type GetCatByIdResponse = Cat;
 
-export interface CreateCatRequest {
-  name: string;
-  appearanceIds?: number[];
-  personalityIds?: number[];
-}
-
-export type CreateCatResponse = Cat;
-
-export interface UpdateCatRequest {
-  name?: string;
-  appearanceIds?: number[];
-  personalityIds?: number[];
-}
-
 export type UpdateCatResponse = Cat;
 
-export interface PresignedUrlResponse {
-  uploadUrl: string;
-  key: string;
-}
+export { Cat, CreateCatRequest, CreateCatResponse, UpdateCatRequest };
