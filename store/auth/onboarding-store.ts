@@ -1,16 +1,5 @@
 import { create } from "zustand";
 
-interface UserOnboardingData {
-  nickname: string;
-  hasAgreedToTerms: boolean;
-  isLivingWithCat: boolean;
-  favoritePersonalities: number[];
-  favoriteAppearances: number[];
-  email: string | null;
-  phone: string | null;
-  profileImageUrl: string | null;
-}
-
 export type Gender = "FEMALE" | "MALE" | null;
 
 interface CatOnboardingData {
@@ -24,23 +13,10 @@ interface CatOnboardingData {
 }
 
 interface OnboardingStore {
-  user: UserOnboardingData;
   cat: CatOnboardingData;
-  setUser: (data: Partial<UserOnboardingData>) => void;
   setCat: (data: Partial<CatOnboardingData>) => void;
   reset: () => void;
 }
-
-const initialUser: UserOnboardingData = {
-  nickname: "",
-  hasAgreedToTerms: false,
-  isLivingWithCat: false,
-  favoritePersonalities: [],
-  favoriteAppearances: [],
-  email: null,
-  phone: null,
-  profileImageUrl: null,
-};
 
 const initialCat: CatOnboardingData = {
   name: "",
@@ -53,9 +29,7 @@ const initialCat: CatOnboardingData = {
 };
 
 export const useOnboardingStore = create<OnboardingStore>((set) => ({
-  user: initialUser,
   cat: initialCat,
-  setUser: (data) => set((state) => ({ user: { ...state.user, ...data } })),
   setCat: (data) => set((state) => ({ cat: { ...state.cat, ...data } })),
-  reset: () => set({ user: initialUser, cat: initialCat }),
+  reset: () => set({ cat: initialCat }),
 }));
