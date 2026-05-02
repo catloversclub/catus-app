@@ -1,7 +1,3 @@
-import {
-  useGetProfileImageUploadUrlMutation,
-  useUploadProfileImageMutation,
-} from "@/api/domains/user/queries";
 import SelectBreed from "@/components/cat/select-breed";
 import Select from "@/components/common/select";
 import SelectDate from "@/components/common/select-date";
@@ -10,46 +6,34 @@ import ProgressBar from "@/components/onboarding/progress-bar";
 import NameField from "@/components/settings/name-field";
 import ProfileImage from "@/components/user/profile-image";
 import { ROUTES } from "@/constants/route";
+import { useCreateCat } from "@/hooks/cat/use-create-cat";
+import { useUpdateCat } from "@/hooks/cat/use-update-cat";
 import { useKeyboardAvoidingView } from "@/hooks/use-keyboard-avoiding-view";
 import { formatDate } from "@/lib/utils";
-import { Gender, useOnboardingStore } from "@/store/onboarding-store";
+import { Gender, useOnboardingStore } from "@/store/auth/onboarding-store";
 import { router } from "expo-router";
 import { useRef, useState } from "react";
 import { KeyboardAvoidingView, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 const Step4 = () => {
-  const { setCat } = useOnboardingStore();
+  const { cat } = useOnboardingStore();
   const keyboardAvoidingViewProps = useKeyboardAvoidingView();
   const scrollViewRef = useRef<ScrollView>(null);
   const breedOffsetY = useRef<number>(0);
 
   const [imageUri, setImageUri] = useState<string | null>(null);
-  const {
-    mutate: getProfileImageUploadUrl,
-    isPending: isGetProfileImageUploadUrlPending,
-  } = useGetProfileImageUploadUrlMutation();
-  const { mutate: uploadProfileImage, isPending: isUploadProfileImagePending } =
-    useUploadProfileImageMutation();
+  const { submit: createCat, isPending: isCreating } = useCreateCat();
+  const { submitProfileImage, isPending: isUploadingImage } = useUpdateCat();
+
+  const isPending = isCreating || isUploadingImage;
 
   const handlePressNext = async () => {
-    if (!imageUri) {
-      return;
-    }
+    if (!imageUri) return;
 
-    getProfileImageUploadUrl(undefined, {
-      onSuccess: ({ fields }) => {
-        uploadProfileImage(
-          { fields, fileUri: imageUri },
-          {
-            onSuccess: () => {
-              setCat({ profileImageUrl: fields.key });
-              router.push(ROUTES.AUTH.ONBOARDING.STEP5);
-            },
-          },
-        );
-      },
-    });
+    const { id: catId } = await createCat(cat);
+    await submitProfileImage(catId, imageUri);
+    router.push(ROUTES.AUTH.ONBOARDING.STEP5);
   };
 
   const handlePressSkip = () => {
@@ -74,8 +58,8 @@ const Step4 = () => {
           고양이의 프로필을 완성해 주세요!
         </Text>
         <Text className="typo-body4 text-semantic-text-tertiary w-full">
-          여러 마리의 고양이가 있다면 {"\n"}다음 화면에서 ‘더 추가하기’를
-          클릭해주세요.
+          여러 마리의 고양이가 있다면 {"\n"}다음 화면에서 {"\'"}더 추가하기
+          {"\'"}를 클릭해주세요.
         </Text>
         <View className="h-6" />
         <View className="items-center">
@@ -95,10 +79,10 @@ const Step4 = () => {
             onBreedOpen={() => {
               setTimeout(() => {
                 scrollViewRef.current?.scrollTo({
-                  y: breedOffsetY.current + 4 * 46 + 80, // SearchInput + 텍스트 높이 추가
+                  y: breedOffsetY.current + 4 * 46 + 80,
                   animated: true,
                 });
-              }, 50); // isFocused가 true로 바뀐 후 스크롤
+              }, 50);
             }}
             onLayout={(y) => {
               breedOffsetY.current = y;
@@ -113,8 +97,7 @@ const Step4 = () => {
             label: "다음으로",
             onPress: handlePressNext,
             disabled: imageUri === null,
-            isPending:
-              isGetProfileImageUploadUrlPending || isUploadProfileImagePending,
+            isPending,
           },
           {
             label: "건너뛰기",
