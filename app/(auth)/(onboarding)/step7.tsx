@@ -3,7 +3,6 @@ import ProgressBar from "@/components/onboarding/progress-bar";
 import SelectAppearance from "@/components/tag/select-appearance";
 import SelectPersonality from "@/components/tag/select-personality";
 import { ROUTES } from "@/constants/route";
-import { useOnboardingStore } from "@/store/onboarding-store";
 import { router } from "expo-router";
 
 import { useState } from "react";
@@ -49,14 +48,13 @@ const Step7 = () => {
 };
 
 const CreatePersonality = () => {
-  const { setUser } = useOnboardingStore();
   const [selectedPersonality, setSelectedPersonality] = useState<Set<number>>(
     new Set(),
   );
 
   const handleSelectedPersonalityChange = (value: Set<number>) => {
     setSelectedPersonality(value);
-    setUser({ favoritePersonalities: Array.from(value) });
+    // setUser({ favoritePersonalities: Array.from(value) });
   };
 
   return (
@@ -68,14 +66,13 @@ const CreatePersonality = () => {
 };
 
 const CreateAppearance = () => {
-  const { setUser } = useOnboardingStore();
   const [selectedAppearance, setSelectedAppearance] = useState<Set<number>>(
     new Set(),
   );
 
   const handleSelectedAppearanceChange = (value: Set<number>) => {
     setSelectedAppearance(value);
-    setUser({ favoriteAppearances: Array.from(value) });
+    // setUser({ favoriteAppearances: Array.from(value) });
   };
 
   return (

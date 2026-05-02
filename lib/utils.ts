@@ -1,4 +1,4 @@
-import { STORAGE_BAEE_URL } from "@/constants/api";
+import { STORAGE_BASE_URL } from "@/constants/api";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -53,7 +53,7 @@ const getMediaUrl = (path: string | undefined | null): string => {
   if (!path) return ""; // 경로가 없을 경우 빈 문자열 반환 (필요시 기본 이미지 URL 반환 가능)
 
   // 중복된 슬래시(//) 방지 및 결합
-  const baseUrl = STORAGE_BAEE_URL.replace(/\/$/, ""); // 끝의 / 제거
+  const baseUrl = STORAGE_BASE_URL.replace(/\/$/, ""); // 끝의 / 제거
   const relativePath = path.replace(/^\//, ""); // 앞의 / 제거
 
   return `${baseUrl}/${relativePath}`;

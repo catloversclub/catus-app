@@ -4,7 +4,7 @@ import CatCard from "@/components/cat/cat-card";
 import BottomActionBar from "@/components/layout/bottom-action-bar";
 import ProgressBar from "@/components/onboarding/progress-bar";
 import { ROUTES } from "@/constants/route";
-import { useOnboardingStore } from "@/store/onboarding-store";
+import { useOnboardingStore } from "@/store/auth/onboarding-store";
 import { router } from "expo-router";
 
 import { useColors } from "@/hooks/use-colors";

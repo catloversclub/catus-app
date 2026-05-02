@@ -1,14 +1,13 @@
-// app/(tabs)/_layout.tsx (또는 TabsLayout 파일)
 import BellIcon from "@/assets/icons/bell.svg";
 import CameraIcon from "@/assets/icons/camera.svg";
 import ExploreIcon from "@/assets/icons/explore.svg";
 import HouseIcon from "@/assets/icons/house.svg";
 import PersonIcon from "@/assets/icons/person.svg";
 import { HapticTab } from "@/components/haptic-tab";
-import { useImagePicker } from "@/hooks/useImagePicker"; // 방금 만든 훅 임포트
-import { dark, light } from "@/styles/semantic-colors";
-import { Tabs } from "expo-router";
-import { TouchableOpacity, View, useColorScheme } from "react-native";
+import { useColors } from "@/hooks/use-colors";
+import { useImagePicker } from "@/hooks/use-image-picker"; // 방금 만든 훅 임포트
+import { router, Tabs } from "expo-router";
+import { TouchableOpacity, View } from "react-native";
 
 type TabScreenConfig = {
   name: string;
@@ -47,9 +46,19 @@ const TAB_SCREENS: TabScreenConfig[] = [
 ];
 
 export default function TabsLayout() {
-  const { handleCameraPress } = useImagePicker();
-  const scheme = useColorScheme();
-  const colors = scheme === "dark" ? dark : light;
+  // 사용하는 곳
+  const { pickImages } = useImagePicker();
+
+  const handleCameraPress = async () => {
+    const uris = await pickImages({ selectionLimit: 5 });
+    if (!uris) return;
+
+    router.push({
+      pathname: "/post/edit-list",
+      params: { imageUris: JSON.stringify(uris) },
+    });
+  };
+  const { colors } = useColors();
 
   return (
     <Tabs

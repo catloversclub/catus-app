@@ -3,7 +3,7 @@ import ProgressBar from "@/components/onboarding/progress-bar";
 import SelectAppearance from "@/components/tag/select-appearance";
 import SelectPersonality from "@/components/tag/select-personality";
 import { ROUTES } from "@/constants/route";
-import { useOnboardingStore } from "@/store/onboarding-store";
+import { useOnboardingStore } from "@/store/auth/onboarding-store";
 import { router } from "expo-router";
 
 import { useState } from "react";
