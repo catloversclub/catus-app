@@ -2,17 +2,26 @@ import Select from "@/components/common/select";
 import BottomActionBar from "@/components/layout/bottom-action-bar";
 import ProgressBar from "@/components/onboarding/progress-bar";
 import { ROUTES } from "@/constants/route";
-import { useOnboardingStore } from "@/store/onboarding-store";
+import { useUpdateUser } from "@/hooks/user/use-update-user";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
-export default function Step3() {
-  const { setUser } = useOnboardingStore();
+const Step3 = () => {
+  const { updateUser, isPending } = useUpdateUser();
   const [isLivingWithCat, setIsLivingWithCat] = useState(
     null as null | boolean,
   );
+
+  const handlePressNext = async () => {
+    if (isLivingWithCat) {
+      await updateUser({ isLivingWithCat });
+      router.push(ROUTES.AUTH.ONBOARDING.STEP4);
+    } else {
+      router.push(ROUTES.AUTH.ONBOARDING.STEP7);
+    }
+  };
 
   return (
     <View className="flex-1 bg-semantic-bg-primary pt-6">
@@ -36,18 +45,14 @@ export default function Step3() {
         buttons={[
           {
             label: "다음으로",
-            onPress: () => {
-              setUser({ isLivingWithCat: isLivingWithCat! });
-              if (isLivingWithCat) {
-                router.push(ROUTES.AUTH.ONBOARDING.STEP4);
-              } else {
-                router.push(ROUTES.AUTH.ONBOARDING.STEP7);
-              }
-            },
+            onPress: handlePressNext,
             disabled: isLivingWithCat === null,
+            isPending: isPending,
           },
         ]}
       />
     </View>
   );
-}
+};
+
+export default Step3;
