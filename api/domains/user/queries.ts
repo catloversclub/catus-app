@@ -1,3 +1,4 @@
+import { uploadImage } from "@/api/domains/common/api";
 import {
   useMutation,
   useQuery,
@@ -14,7 +15,6 @@ import {
   getUserProfileImageUploadUrl,
   unfollowUser,
   updateUser,
-  uploadProfileImage,
 } from "./api";
 
 // 💡 1. 체계적인 Query Key 관리
@@ -44,10 +44,11 @@ export const useUserDetailQuery = (userId: string) => {
   });
 };
 
-export const useCheckNicknameQuery = (nickname: string) => {
+export const useCheckNicknameQuery = (nickname: string, enabled: boolean) => {
   return useQuery({
     queryKey: userKeys.checkNickname(nickname),
     queryFn: () => checkNickname(nickname),
+    enabled: enabled && nickname.length > 0,
   });
 };
 
@@ -56,7 +57,9 @@ export const useCheckNicknameQuery = (nickname: string) => {
 // -----------------------------------------------------
 
 export const useCreateUserMutation = () => {
-  return useMutation({ mutationFn: createUser });
+  return useMutation({
+    mutationFn: createUser,
+  });
 };
 
 export const useUpdateUserMutation = () => {
@@ -112,7 +115,7 @@ export const useUploadProfileImageMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationKey: [...userKeys.all, "uploadProfileImage"] as const,
-    mutationFn: uploadProfileImage,
+    mutationFn: uploadImage,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.me() });
     },

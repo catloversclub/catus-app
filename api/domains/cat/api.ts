@@ -1,11 +1,11 @@
 import { apiClient } from "@/api/client";
 
+import { ImageUploadUrl } from "@/api/domains/common/type";
 import {
   CreateCatRequest,
   CreateCatResponse,
   GetCatByIdResponse,
   GetMyCatsResponse,
-  PresignedUrlResponse,
   UpdateCatRequest,
   UpdateCatResponse,
 } from "./types";
@@ -15,9 +15,8 @@ const BASE_URL = "/cat";
 const CAT_ENDPOINTS = {
   BASE: `${BASE_URL}`,
   MY_CATS: `${BASE_URL}/my`,
-  DETAIL: (catId: number) => `${BASE_URL}/${catId}`,
-  IMAGE_UPLOAD_URL: (catId: number) => `${BASE_URL}/${catId}/image/upload-url`,
-  IMAGE_UPLOAD: (catId: number) => `${BASE_URL}/${catId}/image`,
+  DETAIL: (catId: string) => `${BASE_URL}/${catId}`,
+  IMAGE_UPLOAD_URL: (catId: string) => `${BASE_URL}/${catId}/image/upload-url`,
 } as const;
 
 export const getMyCats = async (): Promise<GetMyCatsResponse> => {
@@ -28,7 +27,7 @@ export const getMyCats = async (): Promise<GetMyCatsResponse> => {
 };
 
 export const getCatById = async (
-  catId: number,
+  catId: string,
 ): Promise<GetCatByIdResponse> => {
   const { data } = await apiClient.get<GetCatByIdResponse>(
     CAT_ENDPOINTS.DETAIL(catId),
@@ -47,7 +46,7 @@ export const createCat = async (
 };
 
 export const updateCat = async (
-  catId: number,
+  catId: string,
   payload: UpdateCatRequest,
 ): Promise<UpdateCatResponse> => {
   const { data } = await apiClient.patch<UpdateCatResponse>(
@@ -57,22 +56,20 @@ export const updateCat = async (
   return data;
 };
 
-export const deleteCat = async (catId: number): Promise<void> => {
+export const deleteCat = async (catId: string): Promise<void> => {
   await apiClient.delete(CAT_ENDPOINTS.DETAIL(catId));
 };
 
-export const getCatImageUploadUrl = async (
-  catId: number,
-): Promise<PresignedUrlResponse> => {
-  const { data } = await apiClient.post<PresignedUrlResponse>(
+export const getCatImageUploadUrl = async ({
+  catId,
+}: {
+  catId: string;
+}): Promise<ImageUploadUrl> => {
+  const { data } = await apiClient.post<ImageUploadUrl>(
     CAT_ENDPOINTS.IMAGE_UPLOAD_URL(catId),
+    {
+      contentType: "image/png",
+    },
   );
   return data;
-};
-
-export const uploadCatImage = async (
-  catId: number,
-  imageUrl: string,
-): Promise<void> => {
-  await apiClient.post(CAT_ENDPOINTS.IMAGE_UPLOAD(catId), { imageUrl });
 };

@@ -1,8 +1,10 @@
-import { apiClient, storageClient } from "@/api/client";
+import { apiClient } from "@/api/client";
+import { ImageUploadUrl } from "@/api/domains/common/type";
 import {
+  CreateUserRequest,
   GetUserByIdResponse,
   GetUserProfileResponse,
-  ProfileImageUploadUrl,
+  UpdateUserRequest,
 } from "./types"; // 프로젝트에 맞는 타입으로 변경하세요
 
 const BASE_URL = "/user";
@@ -25,7 +27,7 @@ export const getUserProfile = async (): Promise<GetUserProfileResponse> => {
 };
 
 // 1. 사용자 생성 (POST)
-export const createUser = async (payload: any) => {
+export const createUser = async (payload: CreateUserRequest) => {
   const { data } = await apiClient.post(USER_ENDPOINTS.BASE, payload);
   return data;
 };
@@ -41,7 +43,7 @@ export const getUserById = async (
 };
 
 // 3. 사용자 업데이트하기 (PATCH)
-export const updateUser = async (payload: any) => {
+export const updateUser = async (payload: UpdateUserRequest) => {
   const { data } = await apiClient.patch(USER_ENDPOINTS.ME, payload);
   return data;
 };
@@ -75,39 +77,9 @@ export const unfollowUser = async (userId: string) => {
 };
 
 export const getUserProfileImageUploadUrl =
-  async (): Promise<ProfileImageUploadUrl> => {
+  async (): Promise<ImageUploadUrl> => {
     const { data } = await apiClient.post(USER_ENDPOINTS.IMAGE_UPLOAD_URL, {
       contentType: "image/png",
     });
     return data;
   };
-
-type ReactNativeFile = {
-  uri: string;
-  type: string;
-  name: string;
-};
-
-export const uploadProfileImage = async ({
-  fields,
-  fileUri,
-}: {
-  fields: ProfileImageUploadUrl["fields"];
-  fileUri: string;
-}) => {
-  const formData = new FormData();
-  Object.entries(fields).forEach(([key, value]) => {
-    formData.append(key, value);
-  });
-
-  const file: ReactNativeFile = {
-    uri: fileUri,
-    type: fields["Content-Type"],
-    name: fileUri.split("/").pop() || "profile.png",
-  };
-
-  formData.append("file", file as unknown as Blob);
-
-  const { data } = await storageClient.post("", formData);
-  return data;
-};

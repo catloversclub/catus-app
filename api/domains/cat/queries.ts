@@ -4,6 +4,7 @@ import {
   useSuspenseQuery,
 } from "@tanstack/react-query";
 
+import { uploadImage } from "@/api/domains/common/api";
 import {
   createCat,
   deleteCat,
@@ -11,14 +12,13 @@ import {
   getCatImageUploadUrl,
   getMyCats,
   updateCat,
-  uploadCatImage,
 } from "./api";
 import { CreateCatRequest, UpdateCatRequest } from "./types";
 
 export const catKeys = {
   all: ["cat"] as const,
   list: () => [...catKeys.all, "list"] as const,
-  detail: (catId: number) => [...catKeys.all, "detail", catId] as const,
+  detail: (catId: string) => [...catKeys.all, "detail", catId] as const,
 };
 
 export const useMyCatsQuery = () => {
@@ -28,7 +28,7 @@ export const useMyCatsQuery = () => {
   });
 };
 
-export const useCatByIdQuery = (catId: number) => {
+export const useCatByIdQuery = (catId: string) => {
   return useSuspenseQuery({
     queryKey: catKeys.detail(catId),
     queryFn: () => getCatById(catId),
@@ -54,7 +54,7 @@ export const useUpdateCatMutation = () => {
       catId,
       payload,
     }: {
-      catId: number;
+      catId: string;
       payload: UpdateCatRequest;
     }) => updateCat(catId, payload),
     onSuccess: (_, variables) => {
@@ -70,16 +70,16 @@ export const useDeleteCatMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (catId: number) => deleteCat(catId),
+    mutationFn: (catId: string) => deleteCat(catId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: catKeys.list() });
     },
   });
 };
 
-export const useCatImageUploadUrlMutation = () => {
+export const useGetCatImageUploadUrlMutation = () => {
   return useMutation({
-    mutationFn: (catId: number) => getCatImageUploadUrl(catId),
+    mutationFn: getCatImageUploadUrl,
   });
 };
 
@@ -87,12 +87,8 @@ export const useUploadCatImageMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ catId, imageUrl }: { catId: number; imageUrl: string }) =>
-      uploadCatImage(catId, imageUrl),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: catKeys.detail(variables.catId),
-      });
+    mutationFn: uploadImage,
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: catKeys.list() });
     },
   });
