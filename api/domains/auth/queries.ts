@@ -8,8 +8,11 @@ import * as AppleAuthentication from "expo-apple-authentication";
 import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 
-import { exchangeOidcToken, logoutUser } from "./api";
-import { AuthProvider } from "./types";
+import { AuthProvider } from "@/api/domains/auth/types";
+import { ROUTES } from "@/constants/route";
+import { tokenStorage } from "@/lib/token";
+import { useOidcStore } from "@/store/auth/oidc-store";
+import { exchangeAndSaveTokens, logoutUser } from "./api";
 
 GoogleSignin.configure({
   webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
@@ -17,6 +20,7 @@ GoogleSignin.configure({
 });
 
 export const useLogin = () => {
+  const { setOidc } = useOidcStore();
   // const showError = useErrorStore((s) => s.showError);
 
   return useMutation({
@@ -50,22 +54,23 @@ export const useLogin = () => {
 
       if (!idToken) return;
       // throw new Error(`${provider}의 idToken을 가져오지 못했습니다.`);
+      setOidc(idToken, provider);
 
-      return await exchangeOidcToken({ idToken, provider });
+      return await exchangeAndSaveTokens({ idToken, provider });
     },
 
     onSuccess: async (data) => {
       if (!data) throw new Error("로그인이 실패하였습니다. 다시 시도해주세요.");
 
-      await SecureStore.setItemAsync("accessToken", data.accessToken);
-      if (data.refreshToken) {
-        await SecureStore.setItemAsync("refreshToken", data.refreshToken);
-      }
+      await tokenStorage.setTokens(
+        data.accessToken,
+        data.refreshToken ?? undefined,
+      );
 
       if (data.onboardingRequired) {
-        router.push("/(auth)/(onboarding)");
+        router.push(ROUTES.AUTH.ONBOARDING.INDEX);
       } else {
-        router.replace("/(tabs)");
+        router.replace(ROUTES.TABS.INDEX);
       }
     },
 
@@ -77,6 +82,7 @@ export const useLogin = () => {
 
 export const useLogout = () => {
   const queryClient = useQueryClient();
+  const { clearOidc } = useOidcStore();
 
   return useMutation({
     mutationFn: async () => {
@@ -87,13 +93,13 @@ export const useLogout = () => {
     },
 
     onSettled: async () => {
-      await SecureStore.deleteItemAsync("accessToken");
-      await SecureStore.deleteItemAsync("refreshToken");
+      await tokenStorage.clearTokens();
 
       // 모든 캐시 무효화 (다른 유저 정보 노출 방지)
       queryClient.clear();
+      clearOidc();
 
-      router.replace("/(auth)");
+      router.replace(ROUTES.AUTH.INDEX);
     },
   });
 };

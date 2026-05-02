@@ -1,10 +1,10 @@
 import { API_BASE_URL, STORAGE_BASE_URL } from "@/constants/api";
+import { tokenStorage } from "@/lib/token";
 import axios from "axios";
 import { router } from "expo-router";
-import * as SecureStore from "expo-secure-store";
 
-const TIMEOUT = 10000; // 10초
-const STORAGE_TIMEOUT = 30000; // 30초
+const TIMEOUT = 10000;
+const STORAGE_TIMEOUT = 30000;
 
 // ─── 클라이언트 생성 ───────────────────────────────────────
 
@@ -40,23 +40,19 @@ const getNewAccessToken = async (): Promise<string> => {
   isRefreshing = true;
 
   try {
-    const storedRefreshToken = await SecureStore.getItemAsync("refreshToken");
+    const storedRefreshToken = await tokenStorage.getRefresh();
     if (!storedRefreshToken) throw new Error("Refresh Token이 없습니다.");
 
     const { data } = await axios.post(`${API_BASE_URL}/auth/refresh`, {
       refreshToken: storedRefreshToken,
     });
 
-    await SecureStore.setItemAsync("accessToken", data.accessToken);
-    if (data.refreshToken) {
-      await SecureStore.setItemAsync("refreshToken", data.refreshToken);
-    }
+    await tokenStorage.setTokens(data.accessToken, data.refreshToken);
 
     refreshSubscribers.forEach((cb) => cb(data.accessToken));
     return data.accessToken;
   } catch (e) {
-    await SecureStore.deleteItemAsync("accessToken");
-    await SecureStore.deleteItemAsync("refreshToken");
+    await tokenStorage.clearTokens();
     router.replace("/(auth)");
     throw e;
   } finally {
@@ -68,7 +64,7 @@ const getNewAccessToken = async (): Promise<string> => {
 // ─── apiClient 인터셉터 ───────────────────────────────────
 
 apiClient.interceptors.request.use(async (config) => {
-  const token = await SecureStore.getItemAsync("accessToken");
+  const token = await tokenStorage.getAccess();
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
@@ -95,4 +91,13 @@ storageClient.interceptors.response.use(undefined, async (error) => {
     data: error.response?.data,
   });
   throw error;
+});
+
+publicClient.interceptors.response.use(undefined, async (error) => {
+  console.error("Public 요청 에러:", {
+    url: error.config?.url,
+    method: error.config?.method,
+    status: error.response?.status,
+    data: error.response?.data,
+  });
 });

@@ -1,6 +1,6 @@
 // _layout.tsx
 import ErrorModal from "@/components/modal/error-modal";
-import { useAuthRedirect } from "@/hooks/use-auth-redirect";
+import { useAuthRedirect } from "@/hooks/auth/use-auth-redirect";
 import { usePushNotifications } from "@/hooks/use-push-notifications";
 import { useErrorStore } from "@/store/error-store";
 import { useReactQueryDevTools } from "@dev-plugins/react-query";
