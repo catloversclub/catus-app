@@ -17,10 +17,13 @@ export const useUpdateCat = () => {
 
   const isPending = isUpdating || isGettingUploadUrl || isUploadingImage;
 
-  const submitProfileImage = async (
-    catId: string,
-    imageUri: string,
-  ): Promise<string> => {
+  const submitProfileImage = async ({
+    catId,
+    imageUri,
+  }: {
+    catId: string;
+    imageUri: string;
+  }): Promise<string> => {
     const { fields } = await getCatImageUploadUrl({ catId });
     await uploadCatImage({ fields, fileUri: imageUri });
     await updateCat({
