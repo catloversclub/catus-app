@@ -1,22 +1,27 @@
 import CameraIcon from "@/assets/icons/camera.svg";
+import AvatarDark from "@/assets/images/avatar/user-dark.png";
+import AvatarLight from "@/assets/images/avatar/user-light.png";
+import { SelectImageSheet } from "@/components/bottom-sheet/select-image-sheet";
 import { PROFILE_SIZE } from "@/constants/user";
-import { useImagePicker } from "@/hooks/useImagePicker";
-import { dark, light } from "@/styles/semantic-colors";
+import { useColors } from "@/hooks/use-colors";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
+import { useRef, useState } from "react";
 import {
+  ActivityIndicator,
   Pressable,
   TouchableOpacity,
-  useColorScheme,
   View,
 } from "react-native";
 
 interface ProfileImageProps {
   imageUrl: string | null;
+  size: "sm" | "md" | "lg";
   userId?: string;
   isUserLink?: boolean;
   isEditMode?: boolean;
-  size: "sm" | "md" | "lg";
+  handleImageUriChange: (uri: string | null) => void;
 }
 
 const ProfileImage = ({
@@ -25,40 +30,56 @@ const ProfileImage = ({
   isUserLink = false,
   isEditMode = false,
   size,
+  handleImageUriChange,
 }: ProfileImageProps) => {
-  const scheme = useColorScheme();
-  const colors = scheme === "dark" ? dark : light;
-  const defaultAvatar =
-    scheme === "dark"
-      ? require("@/assets/images/avatar/user-dark.png")
-      : require("@/assets/images/avatar/user-light.png");
+  const { colors, scheme } = useColors();
+
+  const defaultAvatar = scheme === "dark" ? AvatarDark : AvatarLight;
   const imageSource = imageUrl ? { uri: imageUrl } : defaultAvatar;
   const sizeValue = PROFILE_SIZE[size];
-  const { handleCameraPress } = useImagePicker();
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const SelectImageSheetModalRef = useRef<BottomSheetModal>(null);
+
+  const handleSelectImagePress = () => {
+    SelectImageSheetModalRef.current?.present();
+  };
 
   const image = (
-    <View style={{ width: sizeValue, height: sizeValue }}>
-      <Image
-        source={imageSource}
-        style={{
-          width: sizeValue,
-          height: sizeValue,
-          borderRadius: sizeValue,
-        }}
-        contentFit="cover"
-        alt={`${userId || "User"} profile`}
-      />
-      {isEditMode && (
-        <TouchableOpacity onPress={handleCameraPress}>
-          <View
-            className="absolute bottom-0 -right-2 size-11 rounded-full items-center justify-center border border-semantic-border-primary bg-semantic-bg-primary"
+    <>
+      <View style={{ width: sizeValue, height: sizeValue }}>
+        <Image
+          source={imageSource}
+          style={{
+            width: sizeValue,
+            height: sizeValue,
+            borderRadius: sizeValue,
+          }}
+          contentFit="cover"
+          alt={`${userId ?? "User"} profile`}
+        />
+        {isEditMode && (
+          <TouchableOpacity
+            onPress={handleSelectImagePress}
+            disabled={isLoading}
+            className="absolute bottom-0 -right-2 size-11 rounded-full items-center justify-center border border-semantic-border-primary"
             style={{ backgroundColor: colors.bg.secondary }}
           >
-            <CameraIcon width={20} height={20} color={colors.icon.primary} />
-          </View>
-        </TouchableOpacity>
-      )}
-    </View>
+            {isLoading ? (
+              <ActivityIndicator size="small" color={colors.icon.primary} />
+            ) : (
+              <CameraIcon width={20} height={20} color={colors.icon.primary} />
+            )}
+          </TouchableOpacity>
+        )}
+      </View>
+      <SelectImageSheet
+        SelectImageSheetModalRef={SelectImageSheetModalRef}
+        handleIsLoading={setIsLoading}
+        handleImageUriChange={handleImageUriChange}
+      />
+    </>
   );
 
   if (isUserLink) {
