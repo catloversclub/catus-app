@@ -3,7 +3,7 @@ import { Pressable, Text, View } from "react-native";
 // components/common/chips-select.tsx
 interface SelectProps<T> {
   options: { label: string; value: T }[];
-  value: T;
+  value: T | undefined;
   onChange: (value: T) => void;
 }
 
