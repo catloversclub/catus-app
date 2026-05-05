@@ -1,4 +1,4 @@
-import { Link } from "@/.expo/types/router";
+import { Link } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 
 const ProfileActions = () => {
