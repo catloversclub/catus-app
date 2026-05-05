@@ -19,7 +19,9 @@ const Checkbox = ({ isChecked, onToggle, label }: CheckboxProps) => {
       ) : (
         <CheckboxOutline width={24} height={24} color={colors.icon.secondary} />
       )}
-      <Text className="typo-body1 text-semantic-text-primary">{label}</Text>
+      <Text className="typo-body1 text-semantic-text-primary flex-1">
+        {label}
+      </Text>
     </Pressable>
   );
 };
