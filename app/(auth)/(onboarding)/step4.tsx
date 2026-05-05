@@ -5,6 +5,7 @@ import BottomActionBar from "@/components/layout/bottom-action-bar";
 import ProgressBar from "@/components/onboarding/progress-bar";
 import NameField from "@/components/settings/name-field";
 import ProfileImage from "@/components/user/profile-image";
+import { Breed } from "@/constants/cat";
 import { ROUTES } from "@/constants/route";
 import { useCreateCat } from "@/hooks/cat/use-create-cat";
 import { useUpdateCat } from "@/hooks/cat/use-update-cat";
@@ -32,7 +33,7 @@ const Step4 = () => {
     if (!imageUri) return;
 
     const { id: catId } = await createCat(cat);
-    await submitProfileImage(catId, imageUri);
+    await submitProfileImage({ catId, imageUri });
     router.push(ROUTES.AUTH.ONBOARDING.STEP5);
   };
 
@@ -183,9 +184,9 @@ interface RegisterBreedProps {
 
 const RegisterBreed = ({ onBreedOpen, onLayout }: RegisterBreedProps) => {
   const { setCat } = useOnboardingStore();
-  const [breed, setBreed] = useState<null | string>(null);
+  const [breed, setBreed] = useState<null | Breed>(null);
 
-  const handleBreedChange = (value: string | null) => {
+  const handleBreedChange = (value: Breed | null) => {
     setBreed(value);
     setCat({ breed: value });
   };
