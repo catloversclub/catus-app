@@ -1,6 +1,4 @@
-import { AttributeItem } from "@/api/domains/attribute/types";
-
-interface Profile {
+interface User {
   id: string;
   kakaoId: string | null;
   googleId: string | null;
@@ -14,18 +12,18 @@ interface Profile {
   followerCount: number;
   followingCount: number;
   isFollowing: boolean; // 팔로우 여부 (선택적 필드)
-  favoriteAppearances: AttributeItem[];
-  favoritePersonalities: AttributeItem[];
+  favoriteAppearances: number[];
+  favoritePersonalities: number[];
 }
 
-type CreateUserRequest = Pick<Profile, "nickname" | "hasAgreedToTerms">;
+type CreateUserRequest = Pick<User, "nickname" | "hasAgreedToTerms">;
 
-type UpdateUserRequest = Partial<Profile>;
+type UpdateUserRequest = Partial<User>;
 
-type GetUserProfileResponse = Omit<Profile, "isFollowing">;
+type GetUserProfileResponse = Omit<User, "isFollowing">;
 
 type GetUserByIdResponse = Pick<
-  Profile,
+  User,
   | "followerCount"
   | "followingCount"
   | "nickname"
@@ -33,10 +31,16 @@ type GetUserByIdResponse = Pick<
   | "isFollowing"
 >;
 
+type UserProfile = Omit<
+  User,
+  "id" | "kakaoId" | "googleId" | "appleId" | "createdAt" | "isFollowing"
+>;
+
 export {
   CreateUserRequest,
   GetUserByIdResponse,
   GetUserProfileResponse,
-  Profile,
   UpdateUserRequest,
+  User,
+  UserProfile,
 };

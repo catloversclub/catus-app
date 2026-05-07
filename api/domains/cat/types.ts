@@ -1,4 +1,4 @@
-import { Gender } from "@/store/auth/onboarding-store";
+export type Gender = "FEMALE" | "MALE" | "UNKNOWN";
 
 interface Cat {
   id: string;
@@ -18,10 +18,18 @@ type CreateCatRequest = Partial<Omit<Cat, "id">>;
 type UpdateCatRequest = Partial<Omit<Cat, "id">>;
 type CreateCatResponse = Omit<Cat, "personalities" | "appearances">;
 
+type CatProfile = Omit<Cat, "id" | "createdAt" | "butlerId" | "type">;
+
 export type GetMyCatsResponse = Cat[];
 
 export type GetCatByIdResponse = Cat;
 
 export type UpdateCatResponse = Cat;
 
-export { Cat, CreateCatRequest, CreateCatResponse, UpdateCatRequest };
+export {
+  Cat,
+  CatProfile,
+  CreateCatRequest,
+  CreateCatResponse,
+  UpdateCatRequest,
+};
