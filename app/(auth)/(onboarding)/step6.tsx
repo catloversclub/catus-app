@@ -1,11 +1,10 @@
-import { useMyCatsQuery } from "@/api/domains/cat/queries";
+import { useCatByIdQuery, useMyCatsQuery } from "@/api/domains/cat/queries";
 import PlusIcon from "@/assets/icons/plus.svg";
 import CatCard from "@/components/cat/cat-card";
 import BottomActionBar from "@/components/layout/bottom-action-bar";
 import ProgressBar from "@/components/onboarding/progress-bar";
 import { ROUTES } from "@/constants/route";
-import { useOnboardingStore } from "@/store/auth/onboarding-store";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 
 import { useColors } from "@/hooks/use-colors";
 import { Text, TouchableOpacity, View } from "react-native";
@@ -13,11 +12,15 @@ import { ScrollView } from "react-native-gesture-handler";
 
 const Step6 = () => {
   const { colors } = useColors();
-  const { cat } = useOnboardingStore();
+
+  const { catId } = useLocalSearchParams<{ catId: string }>();
+  const { data: cat } = useCatByIdQuery(catId);
   const { data: catData } = useMyCatsQuery();
+
   const handlePressAddMore = () => {
-    router.push(ROUTES.AUTH.ONBOARDING.STEP5);
+    router.push(ROUTES.AUTH.ONBOARDING.STEP4_CREATE);
   };
+
   return (
     <View className="flex-1 bg-semantic-bg-primary pt-6">
       <ProgressBar progress={6} />
@@ -34,9 +37,9 @@ const Step6 = () => {
         </View>
         <TouchableOpacity
           onPress={handlePressAddMore}
-          className="py-3 flex-row items-center gap-1.5"
+          className="py-3 justify-center flex-row gap-1.5 items-center"
         >
-          <PlusIcon width={16} height={16} fill={colors.icon.tertiary} />
+          <PlusIcon width={16} height={16} color={colors.icon.tertiary} />
           <Text className="text-semantic-button-ghost-text typo-body4">
             더 추가하기
           </Text>

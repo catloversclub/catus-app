@@ -67,7 +67,7 @@ export default function Step0() {
                   <ChevronRightIcon
                     width={16}
                     height={16}
-                    stroke={colors.icon.secondary}
+                    color={colors.icon.secondary}
                   />
                 </View>
               </TouchableOpacity>

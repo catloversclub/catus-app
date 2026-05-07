@@ -17,7 +17,7 @@ const Step3 = () => {
   const handlePressNext = async () => {
     if (isLivingWithCat) {
       await updateUser({ isLivingWithCat });
-      router.push(ROUTES.AUTH.ONBOARDING.STEP4);
+      router.push(ROUTES.AUTH.ONBOARDING.STEP4_CREATE);
     } else {
       router.push(ROUTES.AUTH.ONBOARDING.STEP7);
     }
