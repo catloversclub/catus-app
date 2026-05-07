@@ -1,8 +1,8 @@
 import { CatProfile } from "@/api/domains/cat/types";
-import RegisterBirthDate from "@/app/cat/form/field/birthday";
-import RegisterBreed from "@/app/cat/form/field/breed";
-import RegisterGender from "@/app/cat/form/field/gender";
-import RegisterCatName from "@/app/cat/form/field/name";
+import RegisterBirthDate from "@/components/cat/form/field/birthday";
+import RegisterBreed from "@/components/cat/form/field/breed";
+import RegisterGender from "@/components/cat/form/field/gender";
+import RegisterCatName from "@/components/cat/form/field/name";
 import ProfileImage from "@/components/common/profile-image";
 import BottomActionBar from "@/components/layout/bottom-action-bar";
 import ProgressBar from "@/components/onboarding/progress-bar";
@@ -24,6 +24,7 @@ interface CatProfileFormProps {
   onSkip?: () => void;
   isPending: boolean;
   isUpdate?: boolean;
+  stepNumber?: number;
 }
 
 const CatProfileForm = ({
@@ -32,6 +33,7 @@ const CatProfileForm = ({
   onSkip,
   isPending,
   isUpdate = false,
+  stepNumber,
 }: CatProfileFormProps) => {
   const { imageUri, setImageUri } = useCatStore();
 
@@ -53,7 +55,7 @@ const CatProfileForm = ({
       className="flex-1 bg-semantic-bg-primary py-6"
       {...keyboardAvoidingViewProps}
     >
-      <ProgressBar progress={4} />
+      {stepNumber && <ProgressBar progress={stepNumber} />}
       <ScrollView
         className="px-5"
         contentContainerStyle={{ flexGrow: 1 }}

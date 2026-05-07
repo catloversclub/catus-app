@@ -15,6 +15,7 @@ interface CatTagFormProps {
   onSubmit: (data: CatProfile) => void;
   onSkip?: () => void;
   isPending: boolean;
+  stepNumber?: number;
 }
 
 const CatTagForm = ({
@@ -23,6 +24,7 @@ const CatTagForm = ({
   onSubmit,
   onSkip,
   isPending,
+  stepNumber,
 }: CatTagFormProps) => {
   const { control, handleSubmit, watch } = useForm<CatProfile>({
     defaultValues: {
@@ -36,7 +38,7 @@ const CatTagForm = ({
 
   return (
     <View className="flex-1 bg-semantic-bg-primary pt-6">
-      <ProgressBar progress={5} />
+      {stepNumber && <ProgressBar progress={stepNumber} />}
       <ScrollView className="px-5" contentContainerStyle={{ flexGrow: 1 }}>
         <View className="h-10" />
         <Text className="typo-title2 text-semantic-text-primary">
