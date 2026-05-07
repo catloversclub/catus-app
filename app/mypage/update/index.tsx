@@ -1,8 +1,8 @@
 import { useUserProfileQuery } from "@/api/domains/user/queries";
+import ProfileImage from "@/components/common/profile-image";
 import Select from "@/components/common/select";
 import BottomActionBar from "@/components/layout/bottom-action-bar";
 import NameField from "@/components/settings/name-field";
-import ProfileImage from "@/components/user/profile-image";
 import { Link } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
@@ -10,9 +10,7 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 const UpdateNickname = () => {
   const { data: userData } = useUserProfileQuery();
   const [nickname, setNickname] = useState(userData.nickname);
-  return (
-    <NameField name={nickname} setName={setNickname} />
-  );
+  return <NameField name={nickname} setName={setNickname} />;
 };
 
 const UpdateIfLivingWithCat = () => {

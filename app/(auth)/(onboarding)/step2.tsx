@@ -1,6 +1,6 @@
+import ProfileImage from "@/components/common/profile-image";
 import BottomActionBar from "@/components/layout/bottom-action-bar";
 import ProgressBar from "@/components/onboarding/progress-bar";
-import ProfileImage from "@/components/user/profile-image";
 import { ROUTES } from "@/constants/route";
 import { useUpdateUser } from "@/hooks/user/use-update-user";
 import { router } from "expo-router";

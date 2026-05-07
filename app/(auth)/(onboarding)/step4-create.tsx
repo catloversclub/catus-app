@@ -1,6 +1,6 @@
 import CatProfileForm, {
   CatProfileFormData,
-} from "@/app/cat/form/profile-form";
+} from "@/components/cat/form/profile-form";
 import { ROUTES } from "@/constants/route";
 import { useCreateCat } from "@/hooks/cat/use-create-cat";
 import { useUpdateCat } from "@/hooks/cat/use-update-cat";
@@ -30,6 +30,7 @@ const Step4 = () => {
 
   return (
     <CatProfileForm
+      stepNumber={4}
       onSubmit={handleOnSubmit}
       onSkip={() => {
         router.push(ROUTES.AUTH.ONBOARDING.STEP7);

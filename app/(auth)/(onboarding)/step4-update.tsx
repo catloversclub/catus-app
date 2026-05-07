@@ -1,7 +1,7 @@
 import { useCatByIdQuery } from "@/api/domains/cat/queries";
 import CatProfileForm, {
   CatProfileFormData,
-} from "@/app/cat/form/profile-form";
+} from "@/components/cat/form/profile-form";
 import { ROUTES } from "@/constants/route";
 import { useUpdateCat } from "@/hooks/cat/use-update-cat";
 import { useCatStore } from "@/store/cat/cat-store";
@@ -15,7 +15,10 @@ const Step4 = () => {
   const { updateCat, submitProfileImage, isPending } = useUpdateCat();
 
   const handleOnSubmit = async (data: CatProfileFormData) => {
-    const { id: catId } = await updateCat(data);
+    await updateCat({
+      catId,
+      payload: data,
+    });
 
     if (imageUri) {
       await submitProfileImage({ catId, imageUri });
@@ -29,6 +32,7 @@ const Step4 = () => {
 
   return (
     <CatProfileForm
+      stepNumber={4}
       initialData={cat}
       onSubmit={handleOnSubmit}
       onSkip={() => {

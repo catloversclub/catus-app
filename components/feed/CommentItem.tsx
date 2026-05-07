@@ -1,4 +1,5 @@
 import { Comment } from "@/api/domains/comment/types";
+import ProfileImage from "@/components/common/profile-image";
 import {
   Accordion,
   AccordionContent,
@@ -6,7 +7,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Text } from "@/components/ui/text";
-import ProfileImage from "@/components/user/profile-image";
 import { cn, formatRelativeTime } from "@/lib/utils";
 import { Image } from "expo-image";
 import { useState } from "react";

@@ -1,6 +1,6 @@
 import { useMyPostsQuery } from "@/api/domains/post/queries";
 import { useUserProfileQuery } from "@/api/domains/user/queries";
-import ProfileImage from "@/components/user/profile-image";
+import ProfileImage from "@/components/common/profile-image";
 import { Link } from "expo-router";
 import { Skeleton } from "moti/skeleton";
 import { Suspense } from "react";

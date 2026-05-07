@@ -1,5 +1,5 @@
 import { useCatByIdQuery } from "@/api/domains/cat/queries";
-import CatTagForm, { CatTagFormData } from "@/app/cat/form/tag-form";
+import CatTagForm, { CatTagFormData } from "@/components/cat/form/tag-form";
 import { ROUTES } from "@/constants/route";
 import { useUpdateCat } from "@/hooks/cat/use-update-cat";
 import { router, useLocalSearchParams } from "expo-router";
@@ -30,6 +30,7 @@ const Step5 = () => {
 
   return (
     <CatTagForm
+      stepNumber={5}
       name={cat.name}
       initialData={cat}
       onSubmit={handlePressNext}
