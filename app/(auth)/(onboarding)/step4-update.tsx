@@ -6,11 +6,12 @@ import { ROUTES } from "@/constants/route";
 import { useUpdateCat } from "@/hooks/cat/use-update-cat";
 import { useCatStore } from "@/store/cat/cat-store";
 import { router, useLocalSearchParams } from "expo-router";
+import { useEffect } from "react";
 
 const Step4 = () => {
   const { catId } = useLocalSearchParams<{ catId: string }>();
   const { data: cat } = useCatByIdQuery(catId);
-  const { imageUri } = useCatStore();
+  const { imageUri, setImageUri } = useCatStore();
 
   const { updateCat, submitProfileImage, isPending } = useUpdateCat();
 
@@ -29,6 +30,10 @@ const Step4 = () => {
       params: { catId },
     });
   };
+
+  useEffect(() => {
+    setImageUri(cat.profileImageUrl);
+  }, []);
 
   return (
     <CatProfileForm

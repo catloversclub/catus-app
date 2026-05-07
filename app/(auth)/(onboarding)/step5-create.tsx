@@ -2,16 +2,19 @@ import { useCatByIdQuery } from "@/api/domains/cat/queries";
 import CatTagForm, { CatTagFormData } from "@/components/cat/form/tag-form";
 import { ROUTES } from "@/constants/route";
 import { useUpdateCat } from "@/hooks/cat/use-update-cat";
+import { useCatStore } from "@/store/cat/cat-store";
 
 import { router, useLocalSearchParams } from "expo-router";
 
 const Step5 = () => {
+  const { resetImageUri } = useCatStore();
   const { catId } = useLocalSearchParams<{ catId: string }>();
   const { data: cat } = useCatByIdQuery(catId);
 
   const { updateCat, isPending } = useUpdateCat();
 
   const handleComplete = () => {
+    resetImageUri();
     router.push({
       pathname: ROUTES.AUTH.ONBOARDING.STEP6,
       params: { catId },
