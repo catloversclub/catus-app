@@ -6,8 +6,8 @@ import { View } from "react-native";
 
 interface SelectDateSheetProps {
   SelectDateSheetModalRef: React.RefObject<BottomSheetModal | null>;
-  date: Date | null;
-  onChangeDate: (date: Date) => void;
+  date: string | null;
+  onChangeDate: (date: string) => void;
 }
 
 const YEARS = Array.from(
@@ -22,7 +22,7 @@ export const SelectDateSheet = ({
   onChangeDate,
   SelectDateSheetModalRef,
 }: SelectDateSheetProps) => {
-  const now = date ?? new Date();
+  const now = date ? new Date(date) : new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [day, setDay] = useState(now.getDate());
@@ -30,7 +30,9 @@ export const SelectDateSheet = ({
   return (
     <BaseBottomSheet
       BaseBottomSheetModalRef={SelectDateSheetModalRef}
-      onDismiss={() => onChangeDate(new Date(year, month - 1, day))}
+      onDismiss={() =>
+        onChangeDate(new Date(year, month - 1, day).toISOString().split("T")[0])
+      }
     >
       <View className="flex-row justify-center items-center px-5 pb-8">
         <WheelPicker

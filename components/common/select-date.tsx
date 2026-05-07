@@ -7,8 +7,8 @@ import { useCallback, useRef } from "react";
 import { Text, TouchableOpacity } from "react-native";
 
 interface SelectDateProps {
-  date: Date | null;
-  onChangeDate: (value: Date | null) => void;
+  date: string | null;
+  onChangeDate: (value: string | null) => void;
 }
 
 const SelectDate = ({ date, onChangeDate }: SelectDateProps) => {
@@ -23,7 +23,9 @@ const SelectDate = ({ date, onChangeDate }: SelectDateProps) => {
         onPress={handleSelectDatePress}
         className="rounded px-3 py-[13px] bg-semantic-bg-secondary flex-row justify-between items-center"
       >
-        <Text>{formatDate(date)}</Text>
+        <Text className="typo-body4 text-semantic-text-tertiary">
+          {formatDate(date)}
+        </Text>
         <CalendarIcon color={colors.icon.tertiary} />
       </TouchableOpacity>
       <SelectDateSheet
