@@ -1,5 +1,5 @@
 import SearchInput from "@/components/common/search-input";
-import { Breed, BREEDS } from "@/constants/cat";
+import { BREEDS } from "@/constants/cat";
 import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
@@ -8,12 +8,11 @@ const ITEM_HEIGHT = 46;
 const MAX_VISIBLE_ITEMS = 4;
 
 interface SelectBreedProps {
-  breed: Breed | null;
-  onChangeBreed: (value: Breed | null) => void;
+  breed: string | null;
+  onChangeBreed: (value: string | null) => void;
   onBreedOpen?: () => void;
 }
 
-// SelectBreed.tsx
 const SelectBreed = ({
   breed,
   onChangeBreed,
@@ -23,7 +22,7 @@ const SelectBreed = ({
   const [isFocused, setIsFocused] = useState(false);
   const filtered = [...BREEDS].sort().filter((b) => b.includes(query));
 
-  const handleSelect = (value: Breed | null) => {
+  const handleSelect = (value: string | null) => {
     onChangeBreed(value);
     setQuery(value || "");
     setIsFocused(false);
