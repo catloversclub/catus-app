@@ -10,8 +10,10 @@ export default function OnboardingLayout() {
       <Stack.Screen name="step1" />
       <Stack.Screen name="step2" />
       <Stack.Screen name="step3" />
-      <Stack.Screen name="step4" />
-      <Stack.Screen name="step5" />
+      <Stack.Screen name="step4-create" />
+      <Stack.Screen name="step4-update" />
+      <Stack.Screen name="step5-create" />
+      <Stack.Screen name="step5-update" />
       <Stack.Screen name="step6" />
       <Stack.Screen name="step7" />
       <Stack.Screen name="step8" />
