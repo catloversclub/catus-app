@@ -21,7 +21,7 @@ interface ProfileImageProps {
   userId?: string;
   isUserLink?: boolean;
   isEditMode?: boolean;
-  handleImageUriChange: (uri: string | null) => void;
+  handleImageUriChange?: (uri: string | null) => void;
 }
 
 const ProfileImage = ({
@@ -74,11 +74,13 @@ const ProfileImage = ({
           </TouchableOpacity>
         )}
       </View>
-      <SelectImageSheet
-        SelectImageSheetModalRef={SelectImageSheetModalRef}
-        handleIsLoading={setIsLoading}
-        handleImageUriChange={handleImageUriChange}
-      />
+      {handleImageUriChange && (
+        <SelectImageSheet
+          SelectImageSheetModalRef={SelectImageSheetModalRef}
+          handleIsLoading={setIsLoading}
+          handleImageUriChange={handleImageUriChange}
+        />
+      )}
     </>
   );
 
