@@ -1,5 +1,6 @@
 // _layout.tsx
 import ErrorModal from "@/components/modal/error-modal";
+import { ToastProvider } from "@/components/ui/toast-provider";
 import { useAuthRedirect } from "@/hooks/auth/use-auth-redirect";
 import { usePushNotifications } from "@/hooks/use-push-notifications";
 import { useErrorStore } from "@/store/error-store";
@@ -58,19 +59,22 @@ function AppContent() {
   if (!fontsLoaded) return null;
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <BottomSheetModalProvider>
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(auth)" />
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="post" />
-          </Stack>
-          <ErrorModal />
-        </BottomSheetModalProvider>
-        <PortalHost />
-      </GestureHandlerRootView>
-    </QueryClientProvider>
+    <>
+      <QueryClientProvider client={queryClient}>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <BottomSheetModalProvider>
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="(auth)" />
+              <Stack.Screen name="(tabs)" />
+              <Stack.Screen name="post" />
+            </Stack>
+            <ErrorModal />
+          </BottomSheetModalProvider>
+          <PortalHost />
+        </GestureHandlerRootView>
+      </QueryClientProvider>
+      <ToastProvider />
+    </>
   );
 }
 
