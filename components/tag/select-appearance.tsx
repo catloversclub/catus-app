@@ -1,5 +1,6 @@
 import { useAppearanceQuery } from "@/api/domains/attribute/queries";
 import ChipsSelect from "@/components/common/chips-select";
+import { useToast } from "@/hooks/use-toast";
 import { Text, View } from "react-native";
 
 interface SelectAppearanceProps {
@@ -11,6 +12,7 @@ const SelectAppearance = ({
   selectedAppearance,
   setSelectedAppearance,
 }: SelectAppearanceProps) => {
+  const toast = useToast();
   const { data: appearanceData } = useAppearanceQuery();
   const appearanceOptions = appearanceData.map((item) => ({
     label: item.label,
@@ -22,6 +24,10 @@ const SelectAppearance = ({
     if (next.has(id)) {
       next.delete(id);
     } else {
+      if (next.size >= 2) {
+        toast.error("최대 선택 개수를 초과했어요");
+        return;
+      }
       next.add(id);
     }
     setSelectedAppearance(next);
