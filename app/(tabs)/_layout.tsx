@@ -6,6 +6,7 @@ import PersonIcon from "@/assets/icons/person.svg";
 import { HapticTab } from "@/components/haptic-tab";
 import { useColors } from "@/hooks/use-colors";
 import { useImagePicker } from "@/hooks/use-image-picker"; // 방금 만든 훅 임포트
+import { usePushNotifications } from "@/hooks/use-push-notifications";
 import { router, Tabs } from "expo-router";
 import { TouchableOpacity, View } from "react-native";
 
@@ -59,6 +60,7 @@ export default function TabsLayout() {
     });
   };
   const { colors } = useColors();
+  usePushNotifications();
 
   return (
     <Tabs

@@ -2,7 +2,6 @@
 import ErrorModal from "@/components/modal/error-modal";
 import { ToastProvider } from "@/components/ui/toast-provider";
 import { useAuthRedirect } from "@/hooks/auth/use-auth-redirect";
-import { usePushNotifications } from "@/hooks/use-push-notifications";
 import { useErrorStore } from "@/store/error-store";
 import { useReactQueryDevTools } from "@dev-plugins/react-query";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
@@ -50,7 +49,6 @@ function AppContent() {
   });
 
   useAuthRedirect(fontsLoaded);
-  usePushNotifications();
 
   useEffect(() => {
     if (fontsLoaded) SplashScreen.hideAsync();
