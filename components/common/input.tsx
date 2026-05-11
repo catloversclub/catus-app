@@ -1,6 +1,7 @@
 import XLogo from "@/assets/icons/x-circle.svg";
 import { useColors } from "@/hooks/use-colors";
 import { cn } from "@/lib/utils";
+import { useRef } from "react";
 import { Pressable, TextInput, View } from "react-native";
 
 interface InputProps {
@@ -25,16 +26,24 @@ const Input = ({
   onBlur,
 }: InputProps) => {
   const { colors } = useColors();
+  const inputRef = useRef<TextInput>(null);
+
+  // 컨테이너 어디를 탭해도 TextInput에 focus가 가도록
+  const handlePressContainer = () => {
+    inputRef.current?.focus();
+  };
 
   return (
-    <View
-      style={{ backgroundColor: colors.bg.secondary }} // className 대신 style로
+    <Pressable
+      onPress={handlePressContainer}
+      style={{ backgroundColor: colors.bg.secondary }}
       className={cn(
-        "rounded px-3 py-[13px] flex-row items-center ",
+        "rounded px-3 py-[13px] flex-row items-center",
         isError && "border border-semantic-border-error",
       )}
     >
       <TextInput
+        ref={inputRef}
         editable
         numberOfLines={1}
         maxLength={maxLength}
@@ -52,12 +61,16 @@ const Input = ({
         onBlur={onBlur}
       />
       {value.length > 0 && (
-        <Pressable onPress={() => onChangeText("")} className="ml-3">
+        <Pressable
+          onPress={() => onChangeText("")}
+          hitSlop={8}
+          className="ml-3"
+        >
           <XLogo width={20} height={20} color={colors.icon.tertiary} />
         </Pressable>
       )}
       {suffix && <View className="ml-3">{suffix}</View>}
-    </View>
+    </Pressable>
   );
 };
 
