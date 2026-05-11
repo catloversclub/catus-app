@@ -12,96 +12,81 @@ const PrivacyPolicy = () => {
       </Text>
       <View className="flex-col gap-2.5">
         <Text className="typo-title3 text-semantic-text-primary">
-          제1조 (목적)
+          제1조 (개인정보 처리 목적)
         </Text>
         <Text className="typo-body4 text-semantic-text-tertiary">
-          본 약관은 CatUs(이하 “서비스”)이 제공하는 커뮤니티 서비스와 관련하여
-          서비스와 이용자 간의 권리·의무 및 책임사항을 규정함을 목적으로 합니다.
+          CatUs(이하 “서비스”)는 다음의 목적을 위하여 개인정보를 처리합니다.
+          {"\n"} · 회원 가입 및 관리 {"\n"} · 서비스 제공 및 운영 {"\n"} ·
+          이용자 문의 대응 및 고객 지원 {"\n"} ·서비스 개선 및 통계 분석
         </Text>
       </View>
       <View className="flex-col gap-2.5">
         <Text className="typo-title3 text-semantic-text-primary">
-          제2조 (정의)
+          제2조 (수집하는 개인정보 항목)
         </Text>
         <Text className="typo-body4 text-semantic-text-tertiary">
-          본 약관에서 사용하는 용어의 정의는 다음과 같습니다. {"\n"}1. 이용자:
-          본 약관에 동의하고 서비스를 이용하는 회원 {"\n"}2. 회원: 계정을
-          생성하여 서비스를 이용하는 자 {"\n"}3. 콘텐츠: 회원이 서비스에 게시한
-          게시물, 댓글, 이미지 등 일체의 정보
+          1. 회원가입 시{"\n"} · 필수: 이메일, 비밀번호, 닉네임 {"\n"} · 선택:
+          프로필 이미지 {"\n"}2. 서비스 이용 과정에서 자동 수집 {"\n"} · 접속 IP
+          주소 {"\n"} · 기기 정보 (OS, 앱 버전 등) {"\n"} · 이용 기록 (접속
+          로그, 활동 내역 등)
         </Text>
       </View>
       <View className="flex-col gap-2.5">
         <Text className="typo-title3 text-semantic-text-primary">
-          제3조 (약관의 효력 및 변경)
+          제3조 (개인정보의 보유 및 이용기간)
         </Text>
         <Text className="typo-body4 text-semantic-text-tertiary">
-          1. 본 약관은 회원 가입 시 동의함으로써 효력이 발생합니다. {"\n"}2.
-          서비스는 관련 법령을 위반하지 않는 범위 내에서 약관을 변경할 수
-          있습니다. {"\n"}3. 약관 변경 시 사전 공지하며, 변경 후에도 서비스를
-          이용할 경우 동의한 것으로 간주합니다.
+          1. 회원 탈퇴 시 개인정보는 지체 없이 삭제합니다. {"\n"}2. 단, 다음의
+          경우 일정 기간 보관할 수 있습니다. {"\n"} · 관련 법령에 따른 보관
+          의무가 있는 경우 {"\n"} · 서비스 부정 이용 방지를 위한 기록
         </Text>
       </View>
       <View className="flex-col gap-2.5">
         <Text className="typo-title3 text-semantic-text-primary">
-          제4조 (회원 가입 및 계정 관리)
+          제4조 (개인정보의 제3자 제공)
         </Text>
         <Text className="typo-body4 text-semantic-text-tertiary">
-          1. 회원은 본인 정보를 바탕으로 계정을 생성해야 합니다. {"\n"}2. 회원은
-          계정 정보의 정확성과 보안을 유지할 책임이 있습니다. {"\n"}3. 서비스는
-          다음의 경우 계정 이용을 제한할 수 있습니다. {"\n"} · 허위 정보 입력{" "}
-          {"\n"} · 타인의 권리 침해 {"\n"} · 서비스 운영 방해 행위
+          서비스는 원칙적으로 이용자의 개인정보를 외부에 제공하지 않습니다.
+          {"\n"}다만, 다음의 경우는 예외로 합니다. {"\n"} · 이용자의 사전 동의를
+          받은 경우 {"\n"} · 법령에 의해 요구되는 경우
         </Text>
       </View>
       <View className="flex-col gap-2.5">
         <Text className="typo-title3 text-semantic-text-primary">
-          제5조 (콘텐츠의 게시 및 관리)
+          제5조 (개인정보 처리의 위탁)
         </Text>
         <Text className="typo-body4 text-semantic-text-tertiary">
-          1. 회원은 서비스 내에 콘텐츠를 게시할 수 있습니다. {"\n"}2. 콘텐츠의
-          저작권은 해당 콘텐츠를 게시한 회원에게 귀속됩니다. {"\n"}3. 서비스는
-          다음 콘텐츠를 사전 통보 없이 삭제할 수 있습니다. {"\n"} · 불법 또는
-          부적절한 내용 {"\n"} · 타인의 권리를 침해하는 콘텐츠 {"\n"} · 커뮤니티
-          운영 정책에 위반되는 경우
+          서비스는 원활한 운영을 위해 일부 업무를 외부에 위탁할 수 있습니다.
+          {"\n"}이 경우 개인정보가 안전하게 처리되도록 필요한 사항을
+          관리·감독합니다.
         </Text>
       </View>
       <View className="flex-col gap-2.5">
         <Text className="typo-title3 text-semantic-text-primary">
-          제6조 (콘텐츠 삭제 및 계정 삭제)
+          제6조 (이용자의 권리 및 행사 방법)
         </Text>
         <Text className="typo-body4 text-semantic-text-tertiary">
-          1. 회원이 탈퇴하거나 계정이 삭제될 경우: {"\n"} · 해당 회원이 작성한
-          게시물은 삭제됩니다. {"\n"} · 댓글 및 대댓글은 모두 삭제됩니다. {"\n"}
-          2. 고양이(Cat)가 삭제되더라도 관련 게시물은 유지될 수 있습니다. {"\n"}
-          3. 삭제된 콘텐츠는 복구되지 않습니다.
+          1. 이용자는 언제든지 자신의 개인정보를 조회, 수정, 삭제할 수 있습니다.
+          {"\n"}2. 개인정보 관련 문의는 서비스 내 문의 기능을 통해 요청할 수
+          있습니다.
         </Text>
       </View>
       <View className="flex-col gap-2.5">
         <Text className="typo-title3 text-semantic-text-primary">
-          제7조 (서비스 이용 제한)
+          제7조 (개인정보의 안전성 확보 조치)
         </Text>
         <Text className="typo-body4 text-semantic-text-tertiary">
-          서비스는 다음 행위가 확인될 경우 서비스 이용을 제한할 수 있습니다.{" "}
-          {"\n"} · 불법 행위 {"\n"} · 서비스 시스템 악용 {"\n"} · 반복적인 신고
-          누적
+          서비스는 개인정보 보호를 위해 다음과 같은 조치를 취합니다. {"\n"} ·
+          비밀번호 암호화 저장 {"\n"} · 접근 권한 최소화 {"\n"} · 보안 시스템
+          운영
         </Text>
       </View>
       <View className="flex-col gap-2.5">
         <Text className="typo-title3 text-semantic-text-primary">
-          제8조 (책임의 제한)
+          제9조 (개인정보처리방침 변경)
         </Text>
         <Text className="typo-body4 text-semantic-text-tertiary">
-          1. 서비스는 회원이 게시한 콘텐츠에 대해 책임을 지지 않습니다. {"\n"}2.
-          서비스는 천재지변, 시스템 장애 등 불가항력적 사유에 대해 책임을 지지
-          않습니다.
-        </Text>
-      </View>
-      <View className="flex-col gap-2.5">
-        <Text className="typo-title3 text-semantic-text-primary">
-          제9조 (준거법 및 관할)
-        </Text>
-        <Text className="typo-body4 text-semantic-text-tertiary">
-          본 약관은 대한민국 법률을 따르며, 분쟁 발생 시 관할 법원은 서비스 본점
-          소재지를 따릅니다.
+          본 방침은 변경될 수 있으며, 변경 시 사전에 공지합니다.
         </Text>
       </View>
     </ScrollView>
