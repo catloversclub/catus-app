@@ -1,7 +1,7 @@
 import SearchIcon from "@/assets/icons/search.svg";
+import IconButton from "@/components/common/icon-button";
 import Input from "@/components/common/input";
 import { useColors } from "@/hooks/use-colors";
-import { Pressable } from "react-native-gesture-handler";
 
 // SearchInput.tsx
 interface SearchInputProps {
@@ -29,9 +29,9 @@ const SearchInput = ({
       onBlur={onBlur} // 추가
       placeholder={placeholder}
       suffix={
-        <Pressable onPress={onFocus}>
+        <IconButton onPress={onFocus}>
           <SearchIcon width={20} height={20} color={colors.icon.tertiary} />
-        </Pressable>
+        </IconButton>
       }
     />
   );

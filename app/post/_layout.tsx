@@ -1,7 +1,8 @@
 import ArrowLeftIcon from "@/assets/icons/arrow-left.svg";
+import IconButton from "@/components/common/icon-button";
 import { dark, light } from "@/styles/semantic-colors";
 import { Stack, router } from "expo-router";
-import { TouchableOpacity, useColorScheme } from "react-native";
+import { useColorScheme } from "react-native";
 
 export default function PostLayout() {
   const scheme = useColorScheme();
@@ -15,9 +16,9 @@ export default function PostLayout() {
           backgroundColor: colors.bg.primary,
         },
         headerLeft: () => (
-          <TouchableOpacity onPress={() => router.back()} className="p-2">
+          <IconButton onPress={() => router.back()} className="p-2">
             <ArrowLeftIcon width={24} height={24} color={colors.icon.primary} />
-          </TouchableOpacity>
+          </IconButton>
         ),
       }}
     >

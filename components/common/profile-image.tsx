@@ -2,18 +2,14 @@ import CameraIcon from "@/assets/icons/camera.svg";
 import AvatarDark from "@/assets/images/avatar/user-dark.png";
 import AvatarLight from "@/assets/images/avatar/user-light.png";
 import { SelectImageSheet } from "@/components/bottom-sheet/select-image-sheet";
+import IconButton from "@/components/common/icon-button";
 import { PROFILE_SIZE } from "@/constants/user";
 import { useColors } from "@/hooks/use-colors";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
 import { useRef, useState } from "react";
-import {
-  ActivityIndicator,
-  Pressable,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ActivityIndicator, Pressable, View } from "react-native";
 
 interface ProfileImageProps {
   imageUrl: string | null;
@@ -60,7 +56,7 @@ const ProfileImage = ({
           alt={`${userId ?? "User"} profile`}
         />
         {isEditMode && (
-          <TouchableOpacity
+          <IconButton
             onPress={handleSelectImagePress}
             disabled={isLoading}
             className="absolute bottom-0 -right-2 size-11 rounded-full items-center justify-center border border-semantic-border-primary"
@@ -71,7 +67,7 @@ const ProfileImage = ({
             ) : (
               <CameraIcon width={20} height={20} color={colors.icon.primary} />
             )}
-          </TouchableOpacity>
+          </IconButton>
         )}
       </View>
       {handleImageUriChange && (

@@ -22,6 +22,7 @@ import { Post, PostImage } from "@/api/domains/post/types";
 import MoreIcon from "@/assets/icons/more.svg";
 import { CommentSheet } from "@/components/bottom-sheet/comment-sheet";
 import { MoreSheet } from "@/components/bottom-sheet/more-sheet";
+import IconButton from "@/components/common/icon-button";
 import { CAROUSEL_CONFIG } from "@/constants/config";
 import { Bookmark, Heart, MessageCircle } from "@/lib/icons";
 import { formatRelativeTime, getMediaUrl } from "@/lib/utils";
@@ -124,7 +125,9 @@ export function FeedCard({
           </Text>
         </View>
       </View>
-      <MoreIcon onPress={handleMorePress} color={colors.icon.primary} />
+      <IconButton onPress={handleMorePress}>
+        <MoreIcon color={colors.icon.primary} />
+      </IconButton>
     </View>
   );
 

@@ -2,6 +2,7 @@ import ChevronRightIcon from "@/assets/icons/chevron-right.svg";
 import SettingsIcon from "@/assets/icons/settings.svg";
 import CatList from "@/components/cat/cat-list";
 import CatRegistration from "@/components/cat/cat-registration";
+import IconButton from "@/components/common/icon-button";
 import IconHeader from "@/components/layout/icon-header";
 import ProfileActions from "@/components/user/my-profile-actions";
 import { ProfileInfo } from "@/components/user/profile-info";
@@ -10,7 +11,7 @@ import { dark, light } from "@/styles/semantic-colors";
 import { Link, Stack } from "expo-router";
 import { useRef, useState } from "react";
 import { Text, useColorScheme, useWindowDimensions, View } from "react-native";
-import { Pressable, ScrollView } from "react-native-gesture-handler";
+import { ScrollView } from "react-native-gesture-handler";
 import PagerView from "react-native-pager-view";
 
 const MyCatListSection = () => {
@@ -23,13 +24,13 @@ const MyCatListSection = () => {
           함께 사는 고양이
         </Text>
         <Link href={`/cat/list`} asChild>
-          <Pressable className="active:opacity-60">
+          <IconButton className="active:opacity-60">
             <ChevronRightIcon
               width={16}
               height={16}
               color={colors.icon.secondary}
             />
-          </Pressable>
+          </IconButton>
         </Link>
       </View>
       <View className="flex-row items-center pr-5">
@@ -69,13 +70,13 @@ export default function Mypage() {
           headerStyle: { backgroundColor: colors.bg.primary },
           headerRight: () => (
             <Link href="/settings" asChild>
-              <Pressable className="active:opacity-60">
+              <IconButton className="active:opacity-60">
                 <SettingsIcon
                   width={44}
                   height={44}
                   color={colors.icon.primary}
                 />
-              </Pressable>
+              </IconButton>
             </Link>
           ),
         }}

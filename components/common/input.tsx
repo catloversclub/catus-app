@@ -1,4 +1,5 @@
 import XLogo from "@/assets/icons/x-circle.svg";
+import IconButton from "@/components/common/icon-button";
 import { useColors } from "@/hooks/use-colors";
 import { cn } from "@/lib/utils";
 import { useRef } from "react";
@@ -61,13 +62,9 @@ const Input = ({
         onBlur={onBlur}
       />
       {value.length > 0 && (
-        <Pressable
-          onPress={() => onChangeText("")}
-          hitSlop={8}
-          className="ml-3"
-        >
+        <IconButton onPress={() => onChangeText("")} className="ml-3">
           <XLogo width={20} height={20} color={colors.icon.tertiary} />
-        </Pressable>
+        </IconButton>
       )}
       {suffix && <View className="ml-3">{suffix}</View>}
     </Pressable>

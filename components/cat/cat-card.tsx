@@ -1,6 +1,7 @@
 import { Cat } from "@/api/domains/cat/types";
 import UpdateIcon from "@/assets/icons/update.svg";
 import GenderIcon from "@/components/cat/gender";
+import IconButton from "@/components/common/icon-button";
 import ProfileImage from "@/components/common/profile-image";
 import { ROUTES } from "@/constants/route";
 import { useColors } from "@/hooks/use-colors";
@@ -41,12 +42,12 @@ const CatCard = ({ cat, routeToDetail = true }: CatCardProps) => {
     <TouchableOpacity onPress={handleRouteToDetail} activeOpacity={0.8}>
       <Pressable className="active:opacity-60">
         <View className="p-6 bg-semantic-bg-secondary rounded-md">
-          <TouchableOpacity
+          <IconButton
             onPress={handleRouteToUpdate}
             className="flex-row justify-end w-full"
           >
             <UpdateIcon height={20} width={20} color={colors.icon.primary} />
-          </TouchableOpacity>
+          </IconButton>
 
           <View className="flex-col items-center">
             <ProfileImage imageUrl={cat.profileImageUrl} size="md" />
