@@ -5,13 +5,21 @@ import { ROUTES } from "@/constants/route";
 import { useNicknameCheck } from "@/hooks/auth/use-nickname-check";
 import { useKeyboardAvoidingView } from "@/hooks/use-keyboard-avoiding-view";
 import { useCreateUser } from "@/hooks/user/use-create-user";
+import { useUpdateUser } from "@/hooks/user/use-update-user";
 import { cn } from "@/lib/utils";
+import { useOnboardingStore } from "@/store/auth/onboarding-store";
 import { router } from "expo-router";
 import { KeyboardAvoidingView, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
-const Step1 = () => {
+interface Step1FormProps {
+  currentNickname?: string;
+}
+
+const Step1Form = ({ currentNickname }: Step1FormProps) => {
   const keyboardAvoidingViewProps = useKeyboardAvoidingView();
+  const isEditMode = !!currentNickname;
+
   const {
     nickname,
     hasChecked,
@@ -20,16 +28,29 @@ const Step1 = () => {
     statusText,
     handleChangeNickname,
     confirmCheck,
-  } = useNicknameCheck();
-  const { submit, isPending } = useCreateUser();
+  } = useNicknameCheck(currentNickname);
+
+  const { submit: createUser, isPending: isCreating } = useCreateUser();
+  const { updateUser, isPending: isUpdating } = useUpdateUser();
+  const { setCurrentNickname } = useOnboardingStore();
+  const isPending = isCreating || isUpdating;
 
   const handlePressNext = async () => {
-    if (hasChecked && isValidNickname && !isDirty) {
-      await submit(nickname);
-      router.push(ROUTES.AUTH.ONBOARDING.STEP2);
-    } else {
+    if (!(hasChecked && isValidNickname && !isDirty)) {
       confirmCheck();
+      return;
     }
+
+    if (isEditMode) {
+      // 닉네임이 실제로 바뀐 경우에만 업데이트
+      if (nickname !== currentNickname) {
+        await updateUser({ nickname });
+        setCurrentNickname(nickname);
+      }
+    } else {
+      await createUser(nickname);
+    }
+    router.push(ROUTES.AUTH.ONBOARDING.STEP2);
   };
 
   return (
@@ -81,6 +102,22 @@ const Step1 = () => {
         ]}
       />
     </KeyboardAvoidingView>
+  );
+};
+
+const Step1 = () => {
+  // 온보딩 세션 동안만 유지되는 상태로 모드 판단
+  // - null: 아직 createUser 안 함 → create 모드
+  // - string: 이미 createUser 완료 → edit 모드
+  const { currentNickname } = useOnboardingStore();
+
+  // key를 사용해 모드 전환 시 Step1Form을 다시 마운트
+  // (useNicknameCheck 내부 useState가 currentNickname으로 다시 초기화되도록)
+  return (
+    <Step1Form
+      key={currentNickname ?? "__create__"}
+      currentNickname={currentNickname ?? undefined}
+    />
   );
 };
 

@@ -2,10 +2,12 @@
 import { exchangeAndSaveTokens } from "@/api/domains/auth/api";
 import { useCreateUserMutation } from "@/api/domains/user/queries";
 import { useOidcStore } from "@/store/auth/oidc-store";
+import { useOnboardingStore } from "@/store/auth/onboarding-store";
 import { useState } from "react";
 
 export const useCreateUser = () => {
   const { idToken, provider } = useOidcStore();
+  const { setCurrentNickname } = useOnboardingStore();
   const { mutateAsync: createUser, isPending: isCreating } =
     useCreateUserMutation();
   const [isTokenRefreshing, setIsTokenRefreshing] = useState(false);
@@ -21,6 +23,8 @@ export const useCreateUser = () => {
         idToken: idToken!,
         provider: provider!,
       });
+      // 사용자 생성 완료 → 이후 Step1으로 돌아오면 edit 모드로 동작
+      setCurrentNickname(nickname);
     } finally {
       setIsTokenRefreshing(false);
     }

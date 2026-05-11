@@ -2,15 +2,24 @@
 import { useCheckNicknameQuery } from "@/api/domains/user/queries";
 import { useState } from "react";
 
-export const useNicknameCheck = () => {
-  const [nickname, setNickname] = useState("");
-  const [checkedNickname, setCheckedNickname] = useState("");
+export const useNicknameCheck = (currentNickname?: string) => {
+  const [nickname, setNickname] = useState(currentNickname ?? "");
+  const [checkedNickname, setCheckedNickname] = useState(
+    currentNickname ?? "",
+  );
 
-  const { data } = useCheckNicknameQuery(nickname, !!nickname.trim());
+  // 이미 등록된 본인 닉네임과 같으면 별도 중복 검사 불필요
+  const isSameAsCurrent =
+    !!currentNickname && nickname.trim() === currentNickname.trim();
 
-  const hasChecked = checkedNickname.length > 0;
-  const isValidNickname = data?.available ?? false;
-  const isDirty = nickname !== checkedNickname;
+  const { data } = useCheckNicknameQuery(
+    nickname,
+    !!nickname.trim() && !isSameAsCurrent,
+  );
+
+  const hasChecked = isSameAsCurrent || checkedNickname.length > 0;
+  const isValidNickname = isSameAsCurrent || (data?.available ?? false);
+  const isDirty = !isSameAsCurrent && nickname !== checkedNickname;
 
   const statusText =
     !hasChecked || isDirty
