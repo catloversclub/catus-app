@@ -46,7 +46,6 @@ const Input = ({
       <TextInput
         ref={inputRef}
         editable
-        numberOfLines={1}
         maxLength={maxLength}
         onChangeText={onChangeText}
         value={value}
@@ -55,9 +54,13 @@ const Input = ({
         placeholderTextColor={colors.text.tertiary}
         style={{
           flex: 1,
+          height: 20,
           color: colors.text.primary,
           fontSize: 14,
-          lineHeight: undefined,
+          lineHeight: 20,
+          padding: 0, // Android 기본 내부 패딩 제거
+          includeFontPadding: false, // Android 폰트 위/아래 추가 패딩 제거
+          textAlignVertical: "center",
         }}
         onBlur={onBlur}
       />
