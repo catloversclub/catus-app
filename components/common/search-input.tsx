@@ -3,13 +3,14 @@ import IconButton from "@/components/common/icon-button";
 import Input from "@/components/common/input";
 import { useColors } from "@/hooks/use-colors";
 
-// SearchInput.tsx
 interface SearchInputProps {
   value: string | null;
   onValueChange: (value: string) => void;
   placeholder?: string;
   onFocus?: () => void;
-  onBlur?: () => void; // 추가
+  onBlur?: () => void;
+  onSubmitEditing?: () => void;
+  maxLength?: number;
 }
 
 const SearchInput = ({
@@ -18,18 +19,22 @@ const SearchInput = ({
   placeholder,
   onFocus,
   onBlur,
+  onSubmitEditing,
+  maxLength,
 }: SearchInputProps) => {
   const { colors } = useColors();
   return (
     <Input
       value={value || ""}
       onChangeText={onValueChange}
-      maxLength={16}
+      maxLength={maxLength}
       onFocus={onFocus}
-      onBlur={onBlur} // 추가
+      onBlur={onBlur}
+      onSubmitEditing={onSubmitEditing}
+      returnKeyType="search"
       placeholder={placeholder}
       suffix={
-        <IconButton onPress={onFocus}>
+        <IconButton onPress={onSubmitEditing ?? onFocus}>
           <SearchIcon width={20} height={20} color={colors.icon.tertiary} />
         </IconButton>
       }

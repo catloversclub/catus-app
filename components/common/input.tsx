@@ -13,6 +13,8 @@ interface InputProps {
   isError?: boolean;
   onFocus?: () => void;
   onBlur?: () => void;
+  onSubmitEditing?: () => void;
+  returnKeyType?: "search" | "done" | "next" | "go" | "send";
   suffix?: React.ReactNode;
 }
 
@@ -23,8 +25,10 @@ const Input = ({
   placeholder,
   isError = false,
   onFocus,
-  suffix,
   onBlur,
+  onSubmitEditing,
+  returnKeyType,
+  suffix,
 }: InputProps) => {
   const { colors } = useColors();
   const inputRef = useRef<TextInput>(null);
@@ -50,6 +54,8 @@ const Input = ({
         onChangeText={onChangeText}
         value={value}
         onFocus={onFocus}
+        onSubmitEditing={onSubmitEditing}
+        returnKeyType={returnKeyType}
         placeholder={placeholder}
         placeholderTextColor={colors.text.tertiary}
         style={{
