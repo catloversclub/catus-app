@@ -5,7 +5,6 @@ import HouseIcon from "@/assets/icons/house.svg";
 import PersonIcon from "@/assets/icons/person.svg";
 import { HapticTab } from "@/components/haptic-tab";
 import { useColors } from "@/hooks/use-colors";
-import { useImagePicker } from "@/hooks/use-image-picker"; // 방금 만든 훅 임포트
 import { usePushNotifications } from "@/hooks/use-push-notifications";
 import { router, Tabs } from "expo-router";
 import { TouchableOpacity, View } from "react-native";
@@ -47,17 +46,8 @@ const TAB_SCREENS: TabScreenConfig[] = [
 ];
 
 export default function TabsLayout() {
-  // 사용하는 곳
-  const { pickImages } = useImagePicker();
-
-  const handleCameraPress = async () => {
-    const uris = await pickImages({ selectionLimit: 5 });
-    if (!uris) return;
-
-    router.push({
-      pathname: "/post/edit-list",
-      params: { imageUris: JSON.stringify(uris) },
-    });
+  const handleCameraPress = () => {
+    router.push("/post/gallery");
   };
   const { colors } = useColors();
   usePushNotifications();

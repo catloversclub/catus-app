@@ -3,64 +3,25 @@ import {
   useRecommendedFeedQuery,
 } from "@/api/domains/post/queries";
 import { FeedCard } from "@/components/feed/FeedCard";
-import { Header } from "@/components/layout/text-header";
-import { FeedType } from "@/constants/tab";
-import { commonStyles } from "@/styles/common-styles";
-import { Suspense, useCallback, useRef, useState } from "react";
+import TabPager from "@/components/layout/tab-pager";
+import { Image } from "expo-image";
+import { Suspense, useCallback, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
   RefreshControl,
+  useColorScheme,
   View,
 } from "react-native";
-import PagerView from "react-native-pager-view";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { commonStyles } from "@/styles/common-styles";
 
 function FollowingFeedList() {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } =
     useFollowingFeedQuery();
-  const posts = data.pages.flatMap((page) => page);
-
-  // 각 리스트가 자신의 새로고침 상태를 관리합니다.
-  const [refreshing, setRefreshing] = useState(false);
-
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    await refetch();
-    setRefreshing(false);
-  }, [refetch]);
-
-  return (
-    <>
-      <FlatList
-        data={posts}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <FeedCard post={item} />}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        onEndReached={() => {
-          if (hasNextPage && !isFetchingNextPage) fetchNextPage();
-        }}
-        onEndReachedThreshold={0.5}
-        ListFooterComponent={
-          isFetchingNextPage ? (
-            <ActivityIndicator size="small" style={{ marginVertical: 20 }} />
-          ) : null
-        }
-      />
-    </>
-  );
-}
-
-// 2. 추천 피드 리스트 (새로고침 로직 포함)
-function RecommendedFeedList() {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } =
-    useRecommendedFeedQuery();
-  const posts = data.pages.flatMap((page) => page);
+  const posts = data.pages.flat();
 
   const [refreshing, setRefreshing] = useState(false);
-
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     await refetch();
@@ -88,53 +49,80 @@ function RecommendedFeedList() {
   );
 }
 
+function RecommendedFeedList() {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } =
+    useRecommendedFeedQuery();
+  const posts = data.pages.flat();
+
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }, [refetch]);
+
+  return (
+    <FlatList
+      data={posts}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => <FeedCard post={item} />}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+      onEndReached={() => {
+        if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+      }}
+      onEndReachedThreshold={0.5}
+      ListFooterComponent={
+        isFetchingNextPage ? (
+          <ActivityIndicator size="small" style={{ marginVertical: 20 }} />
+        ) : null
+      }
+    />
+  );
+}
+
+function LogoHeader() {
+  const scheme = useColorScheme();
+  return (
+    <View className="px-3 pt-1 pb-3">
+      <Image
+        style={{ width: 82, height: 26 }}
+        source={
+          scheme === "dark"
+            ? require("@/assets/images/logo/row-dark.png")
+            : require("@/assets/images/logo/row-light.png")
+        }
+        contentFit="cover"
+      />
+    </View>
+  );
+}
+
 export default function HomeScreen() {
-  const pagerRef = useRef<PagerView>(null);
-  const [activeTab, setActiveTab] = useState(0); // 0: following, 1: recommended
-
-  const handleTabChange = (tab: FeedType) => {
-    const index = tab === "following" ? 0 : 1;
-    setActiveTab(index);
-    pagerRef.current?.setPage(index);
-  };
-
   return (
     <SafeAreaView
       style={commonStyles.container}
       className="bg-semantic-bg-primary"
       edges={["top", "left", "right"]}
     >
-      <Header
-        activeTab={activeTab === 0 ? "following" : "recommended"}
-        onTabChange={handleTabChange}
-      />
-
-      <PagerView
-        ref={pagerRef}
-        style={{ flex: 1 }}
-        initialPage={0}
-        onPageSelected={(e) => setActiveTab(e.nativeEvent.position)}
-      >
-        <View key="following" style={{ flex: 1 }}>
-          <Suspense
-            fallback={
-              <ActivityIndicator size="large" style={{ marginTop: 50 }} />
-            }
-          >
-            <FollowingFeedList />
-          </Suspense>
-        </View>
-
-        <View key="recommended" style={{ flex: 1 }}>
-          <Suspense
-            fallback={
-              <ActivityIndicator size="large" style={{ marginTop: 50 }} />
-            }
-          >
-            <RecommendedFeedList />
-          </Suspense>
-        </View>
-      </PagerView>
+      <LogoHeader />
+      <TabPager tabs={["팔로잉", "추천"]}>
+        <Suspense
+          fallback={
+            <ActivityIndicator size="large" style={{ marginTop: 50 }} />
+          }
+        >
+          <FollowingFeedList />
+        </Suspense>
+        <Suspense
+          fallback={
+            <ActivityIndicator size="large" style={{ marginTop: 50 }} />
+          }
+        >
+          <RecommendedFeedList />
+        </Suspense>
+      </TabPager>
     </SafeAreaView>
   );
 }
