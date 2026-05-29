@@ -75,7 +75,17 @@ apiClient.interceptors.request.use(async (config) => {
   return config;
 });
 
-apiClient.interceptors.response.use(undefined, async (error) => {
+apiClient.interceptors.response.use(
+  (response) => {
+    console.log("API 응답:", {
+      url: response.config.url,
+      params: response.config.params,
+      status: response.status,
+      data: response.data,
+    });
+    return response;
+  },
+  async (error) => {
   console.error("API 요청 에러:", {
     url: error.config?.url,
     method: error.config?.method,
@@ -87,7 +97,8 @@ apiClient.interceptors.response.use(undefined, async (error) => {
   const newToken = await getNewAccessToken();
   error.config.headers.Authorization = `Bearer ${newToken}`;
   return apiClient(error.config);
-});
+  },
+);
 
 storageClient.interceptors.response.use(undefined, async (error) => {
   console.error("Storage 요청 에러:", {
