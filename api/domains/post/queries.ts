@@ -1,7 +1,6 @@
 import {
   InfiniteData,
   useMutation,
-  useQuery,
   useQueryClient,
   useSuspenseInfiniteQuery,
   useSuspenseQuery,
@@ -13,17 +12,20 @@ import {
   createPost,
   deletePost,
   getCatPosts,
+  getDailyPopularPosts,
   getFollowingFeed,
+  getMyBookmarkedPosts,
+  getMyLikedPosts,
   getMyPosts,
   getPostById,
   getPostImageUploadUrl,
   getRecommendedFeed,
   getUserPosts,
   likePost,
+  reportPost,
   unbookmarkPost,
   unlikePost,
   updatePost,
-  uploadPostImage,
 } from "./api";
 import { CreatePostRequest, Post, UpdatePostRequest } from "./types";
 
@@ -31,6 +33,9 @@ export const postKeys = {
   all: ["post"] as const,
   detail: (postId: string) => [...postKeys.all, "detail", postId] as const,
   myPosts: () => [...postKeys.all, "my"] as const,
+  myBookmarkedPosts: () => [...postKeys.all, "my", "bookmarked"] as const,
+  myLikedPosts: () => [...postKeys.all, "my", "liked"] as const,
+  dailyPopular: () => [...postKeys.all, "feed", "daily-popular"] as const,
   userPosts: (userId: string) => [...postKeys.all, "user", userId] as const,
   catPosts: (catId: string) => [...postKeys.all, "cat", catId] as const,
   followingFeed: () => [...postKeys.all, "feed", "following"] as const,
@@ -45,45 +50,109 @@ export const usePostByIdQuery = (postId: string) => {
 };
 
 export const useMyPostsQuery = () => {
-  return useSuspenseQuery({
+  return useSuspenseInfiniteQuery({
     queryKey: postKeys.myPosts(),
-    queryFn: getMyPosts,
+    queryFn: ({ pageParam }) =>
+      getMyPosts({
+        take: POST_PAGINATION.DEFAULT_TAKE,
+        cursor: pageParam,
+      }),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) => {
+      if (!lastPage || lastPage.length < POST_PAGINATION.DEFAULT_TAKE)
+        return undefined;
+      return lastPage[lastPage.length - 1].id;
+    },
+  });
+};
+
+export const useMyBookmarkedPostsQuery = () => {
+  return useSuspenseInfiniteQuery({
+    queryKey: postKeys.myBookmarkedPosts(),
+    queryFn: ({ pageParam }) =>
+      getMyBookmarkedPosts({
+        take: POST_PAGINATION.DEFAULT_TAKE,
+        cursor: pageParam,
+      }),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) => {
+      if (!lastPage || lastPage.length < POST_PAGINATION.DEFAULT_TAKE)
+        return undefined;
+      return lastPage[lastPage.length - 1].id;
+    },
+  });
+};
+
+export const useMyLikedPostsQuery = () => {
+  return useSuspenseInfiniteQuery({
+    queryKey: postKeys.myLikedPosts(),
+    queryFn: ({ pageParam }) =>
+      getMyLikedPosts({
+        take: POST_PAGINATION.DEFAULT_TAKE,
+        cursor: pageParam,
+      }),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) => {
+      if (!lastPage || lastPage.length < POST_PAGINATION.DEFAULT_TAKE)
+        return undefined;
+      return lastPage[lastPage.length - 1].id;
+    },
+  });
+};
+
+export const useDailyPopularPostsQuery = () => {
+  return useSuspenseQuery({
+    queryKey: postKeys.dailyPopular(),
+    queryFn: () => getDailyPopularPosts(),
   });
 };
 
 export const useUserPostsQuery = (userId: string) => {
-  return useSuspenseQuery({
+  return useSuspenseInfiniteQuery({
     queryKey: postKeys.userPosts(userId),
-    queryFn: () => getUserPosts(userId),
+    queryFn: ({ pageParam }) =>
+      getUserPosts(userId, {
+        take: POST_PAGINATION.DEFAULT_TAKE,
+        cursor: pageParam,
+      }),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) => {
+      if (!lastPage || lastPage.length < POST_PAGINATION.DEFAULT_TAKE)
+        return undefined;
+      return lastPage[lastPage.length - 1].id;
+    },
   });
 };
 
 export const useCatPostsQuery = (catId: string) => {
-  return useQuery({
+  return useSuspenseInfiniteQuery({
     queryKey: postKeys.catPosts(catId),
-    queryFn: () => getCatPosts(catId),
-    enabled: !!catId,
+    queryFn: ({ pageParam }) =>
+      getCatPosts(catId, {
+        take: POST_PAGINATION.DEFAULT_TAKE,
+        cursor: pageParam,
+      }),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) => {
+      if (!lastPage || lastPage.length < POST_PAGINATION.DEFAULT_TAKE)
+        return undefined;
+      return lastPage[lastPage.length - 1].id;
+    },
   });
 };
 
 export const useFollowingFeedQuery = () => {
   return useSuspenseInfiniteQuery({
     queryKey: postKeys.followingFeed(),
-    // pageParam이 cursor 역할을 합니다.
     queryFn: ({ pageParam }) =>
       getFollowingFeed({
         take: POST_PAGINATION.DEFAULT_TAKE,
         cursor: pageParam,
       }),
-    initialPageParam: undefined as string | undefined, // 첫 요청 시 커서는 없음
-
+    initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => {
-      // 응답 데이터가 20개 미만이면 더 이상 불러올 데이터가 없다고 판단
-      if (!lastPage || lastPage.length < POST_PAGINATION.DEFAULT_TAKE) {
+      if (!lastPage || lastPage.length < POST_PAGINATION.DEFAULT_TAKE)
         return undefined;
-      }
-
-      // 순수 배열(Post[])이므로, 마지막 요소의 id(string)를 다음 커서로 반환
       return lastPage[lastPage.length - 1].id;
     },
   });
@@ -92,21 +161,15 @@ export const useFollowingFeedQuery = () => {
 export const useRecommendedFeedQuery = () => {
   return useSuspenseInfiniteQuery({
     queryKey: postKeys.recommendedFeed(),
-    // pageParam이 cursor 역할을 합니다.
     queryFn: ({ pageParam }) =>
       getRecommendedFeed({
         take: POST_PAGINATION.DEFAULT_TAKE,
         cursor: pageParam,
       }),
-    initialPageParam: undefined as string | undefined, // 첫 요청 시 커서는 없음
-
+    initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => {
-      // 응답 데이터가 20개 미만이면 더 이상 불러올 데이터가 없다고 판단
-      if (!lastPage || lastPage.length < POST_PAGINATION.DEFAULT_TAKE) {
+      if (!lastPage || lastPage.length < POST_PAGINATION.DEFAULT_TAKE)
         return undefined;
-      }
-
-      // 순수 배열(Post[])이므로, 마지막 요소의 id(string)를 다음 커서로 반환
       return lastPage[lastPage.length - 1].id;
     },
   });
@@ -160,22 +223,25 @@ export const useDeletePostMutation = () => {
   });
 };
 
+export const useReportPostMutation = () => {
+  return useMutation({
+    mutationFn: (postId: string) => reportPost(postId),
+  });
+};
+
 export const useLikePostMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    // postId는 UUID이므로 string 타입입니다.
     mutationFn: ({ postId }: { postId: string }) => likePost(postId),
 
     onMutate: async ({ postId }) => {
-      // 1. 진행 중인 쿼리 취소
       await Promise.all([
         queryClient.cancelQueries({ queryKey: postKeys.followingFeed() }),
-        queryClient.cancelQueries({ queryKey: postKeys.recommendedFeed() }), // 있다면
+        queryClient.cancelQueries({ queryKey: postKeys.recommendedFeed() }),
         queryClient.cancelQueries({ queryKey: postKeys.detail(postId) }),
       ]);
 
-      // 2. 이전 상태 스냅샷 저장 (타입을 InfiniteData<Post[]> 로 명확히 지정)
       const prevFollowing = queryClient.getQueryData<InfiniteData<Post[]>>(
         postKeys.followingFeed(),
       );
@@ -186,25 +252,22 @@ export const useLikePostMutation = () => {
         postKeys.detail(postId),
       );
 
-      // 3. 업데이트 헬퍼 함수: 페이지(Post[])들의 배열을 순회
       const updateFeed = (
         oldData: InfiniteData<Post[]> | undefined,
       ): InfiniteData<Post[]> | undefined => {
         if (!oldData) return undefined;
         return {
           ...oldData,
-          // page는 객체가 아니라 Post[] (배열) 자체입니다.
           pages: oldData.pages.map((page) =>
             page.map((post) =>
               post.id === postId
-                ? { ...post, likedByMe: true, likeCount: post.likeCount + 1 }
+                ? { ...post, isLikedByMe: true, likeCount: post.likeCount + 1 }
                 : post,
             ),
           ),
         };
       };
 
-      // 4. 즉각적인 UI 반영
       queryClient.setQueryData<InfiniteData<Post[]>>(
         postKeys.followingFeed(),
         updateFeed,
@@ -214,14 +277,15 @@ export const useLikePostMutation = () => {
         updateFeed,
       );
       queryClient.setQueryData<Post>(postKeys.detail(postId), (old) =>
-        old ? { ...old, likedByMe: true, likeCount: old.likeCount + 1 } : old,
+        old
+          ? { ...old, isLikedByMe: true, likeCount: old.likeCount + 1 }
+          : old,
       );
 
       return { prevFollowing, prevRecommended, prevDetail };
     },
 
     onError: (err, variables, context) => {
-      // 에러 시 롤백
       if (context) {
         queryClient.setQueryData(
           postKeys.followingFeed(),
@@ -239,7 +303,6 @@ export const useLikePostMutation = () => {
     },
 
     onSettled: (data, error, variables) => {
-      // 최종 동기화
       queryClient.invalidateQueries({ queryKey: postKeys.followingFeed() });
       queryClient.invalidateQueries({ queryKey: postKeys.recommendedFeed() });
       queryClient.invalidateQueries({
@@ -253,18 +316,15 @@ export const useUnlikePostMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    // postId는 UUID이므로 string 타입
     mutationFn: ({ postId }: { postId: string }) => unlikePost(postId),
 
     onMutate: async ({ postId }) => {
-      // 1. 진행 중인 쿼리 취소
       await Promise.all([
         queryClient.cancelQueries({ queryKey: postKeys.followingFeed() }),
         queryClient.cancelQueries({ queryKey: postKeys.recommendedFeed() }),
         queryClient.cancelQueries({ queryKey: postKeys.detail(postId) }),
       ]);
 
-      // 2. 이전 상태 스냅샷 저장
       const prevFollowing = queryClient.getQueryData<InfiniteData<Post[]>>(
         postKeys.followingFeed(),
       );
@@ -275,7 +335,6 @@ export const useUnlikePostMutation = () => {
         postKeys.detail(postId),
       );
 
-      // 3. 업데이트 헬퍼 함수 (좋아요 취소 로직)
       const updateFeed = (
         oldData: InfiniteData<Post[]> | undefined,
       ): InfiniteData<Post[]> | undefined => {
@@ -287,16 +346,15 @@ export const useUnlikePostMutation = () => {
               post.id === postId
                 ? {
                     ...post,
-                    likedByMe: false,
+                    isLikedByMe: false,
                     likeCount: Math.max(0, post.likeCount - 1),
-                  } // 0 이하 방지
+                  }
                 : post,
             ),
           ),
         };
       };
 
-      // 4. 즉각적인 UI 반영
       queryClient.setQueryData<InfiniteData<Post[]>>(
         postKeys.followingFeed(),
         updateFeed,
@@ -309,7 +367,7 @@ export const useUnlikePostMutation = () => {
         old
           ? {
               ...old,
-              likedByMe: false,
+              isLikedByMe: false,
               likeCount: Math.max(0, old.likeCount - 1),
             }
           : old,
@@ -319,7 +377,6 @@ export const useUnlikePostMutation = () => {
     },
 
     onError: (err, variables, context) => {
-      // 에러 시 롤백
       if (context) {
         queryClient.setQueryData(
           postKeys.followingFeed(),
@@ -337,7 +394,6 @@ export const useUnlikePostMutation = () => {
     },
 
     onSettled: (data, error, variables) => {
-      // 최종 동기화
       queryClient.invalidateQueries({ queryKey: postKeys.followingFeed() });
       queryClient.invalidateQueries({ queryKey: postKeys.recommendedFeed() });
       queryClient.invalidateQueries({
@@ -379,10 +435,7 @@ export const useBookmarkMutation = () => {
           pages: oldData.pages.map((page) =>
             page.map((post) =>
               post.id === postId
-                ? {
-                    ...post,
-                    isBookmarkedByMe: true,
-                  }
+                ? { ...post, isBookmarkedByMe: true }
                 : post,
             ),
           ),
@@ -398,12 +451,7 @@ export const useBookmarkMutation = () => {
         updateFeed,
       );
       queryClient.setQueryData<Post>(postKeys.detail(postId), (old) =>
-        old
-          ? {
-              ...old,
-              isBookmarkedByMe: true,
-            }
-          : old,
+        old ? { ...old, isBookmarkedByMe: true } : old,
       );
 
       return { prevFollowing, prevRecommended, prevDetail };
@@ -468,10 +516,7 @@ export const useUnbookmarkMutation = () => {
           pages: oldData.pages.map((page) =>
             page.map((post) =>
               post.id === postId
-                ? {
-                    ...post,
-                    isBookmarkedByMe: false,
-                  }
+                ? { ...post, isBookmarkedByMe: false }
                 : post,
             ),
           ),
@@ -487,12 +532,7 @@ export const useUnbookmarkMutation = () => {
         updateFeed,
       );
       queryClient.setQueryData<Post>(postKeys.detail(postId), (old) =>
-        old
-          ? {
-              ...old,
-              isBookmarkedByMe: false,
-            }
-          : old,
+        old ? { ...old, isBookmarkedByMe: false } : old,
       );
 
       return { prevFollowing, prevRecommended, prevDetail };
@@ -527,13 +567,6 @@ export const useUnbookmarkMutation = () => {
 
 export const usePostImageUploadUrlMutation = () => {
   return useMutation({
-    mutationFn: () => getPostImageUploadUrl(),
-  });
-};
-
-export const useUploadPostImageMutation = () => {
-  return useMutation({
-    mutationFn: ({ imageUrl }: { imageUrl: string }) =>
-      uploadPostImage(imageUrl),
+    mutationFn: (count: number) => getPostImageUploadUrl(count),
   });
 };

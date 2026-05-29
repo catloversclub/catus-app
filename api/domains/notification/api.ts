@@ -1,20 +1,51 @@
 import { apiClient } from "@/api/client";
 import { Platform } from "react-native";
+import { GetNotificationsParams, Notification, PushToken } from "./types";
 
 const BASE_URL = "/notification";
 
 const NOTI_ENDPOINTS = {
+  BASE: BASE_URL,
   PUSH_TOKEN: `${BASE_URL}/push-token`,
+  PUSH_TOKEN_DETAIL: (token: string) => `${BASE_URL}/push-token/${token}`,
   TEST: `${BASE_URL}/test`,
 } as const;
 
 export const registerPushToken = async (
   expoPushToken: string,
-): Promise<void> => {
-  await apiClient.post(NOTI_ENDPOINTS.PUSH_TOKEN, {
+): Promise<PushToken> => {
+  const { data } = await apiClient.post<PushToken>(NOTI_ENDPOINTS.PUSH_TOKEN, {
     token: expoPushToken,
     platform: Platform.OS as "ios" | "android",
   });
+  return data;
+};
+
+export const getPushToken = async (token: string): Promise<PushToken> => {
+  const { data } = await apiClient.get<PushToken>(
+    NOTI_ENDPOINTS.PUSH_TOKEN_DETAIL(token),
+  );
+  return data;
+};
+
+export const updatePushToken = async (
+  token: string,
+  enabled: boolean,
+): Promise<{ token: string; enabled: boolean }> => {
+  const { data } = await apiClient.patch<{ token: string; enabled: boolean }>(
+    NOTI_ENDPOINTS.PUSH_TOKEN_DETAIL(token),
+    { enabled },
+  );
+  return data;
+};
+
+export const getNotifications = async (
+  params: GetNotificationsParams = {},
+): Promise<Notification[]> => {
+  const { data } = await apiClient.get<Notification[]>(NOTI_ENDPOINTS.BASE, {
+    params,
+  });
+  return data;
 };
 
 export const testNotification = async (): Promise<void> => {

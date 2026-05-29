@@ -6,8 +6,8 @@ import {
   CreatePostResponse,
   FeedResponse,
   GetFeedParams,
+  GetPostImageUploadUrlResponse,
   Post,
-  PresignedUrlResponse,
   UpdatePostRequest,
   UpdatePostResponse,
 } from "./types";
@@ -17,15 +17,17 @@ const BASE_URL = "/post";
 const POST_ENDPOINTS = {
   BASE: BASE_URL,
   DETAIL: (postId: string) => `${BASE_URL}/${postId}`,
-  CAT_POSTS: (catId: string) => `${BASE_URL}/cats/${catId}`,
-  USER_POSTS: (userId: string) => `${BASE_URL}/users/${userId}`,
+  CAT_POSTS: (catId: string) => `/cat/${catId}/post`,
+  USER_POSTS: (userId: string) => `/user/${userId}/post`,
   MY_POSTS: `${BASE_URL}/my`,
-  FOLLOWING_FEED: `${BASE_URL}/feed`,
-  RECOMMENDED_FEED: `${BASE_URL}/feed/?type=recommended`,
+  MY_BOOKMARKED: `${BASE_URL}/bookmark/my`,
+  MY_LIKED: `${BASE_URL}/liked/my`,
+  FEED: `${BASE_URL}/feed`,
+  DAILY_POPULAR: `${BASE_URL}/feed/daily-popular`,
   LIKE: (postId: string) => `${BASE_URL}/${postId}/like`,
   BOOKMARK: (postId: string) => `${BASE_URL}/${postId}/bookmark`,
+  REPORT: (postId: string) => `${BASE_URL}/${postId}/report`,
   IMAGE_UPLOAD_URL: `${BASE_URL}/image/upload-url`,
-  IMAGE_UPLOAD: `${BASE_URL}/image`,
 } as const;
 
 export const createPost = async (
@@ -58,10 +60,53 @@ export const getPostById = async (postId: string): Promise<Post> => {
   return data;
 };
 
-export const getCatPosts = async (catId: string): Promise<FeedResponse> => {
+export const getCatPosts = async (
+  catId: string,
+  params: GetFeedParams = {},
+): Promise<FeedResponse> => {
   const { data } = await apiClient.get<FeedResponse>(
     POST_ENDPOINTS.CAT_POSTS(catId),
+    { params },
   );
+  return data;
+};
+
+export const getUserPosts = async (
+  userId: string,
+  params: GetFeedParams = {},
+): Promise<FeedResponse> => {
+  const { data } = await apiClient.get<FeedResponse>(
+    POST_ENDPOINTS.USER_POSTS(userId),
+    { params },
+  );
+  return data;
+};
+
+export const getMyPosts = async (
+  params: GetFeedParams = {},
+): Promise<FeedResponse> => {
+  const { data } = await apiClient.get<FeedResponse>(POST_ENDPOINTS.MY_POSTS, {
+    params,
+  });
+  return data;
+};
+
+export const getMyBookmarkedPosts = async (
+  params: GetFeedParams = {},
+): Promise<FeedResponse> => {
+  const { data } = await apiClient.get<FeedResponse>(
+    POST_ENDPOINTS.MY_BOOKMARKED,
+    { params },
+  );
+  return data;
+};
+
+export const getMyLikedPosts = async (
+  params: GetFeedParams = {},
+): Promise<FeedResponse> => {
+  const { data } = await apiClient.get<FeedResponse>(POST_ENDPOINTS.MY_LIKED, {
+    params,
+  });
   return data;
 };
 
@@ -69,20 +114,9 @@ export const getFollowingFeed = async ({
   take = POST_PAGINATION.DEFAULT_TAKE,
   cursor,
 }: GetFeedParams = {}): Promise<FeedResponse> => {
-  const { data } = await apiClient.get<FeedResponse>(
-    POST_ENDPOINTS.FOLLOWING_FEED,
-    {
-      params: {
-        take,
-        cursor,
-      },
-    },
-  );
-  return data;
-};
-
-export const getMyPosts = async (): Promise<FeedResponse> => {
-  const { data } = await apiClient.get<FeedResponse>(POST_ENDPOINTS.MY_POSTS);
+  const { data } = await apiClient.get<FeedResponse>(POST_ENDPOINTS.FEED, {
+    params: { type: "following", take, cursor },
+  });
   return data;
 };
 
@@ -90,21 +124,18 @@ export const getRecommendedFeed = async ({
   take = POST_PAGINATION.DEFAULT_TAKE,
   cursor,
 }: GetFeedParams = {}): Promise<FeedResponse> => {
-  const { data } = await apiClient.get<FeedResponse>(
-    POST_ENDPOINTS.RECOMMENDED_FEED,
-    {
-      params: {
-        take,
-        cursor,
-      },
-    },
-  );
+  const { data } = await apiClient.get<FeedResponse>(POST_ENDPOINTS.FEED, {
+    params: { type: "recommended", take, cursor },
+  });
   return data;
 };
 
-export const getUserPosts = async (userId: string): Promise<FeedResponse> => {
+export const getDailyPopularPosts = async (
+  take = 10,
+): Promise<FeedResponse> => {
   const { data } = await apiClient.get<FeedResponse>(
-    POST_ENDPOINTS.USER_POSTS(userId),
+    POST_ENDPOINTS.DAILY_POPULAR,
+    { params: { take } },
   );
   return data;
 };
@@ -125,14 +156,16 @@ export const unbookmarkPost = async (postId: string): Promise<void> => {
   await apiClient.delete(POST_ENDPOINTS.BOOKMARK(postId));
 };
 
-export const getPostImageUploadUrl =
-  async (): Promise<PresignedUrlResponse> => {
-    const { data } = await apiClient.post<PresignedUrlResponse>(
-      POST_ENDPOINTS.IMAGE_UPLOAD_URL,
-    );
-    return data;
-  };
+export const reportPost = async (postId: string): Promise<void> => {
+  await apiClient.post(POST_ENDPOINTS.REPORT(postId));
+};
 
-export const uploadPostImage = async (imageUrl: string): Promise<void> => {
-  await apiClient.post(POST_ENDPOINTS.IMAGE_UPLOAD, { imageUrl });
+export const getPostImageUploadUrl = async (
+  count: number,
+): Promise<GetPostImageUploadUrlResponse> => {
+  const { data } = await apiClient.post<GetPostImageUploadUrlResponse>(
+    POST_ENDPOINTS.IMAGE_UPLOAD_URL,
+    { count },
+  );
+  return data;
 };

@@ -2,10 +2,14 @@ import { apiClient } from "@/api/client";
 import { ImageUploadUrl } from "@/api/domains/common/type";
 import {
   CreateUserRequest,
+  GetBlocksResponse,
+  GetFollowersResponse,
+  GetFollowingsResponse,
+  GetFollowListParams,
   GetUserByIdResponse,
   GetUserProfileResponse,
   UpdateUserRequest,
-} from "./types"; // 프로젝트에 맞는 타입으로 변경하세요
+} from "./types";
 
 const BASE_URL = "/user";
 
@@ -14,11 +18,14 @@ const USER_ENDPOINTS = {
   DETAIL: (userId: string) => `${BASE_URL}/${userId}`,
   ME: `${BASE_URL}/me`,
   FOLLOW: (userId: string) => `${BASE_URL}/${userId}/follow`,
-  CHECK_NICKNAME: `${BASE_URL}/check-nickname`, // 쿼리 파라미터로 보낼 것이므로 함수형 대신 문자열로 변경
+  BLOCK: (userId: string) => `${BASE_URL}/${userId}/block`,
+  BLOCKS: `${BASE_URL}/blocks`,
+  FOLLOWERS: (userId: string) => `${BASE_URL}/${userId}/followers`,
+  FOLLOWINGS: (userId: string) => `${BASE_URL}/${userId}/followings`,
+  CHECK_NICKNAME: `${BASE_URL}/check-nickname`,
   IMAGE_UPLOAD_URL: `${BASE_URL}/me/image/upload-url`,
 } as const;
 
-// 0. 내 프로필 가져오기 (GET)
 export const getUserProfile = async (): Promise<GetUserProfileResponse> => {
   const { data } = await apiClient.get<GetUserProfileResponse>(
     USER_ENDPOINTS.ME,
@@ -26,13 +33,11 @@ export const getUserProfile = async (): Promise<GetUserProfileResponse> => {
   return data;
 };
 
-// 1. 사용자 생성 (POST)
 export const createUser = async (payload: CreateUserRequest) => {
   const { data } = await apiClient.post(USER_ENDPOINTS.BASE, payload);
   return data;
 };
 
-// 2. ID로 사용자 받아오기 (GET)
 export const getUserById = async (
   userId: string,
 ): Promise<GetUserByIdResponse> => {
@@ -42,19 +47,16 @@ export const getUserById = async (
   return data;
 };
 
-// 3. 사용자 업데이트하기 (PATCH)
 export const updateUser = async (payload: UpdateUserRequest) => {
   const { data } = await apiClient.patch(USER_ENDPOINTS.ME, payload);
   return data;
 };
 
-// 4. 사용자 삭제 (DELETE)
 export const deleteUser = async () => {
   const { data } = await apiClient.delete(USER_ENDPOINTS.ME);
   return data;
 };
 
-// 5. 닉네임 중복확인 (GET)
 export const checkNickname = async (
   nickname: string,
 ): Promise<{ available: boolean }> => {
@@ -64,15 +66,59 @@ export const checkNickname = async (
   return data;
 };
 
-// 6. 팔로우하기 (POST)
 export const followUser = async (userId: string) => {
   const { data } = await apiClient.post(USER_ENDPOINTS.FOLLOW(userId));
   return data;
 };
 
-// 7. 언팔로우하기 (DELETE)
 export const unfollowUser = async (userId: string) => {
   const { data } = await apiClient.delete(USER_ENDPOINTS.FOLLOW(userId));
+  return data;
+};
+
+export const blockUser = async (
+  userId: string,
+): Promise<{ isBlockedByMe: boolean }> => {
+  const { data } = await apiClient.post(USER_ENDPOINTS.BLOCK(userId));
+  return data;
+};
+
+export const unblockUser = async (
+  userId: string,
+): Promise<{ isBlockedByMe: boolean }> => {
+  const { data } = await apiClient.delete(USER_ENDPOINTS.BLOCK(userId));
+  return data;
+};
+
+export const getBlockedUsers = async (
+  params: GetFollowListParams = {},
+): Promise<GetBlocksResponse> => {
+  const { data } = await apiClient.get<GetBlocksResponse>(
+    USER_ENDPOINTS.BLOCKS,
+    { params },
+  );
+  return data;
+};
+
+export const getUserFollowers = async (
+  userId: string,
+  params: GetFollowListParams = {},
+): Promise<GetFollowersResponse> => {
+  const { data } = await apiClient.get<GetFollowersResponse>(
+    USER_ENDPOINTS.FOLLOWERS(userId),
+    { params },
+  );
+  return data;
+};
+
+export const getUserFollowings = async (
+  userId: string,
+  params: GetFollowListParams = {},
+): Promise<GetFollowingsResponse> => {
+  const { data } = await apiClient.get<GetFollowingsResponse>(
+    USER_ENDPOINTS.FOLLOWINGS(userId),
+    { params },
+  );
   return data;
 };
 

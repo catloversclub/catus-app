@@ -3,32 +3,40 @@ import {
   useMutation,
   useQuery,
   useQueryClient,
+  useSuspenseInfiniteQuery,
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import {
+  blockUser,
   checkNickname,
   createUser,
   deleteUser,
   followUser,
+  getBlockedUsers,
   getUserById,
+  getUserFollowers,
+  getUserFollowings,
   getUserProfile,
   getUserProfileImageUploadUrl,
+  unblockUser,
   unfollowUser,
   updateUser,
 } from "./api";
 
-// 💡 1. 체계적인 Query Key 관리
+const DEFAULT_TAKE = 20;
+
 export const userKeys = {
   all: ["user"] as const,
   me: () => [...userKeys.all, "me"] as const,
   detail: (userId: string) => [...userKeys.all, "detail", userId] as const,
   checkNickname: (nickname: string) =>
     [...userKeys.all, "nickname", nickname] as const,
+  followers: (userId: string) =>
+    [...userKeys.all, "followers", userId] as const,
+  followings: (userId: string) =>
+    [...userKeys.all, "followings", userId] as const,
+  blocks: () => [...userKeys.all, "blocks"] as const,
 };
-
-// -----------------------------------------------------
-// 💡 2. GET 요청 (useSuspenseQuery 사용)
-// -----------------------------------------------------
 
 export const useUserProfileQuery = () => {
   return useSuspenseQuery({
@@ -52,9 +60,53 @@ export const useCheckNicknameQuery = (nickname: string, enabled: boolean) => {
   });
 };
 
-// -----------------------------------------------------
-// 💡 3. POST/PATCH/DELETE 요청 (useMutation 사용)
-// -----------------------------------------------------
+export const useUserFollowersQuery = (userId: string) => {
+  return useSuspenseInfiniteQuery({
+    queryKey: userKeys.followers(userId),
+    queryFn: ({ pageParam }) =>
+      getUserFollowers(userId, {
+        take: DEFAULT_TAKE,
+        cursor: pageParam,
+      }),
+    initialPageParam: undefined as number | undefined,
+    getNextPageParam: (lastPage) => {
+      if (lastPage.length < DEFAULT_TAKE) return undefined;
+      return lastPage[lastPage.length - 1].cursor;
+    },
+  });
+};
+
+export const useUserFollowingsQuery = (userId: string) => {
+  return useSuspenseInfiniteQuery({
+    queryKey: userKeys.followings(userId),
+    queryFn: ({ pageParam }) =>
+      getUserFollowings(userId, {
+        take: DEFAULT_TAKE,
+        cursor: pageParam,
+      }),
+    initialPageParam: undefined as number | undefined,
+    getNextPageParam: (lastPage) => {
+      if (lastPage.length < DEFAULT_TAKE) return undefined;
+      return lastPage[lastPage.length - 1].cursor;
+    },
+  });
+};
+
+export const useBlockedUsersQuery = () => {
+  return useSuspenseInfiniteQuery({
+    queryKey: userKeys.blocks(),
+    queryFn: ({ pageParam }) =>
+      getBlockedUsers({
+        take: DEFAULT_TAKE,
+        cursor: pageParam,
+      }),
+    initialPageParam: undefined as number | undefined,
+    getNextPageParam: (lastPage) => {
+      if (lastPage.length < DEFAULT_TAKE) return undefined;
+      return lastPage[lastPage.length - 1].cursor;
+    },
+  });
+};
 
 export const useCreateUserMutation = () => {
   return useMutation({
@@ -67,7 +119,6 @@ export const useUpdateUserMutation = () => {
   return useMutation({
     mutationFn: updateUser,
     onSuccess: () => {
-      // 내 정보가 업데이트되면 캐시 무효화하여 최신 데이터 다시 불러오기
       queryClient.invalidateQueries({ queryKey: userKeys.me() });
     },
   });
@@ -78,7 +129,7 @@ export const useDeleteUserMutation = () => {
   return useMutation({
     mutationFn: deleteUser,
     onSuccess: () => {
-      queryClient.clear(); // 탈퇴 시 모든 캐시 초기화 등 처리
+      queryClient.clear();
     },
   });
 };
@@ -89,7 +140,7 @@ export const useFollowUserMutation = () => {
     mutationFn: (userId: string) => followUser(userId),
     onSuccess: (_, userId) => {
       queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
-      // 필요 시 팔로잉 피드 등 무효화
+      queryClient.invalidateQueries({ queryKey: userKeys.followings(userId) });
     },
   });
 };
@@ -99,6 +150,29 @@ export const useUnfollowUserMutation = () => {
   return useMutation({
     mutationFn: (userId: string) => unfollowUser(userId),
     onSuccess: (_, userId) => {
+      queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
+      queryClient.invalidateQueries({ queryKey: userKeys.followings(userId) });
+    },
+  });
+};
+
+export const useBlockUserMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (userId: string) => blockUser(userId),
+    onSuccess: (_, userId) => {
+      queryClient.invalidateQueries({ queryKey: userKeys.blocks() });
+      queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
+    },
+  });
+};
+
+export const useUnblockUserMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (userId: string) => unblockUser(userId),
+    onSuccess: (_, userId) => {
+      queryClient.invalidateQueries({ queryKey: userKeys.blocks() });
       queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
     },
   });

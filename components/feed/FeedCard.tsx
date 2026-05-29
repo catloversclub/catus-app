@@ -97,12 +97,12 @@ export function FeedCard({
   const scheme = useColorScheme();
   const colors = scheme === "dark" ? dark : light;
 
-  const catName = post.cat.name;
+  const catName = post.cat?.name ?? post.author.nickname;
   const defaultAvatar =
     scheme === "dark"
       ? require("@/assets/images/avatar/user-dark.png")
       : require("@/assets/images/avatar/user-light.png");
-  const imageSource = post.cat.profileImageUrl
+  const imageSource = post.cat?.profileImageUrl
     ? { uri: post.cat.profileImageUrl }
     : defaultAvatar;
 

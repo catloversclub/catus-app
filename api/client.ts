@@ -64,6 +64,12 @@ const getNewAccessToken = async (): Promise<string> => {
 // ─── apiClient 인터셉터 ───────────────────────────────────
 
 apiClient.interceptors.request.use(async (config) => {
+  console.log("API 요청:", {
+    url: config.url,
+    method: config.method,
+    headers: config.headers,
+    data: config.data,
+  });
   const token = await tokenStorage.getAccess();
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;

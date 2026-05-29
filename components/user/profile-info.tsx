@@ -55,7 +55,7 @@ const ProfileInfoContent = () => {
   const isLivingWithCat = userData.isLivingWithCat;
   const followerCount = userData.followerCount;
   const followingCount = userData.followingCount;
-  const postCount = myPostsData.length;
+  const postCount = myPostsData.pages.flat().length;
 
   return (
     <View className="flex-col items-center">

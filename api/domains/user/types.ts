@@ -1,3 +1,5 @@
+import { Appearance, Personality } from "@/api/domains/attribute/types";
+
 interface User {
   id: string;
   kakaoId: string | null;
@@ -11,14 +13,22 @@ interface User {
   profileImageUrl: string | null;
   followerCount: number;
   followingCount: number;
-  isFollowing: boolean; // 팔로우 여부 (선택적 필드)
-  favoriteAppearances: number[];
-  favoritePersonalities: number[];
+  isFollowing: boolean;
+  favoriteAppearances: Appearance[];
+  favoritePersonalities: Personality[];
 }
 
-type CreateUserRequest = Pick<User, "nickname" | "hasAgreedToTerms">;
+type CreateUserRequest = Pick<User, "nickname" | "hasAgreedToTerms"> & {
+  favoriteAppearances?: number[];
+  favoritePersonalities?: number[];
+};
 
-type UpdateUserRequest = Partial<User>;
+type UpdateUserRequest = Partial<
+  Omit<User, "favoriteAppearances" | "favoritePersonalities">
+> & {
+  favoriteAppearances?: number[];
+  favoritePersonalities?: number[];
+};
 
 type GetUserProfileResponse = Omit<User, "isFollowing">;
 
@@ -36,8 +46,38 @@ type UserProfile = Omit<
   "id" | "kakaoId" | "googleId" | "appleId" | "createdAt" | "isFollowing"
 >;
 
+interface FollowUser {
+  id: string;
+  nickname: string;
+  profileImageUrl: string | null;
+  isFollowedByMe: boolean;
+  cursor: number;
+}
+
+interface BlockedUser {
+  id: string;
+  nickname: string;
+  profileImageUrl: string | null;
+  cursor: number;
+}
+
+interface GetFollowListParams {
+  cursor?: number;
+  take?: number;
+}
+
+type GetFollowersResponse = FollowUser[];
+type GetFollowingsResponse = FollowUser[];
+type GetBlocksResponse = BlockedUser[];
+
 export {
+  BlockedUser,
   CreateUserRequest,
+  FollowUser,
+  GetBlocksResponse,
+  GetFollowersResponse,
+  GetFollowingsResponse,
+  GetFollowListParams,
   GetUserByIdResponse,
   GetUserProfileResponse,
   UpdateUserRequest,

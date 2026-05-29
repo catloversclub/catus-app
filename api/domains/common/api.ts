@@ -1,11 +1,5 @@
-import { storageClient } from "@/api/client";
+import { STORAGE_BASE_URL } from "@/constants/api";
 import { ImageUploadUrl } from "@/api/domains/common/type";
-
-type ReactNativeFile = {
-  uri: string;
-  type: string;
-  name: string;
-};
 
 const uploadImage = async ({
   fields,
@@ -19,16 +13,22 @@ const uploadImage = async ({
     formData.append(key, value);
   });
 
-  const file: ReactNativeFile = {
+  formData.append("file", {
     uri: fileUri,
     type: fields["Content-Type"],
     name: fileUri.split("/").pop() || "profile.png",
-  };
+  } as unknown as Blob);
 
-  formData.append("file", file as unknown as Blob);
+  const response = await fetch(STORAGE_BASE_URL, {
+    method: "POST",
+    body: formData,
+  });
 
-  const { data } = await storageClient.post("", formData);
-  return data;
+  if (!response.ok) {
+    throw new Error(`Image upload failed: ${response.status}`);
+  }
+
+  return response;
 };
 
 export { uploadImage };

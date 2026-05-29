@@ -1,4 +1,3 @@
-import { UserProfile } from "@/api/domains/user/types";
 import BottomActionBar from "@/components/layout/bottom-action-bar";
 import ProgressBar from "@/components/onboarding/progress-bar";
 import SelectAppearance from "@/components/tag/select-appearance";
@@ -7,10 +6,10 @@ import { Controller, useForm } from "react-hook-form";
 import { Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
-export type UserTagFormData = Pick<
-  UserProfile,
-  "favoriteAppearances" | "favoritePersonalities"
->;
+export type UserTagFormData = {
+  favoriteAppearances: number[];
+  favoritePersonalities: number[];
+};
 
 interface UserTagFormProps {
   initialData?: UserTagFormData;

@@ -21,7 +21,8 @@ export interface Comment {
 export type GetPostCommentsResponse = Comment[]
 
 export interface CreateCommentRequest {
-  content: string
+  content: string;
+  parentId?: string | null;
 }
 
 export type CreateCommentResponse = Comment

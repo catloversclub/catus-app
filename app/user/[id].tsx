@@ -32,7 +32,8 @@ function UserDetailContent({ userId }: { userId: string }) {
 
   // 1. 프로필과 게시물 데이터 병렬 패칭 (Suspense 덕분에 둘 다 로딩 완료되어야 렌더링됨)
   const { data: profile, refetch: refetchProfile } = useUserDetailQuery(userId);
-  const { data: posts, refetch: refetchPosts } = useUserPostsQuery(userId);
+  const { data: postsData, refetch: refetchPosts } = useUserPostsQuery(userId);
+  const posts = postsData.pages.flat();
 
   const [refreshing, setRefreshing] = useState(false);
 
