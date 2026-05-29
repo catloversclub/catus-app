@@ -1,5 +1,5 @@
 import {
-  useInfiniteQuery,
+  useSuspenseInfiniteQuery,
   useQuery,
 } from "@tanstack/react-query";
 import { search, searchAutocomplete } from "./api";
@@ -16,7 +16,7 @@ export const searchKeys = {
 const DEFAULT_TAKE = 20;
 
 export const useSearchPostsQuery = (query: string) => {
-  return useInfiniteQuery({
+  return useSuspenseInfiniteQuery({
     queryKey: searchKeys.results("post", query),
     queryFn: ({ pageParam }) =>
       search({
@@ -31,12 +31,11 @@ export const useSearchPostsQuery = (query: string) => {
       if (lastPage.posts.length < DEFAULT_TAKE) return undefined;
       return lastPage.posts[lastPage.posts.length - 1].id;
     },
-    enabled: query.trim().length > 0,
   });
 };
 
 export const useSearchProfilesQuery = (query: string) => {
-  return useInfiniteQuery({
+  return useSuspenseInfiniteQuery({
     queryKey: searchKeys.results("profile", query),
     queryFn: ({ pageParam }) =>
       search({
@@ -63,7 +62,6 @@ export const useSearchProfilesQuery = (query: string) => {
           : undefined,
       };
     },
-    enabled: query.trim().length > 0,
   });
 };
 

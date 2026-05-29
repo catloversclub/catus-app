@@ -6,8 +6,11 @@ import { SearchCatItem, SearchUserItem } from "@/api/domains/search/types";
 import { Post } from "@/api/domains/post/types";
 import { useSearchHistoryStore } from "@/store/explore/search-history-store";
 import TabPager from "@/components/layout/tab-pager";
+import { useColors } from "@/hooks/use-colors";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
+import { Skeleton } from "moti/skeleton";
+import { Suspense } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -21,11 +24,68 @@ interface ExploreResultsViewProps {
   query: string;
 }
 
+// ─── Skeletons ───────────────────────────────────────────────
+
+function PostGridSkeleton() {
+  const { scheme } = useColors();
+  const colorMode = scheme === "dark" ? "dark" : "light";
+  const { width } = useWindowDimensions();
+  const size = Math.floor((width - 24 - 4) / 3);
+
+  return (
+    <Skeleton.Group show>
+      <View style={{ padding: 12, gap: 2 }}>
+        {[0, 1, 2].map((row) => (
+          <View key={row} style={{ flexDirection: "row", gap: 2 }}>
+            {[0, 1, 2].map((col) => (
+              <Skeleton
+                key={col}
+                colorMode={colorMode}
+                width={size}
+                height={size}
+                radius={0}
+              />
+            ))}
+          </View>
+        ))}
+      </View>
+    </Skeleton.Group>
+  );
+}
+
+function ProfileListSkeleton() {
+  const { scheme } = useColors();
+  const colorMode = scheme === "dark" ? "dark" : "light";
+
+  return (
+    <Skeleton.Group show>
+      {[0, 1, 2, 3].map((i) => (
+        <View
+          key={i}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 12,
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+          }}
+        >
+          <Skeleton colorMode={colorMode} width={52} height={52} radius="round" />
+          <View style={{ gap: 6 }}>
+            <Skeleton colorMode={colorMode} width={130} height={16} radius={4} />
+            <Skeleton colorMode={colorMode} width={80} height={12} radius={4} />
+          </View>
+        </View>
+      ))}
+    </Skeleton.Group>
+  );
+}
+
 // ─── Post grid ───────────────────────────────────────────────
 
 function PostGrid({ post }: { post: Post }) {
   const { width } = useWindowDimensions();
-  const size = (width - 24 - 4) / 3; // 12px padding each side + 2 gaps of 2px
+  const size = (width - 24 - 4) / 3;
 
   const imageUrl = post.images[0]?.url;
   return (
@@ -49,19 +109,13 @@ function PostGrid({ post }: { post: Post }) {
 }
 
 function SearchPostsTab({ query }: { query: string }) {
-  const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
+  const { data, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useSearchPostsQuery(query);
 
   const posts =
-    data?.pages.flatMap((page) =>
+    data.pages.flatMap((page) =>
       page.type === "post" ? page.posts : [],
-    ) ?? [];
-
-  if (isLoading) {
-    return (
-      <ActivityIndicator size="large" style={{ marginTop: 50 }} />
     );
-  }
 
   if (posts.length === 0) {
     return (
@@ -148,19 +202,13 @@ function SearchCatCard({ cat }: { cat: SearchCatItem }) {
 }
 
 function SearchCatsTab({ query }: { query: string }) {
-  const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
+  const { data, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useSearchProfilesQuery(query);
 
   const cats =
-    data?.pages.flatMap((page) =>
+    data.pages.flatMap((page) =>
       page.type === "profile" ? page.cats : [],
-    ) ?? [];
-
-  if (isLoading) {
-    return (
-      <ActivityIndicator size="large" style={{ marginTop: 50 }} />
     );
-  }
 
   if (cats.length === 0) {
     return (
@@ -225,17 +273,13 @@ function SearchUserCard({ user }: { user: SearchUserItem }) {
 }
 
 function SearchUsersTab({ query }: { query: string }) {
-  const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
+  const { data, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useSearchProfilesQuery(query);
 
   const users =
-    data?.pages.flatMap((page) =>
+    data.pages.flatMap((page) =>
       page.type === "profile" ? page.users : [],
-    ) ?? [];
-
-  if (isLoading) {
-    return <ActivityIndicator size="large" style={{ marginTop: 50 }} />;
-  }
+    );
 
   if (users.length === 0) {
     return (
@@ -270,9 +314,15 @@ function SearchUsersTab({ query }: { query: string }) {
 const ExploreResultsView = ({ query }: ExploreResultsViewProps) => {
   return (
     <TabPager tabs={["게시글", "고양이", "집사"]}>
-      <SearchPostsTab query={query} />
-      <SearchCatsTab query={query} />
-      <SearchUsersTab query={query} />
+      <Suspense fallback={<PostGridSkeleton />}>
+        <SearchPostsTab query={query} />
+      </Suspense>
+      <Suspense fallback={<ProfileListSkeleton />}>
+        <SearchCatsTab query={query} />
+      </Suspense>
+      <Suspense fallback={<ProfileListSkeleton />}>
+        <SearchUsersTab query={query} />
+      </Suspense>
     </TabPager>
   );
 };
