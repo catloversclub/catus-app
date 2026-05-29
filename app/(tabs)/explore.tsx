@@ -3,12 +3,10 @@ import ArrowLeftIcon from "@/assets/icons/arrow-left.svg";
 import IconButton from "@/components/common/icon-button";
 import SearchInput from "@/components/common/search-input";
 import ExploreDefaultView from "@/components/explore/explore-default-view";
-import ExploreIdleView, {
-  ViewedCat,
-} from "@/components/explore/explore-idle-view";
+import ExploreIdleView from "@/components/explore/explore-idle-view";
 import ExploreResultsView from "@/components/explore/explore-results-view";
 import ExploreTypingView from "@/components/explore/explore-typing-view";
-import { PopularCat } from "@/components/explore/popular-cat-card";
+import { useSearchHistoryStore } from "@/store/explore/search-history-store";
 import { useColors } from "@/hooks/use-colors";
 import { Stack } from "expo-router";
 import { useState } from "react";
@@ -16,55 +14,14 @@ import { Keyboard, Text, View } from "react-native";
 
 type ExploreMode = "default" | "idle" | "typing" | "results";
 
-// mock data — 추후 API 연동
-const POPULAR_CATS: PopularCat[] = [
-  {
-    id: "1",
-    name: "갸우뚱깜냥이",
-    tags: ["애교쟁이 💕", "소심 ☔", "장난꾸러기 😜", "올블랙 🖤"],
-    photos: ["https://placekitten.com/400/400"],
-  },
-  {
-    id: "2",
-    name: "치즈왕김치즈",
-    breed: "골든브리티쉬숏헤어",
-    tags: ["순둥이 🧸", "단모", "치즈 🧀"],
-    photos: ["https://placekitten.com/401/400"],
-  },
-  {
-    id: "3",
-    name: "김요모",
-    breed: "스코티쉬스트레이트",
-    tags: ["겁쟁이 🥺", "장모"],
-    photos: ["https://placekitten.com/402/400"],
-  },
-];
-
-const MOCK_RECENT_SEARCHES = [
-  "아메리칸 쇼트헤어",
-  "김치즈",
-  "봄비",
-  "김요모",
-  "스핑크스 고양이",
-];
-
-const MOCK_VIEWED_CATS: ViewedCat[] = [
-  { id: "1", name: "여름에태어난여름이", breed: "랙돌 먼치킨", imageUrl: null },
-  { id: "2", name: "에메랄드냥냥이", breed: "스핑크스", imageUrl: null },
-  { id: "3", name: "후추를후추추추", breed: "시나몬 랙돌", imageUrl: null },
-];
-
 export default function ExploreScreen() {
   const { colors } = useColors();
+  const addSearch = useSearchHistoryStore((s) => s.addSearch);
 
   const [mode, setMode] = useState<ExploreMode>("default");
   const [query, setQuery] = useState("");
   const [submittedQuery, setSubmittedQuery] = useState("");
-  const [showMoreHistory, setShowMoreHistory] = useState(false);
-  const [showMoreCats, setShowMoreCats] = useState(false);
   const [showEmptyToast, setShowEmptyToast] = useState(false);
-  const [recentSearches, setRecentSearches] = useState(MOCK_RECENT_SEARCHES);
-  const [viewedCats, setViewedCats] = useState(MOCK_VIEWED_CATS);
 
   const isSearchMode = mode !== "default";
 
@@ -83,6 +40,7 @@ export default function ExploreScreen() {
       setTimeout(() => setShowEmptyToast(false), 2000);
       return;
     }
+    addSearch(query.trim());
     setSubmittedQuery(query);
     setMode("results");
     Keyboard.dismiss();
@@ -92,12 +50,11 @@ export default function ExploreScreen() {
     setQuery("");
     setSubmittedQuery("");
     setMode("default");
-    setShowMoreHistory(false);
-    setShowMoreCats(false);
     Keyboard.dismiss();
   };
 
   const handleSuggestionPress = (text: string) => {
+    addSearch(text);
     setQuery(text);
     setSubmittedQuery(text);
     setMode("results");
@@ -138,27 +95,10 @@ export default function ExploreScreen() {
           />
         </View>
 
-        {mode === "default" && (
-          <ExploreDefaultView popularCats={POPULAR_CATS} />
-        )}
+        {mode === "default" && <ExploreDefaultView />}
 
         {mode === "idle" && (
-          <ExploreIdleView
-            recentSearches={recentSearches}
-            onDeleteSearch={(idx) =>
-              setRecentSearches((prev) => prev.filter((_, i) => i !== idx))
-            }
-            onClearAll={() => setRecentSearches([])}
-            onSearchPress={handleSuggestionPress}
-            showMoreHistory={showMoreHistory}
-            onToggleMoreHistory={() => setShowMoreHistory((v) => !v)}
-            viewedCats={viewedCats}
-            onDeleteCat={(id) =>
-              setViewedCats((prev) => prev.filter((c) => c.id !== id))
-            }
-            showMoreCats={showMoreCats}
-            onToggleMoreCats={() => setShowMoreCats((v) => !v)}
-          />
+          <ExploreIdleView onSearchPress={handleSuggestionPress} />
         )}
 
         {mode === "typing" && (

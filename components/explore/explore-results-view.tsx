@@ -4,6 +4,7 @@ import {
 } from "@/api/domains/search/queries";
 import { SearchCatItem } from "@/api/domains/search/types";
 import { Post } from "@/api/domains/post/types";
+import { useSearchHistoryStore } from "@/store/explore/search-history-store";
 import TabPager from "@/components/layout/tab-pager";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
@@ -96,9 +97,20 @@ function SearchPostsTab({ query }: { query: string }) {
 // ─── Cat results ─────────────────────────────────────────────
 
 function SearchCatCard({ cat }: { cat: SearchCatItem }) {
+  const addViewedCat = useSearchHistoryStore((s) => s.addViewedCat);
   return (
     <Link href={`/cat/${cat.id}`} asChild>
-      <Pressable className="flex-row items-center gap-3 px-4 py-3 active:opacity-70">
+      <Pressable
+        onPress={() =>
+          addViewedCat({
+            id: cat.id,
+            name: cat.name,
+            breed: cat.breed ?? undefined,
+            imageUrl: cat.profileImageUrl,
+          })
+        }
+        className="flex-row items-center gap-3 px-4 py-3 active:opacity-70"
+      >
         <View className="size-[52px] rounded-full bg-semantic-bg-secondary overflow-hidden">
           {cat.profileImageUrl && (
             <Image

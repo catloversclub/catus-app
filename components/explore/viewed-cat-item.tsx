@@ -1,8 +1,8 @@
 import DeleteIcon from "@/assets/icons/delete.svg";
 import IconButton from "@/components/common/icon-button";
 import { useColors } from "@/hooks/use-colors";
+import { ViewedCat } from "@/store/explore/search-history-store";
 import { Image, Text, View } from "react-native";
-import { ViewedCat } from "./explore-idle-view";
 
 interface ViewedCatItemProps {
   cat: ViewedCat;

@@ -1,4 +1,5 @@
 import { useSearchAutocompleteQuery } from "@/api/domains/search/queries";
+import { AutocompleteProfileItem } from "@/api/domains/search/types";
 import { Image } from "expo-image";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 
@@ -14,17 +15,10 @@ const HighlightedText = ({
   text: string;
   highlight: string;
 }) => {
-  if (!highlight) {
-    return (
-      <Text
-        className="typo-body4 text-semantic-text-secondary"
-        numberOfLines={1}
-      >
-        {text}
-      </Text>
-    );
-  }
-  const idx = text.toLowerCase().indexOf(highlight.toLowerCase());
+  const idx = highlight
+    ? text.toLowerCase().indexOf(highlight.toLowerCase())
+    : -1;
+
   if (idx === -1) {
     return (
       <Text
@@ -48,19 +42,45 @@ const HighlightedText = ({
   );
 };
 
+const ProfileRow = ({
+  item,
+  query,
+  onPress,
+}: {
+  item: AutocompleteProfileItem;
+  query: string;
+  onPress: (text: string) => void;
+}) => (
+  <TouchableOpacity
+    onPress={() => onPress(item.profileName)}
+    className="flex-row items-center gap-1.5 h-[46px] p-3"
+  >
+    <View className="size-9 rounded-full bg-semantic-bg-primary overflow-hidden">
+      {item.profileImageUrl && (
+        <Image
+          source={{ uri: item.profileImageUrl }}
+          style={{ width: 36, height: 36 }}
+          contentFit="cover"
+        />
+      )}
+    </View>
+    <HighlightedText text={item.profileName} highlight={query} />
+  </TouchableOpacity>
+);
+
+const Divider = () => (
+  <View className="h-px mx-7 bg-semantic-border-primary" />
+);
+
 const ExploreTypingView = ({ query, onPress }: ExploreTypingViewProps) => {
   const { data, isFetching } = useSearchAutocompleteQuery(
     query,
     query.trim().length > 0,
   );
 
-  const profileItems = [
-    ...(data?.profile.cats ?? []),
-    ...(data?.profile.users ?? []),
-  ];
+  const cats = data?.profile.cats ?? [];
+  const users = data?.profile.users ?? [];
   const keywords = data?.post.keywords ?? [];
-  const hasProfileItems = profileItems.length > 0;
-  const hasKeywords = keywords.length > 0;
 
   if (isFetching && !data) {
     return (
@@ -70,50 +90,56 @@ const ExploreTypingView = ({ query, onPress }: ExploreTypingViewProps) => {
     );
   }
 
-  if (!hasProfileItems && !hasKeywords) return null;
+  if (!cats.length && !users.length && !keywords.length) return null;
+
+  const sections = [
+    cats.length > 0 && (
+      <View key="cats" className="p-1.5">
+        {cats.map((item) => (
+          <ProfileRow
+            key={`cat-${item.profileName}`}
+            item={item}
+            query={query}
+            onPress={onPress}
+          />
+        ))}
+      </View>
+    ),
+    users.length > 0 && (
+      <View key="users" className="p-1.5">
+        {users.map((item) => (
+          <ProfileRow
+            key={`user-${item.profileName}`}
+            item={item}
+            query={query}
+            onPress={onPress}
+          />
+        ))}
+      </View>
+    ),
+    keywords.length > 0 && (
+      <View key="keywords" className="p-1.5">
+        {keywords.map((keyword) => (
+          <TouchableOpacity
+            key={keyword}
+            onPress={() => onPress(keyword)}
+            className="flex-row items-center h-[46px] p-3"
+          >
+            <HighlightedText text={keyword} highlight={query} />
+          </TouchableOpacity>
+        ))}
+      </View>
+    ),
+  ].filter(Boolean);
 
   return (
     <View className="mx-3 mt-1.5 rounded overflow-hidden bg-semantic-bg-secondary">
-      {hasProfileItems && (
-        <View className="p-1.5">
-          {profileItems.map((item) => (
-            <TouchableOpacity
-              key={item.profileName}
-              onPress={() => onPress(item.profileName)}
-              className="flex-row items-center gap-1.5 h-[46px] p-3"
-            >
-              <View className="size-9 rounded-full bg-semantic-bg-primary overflow-hidden">
-                {item.profileImageUrl && (
-                  <Image
-                    source={{ uri: item.profileImageUrl }}
-                    style={{ width: 36, height: 36 }}
-                    contentFit="cover"
-                  />
-                )}
-              </View>
-              <HighlightedText text={item.profileName} highlight={query} />
-            </TouchableOpacity>
-          ))}
+      {sections.map((section, i) => (
+        <View key={i}>
+          {i > 0 && <Divider />}
+          {section}
         </View>
-      )}
-
-      {hasProfileItems && hasKeywords && (
-        <View className="h-px mx-7 bg-semantic-border-primary" />
-      )}
-
-      {hasKeywords && (
-        <View className="p-1.5">
-          {keywords.map((keyword) => (
-            <TouchableOpacity
-              key={keyword}
-              onPress={() => onPress(keyword)}
-              className="flex-row items-center h-[46px] p-3"
-            >
-              <HighlightedText text={keyword} highlight={query} />
-            </TouchableOpacity>
-          ))}
-        </View>
-      )}
+      ))}
     </View>
   );
 };
