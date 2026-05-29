@@ -2,7 +2,7 @@ import {
   useSearchPostsQuery,
   useSearchProfilesQuery,
 } from "@/api/domains/search/queries";
-import { SearchCatItem } from "@/api/domains/search/types";
+import { SearchCatItem, SearchUserItem } from "@/api/domains/search/types";
 import { Post } from "@/api/domains/post/types";
 import { useSearchHistoryStore } from "@/store/explore/search-history-store";
 import TabPager from "@/components/layout/tab-pager";
@@ -190,13 +190,89 @@ function SearchCatsTab({ query }: { query: string }) {
   );
 }
 
+// ─── User results ────────────────────────────────────────────
+
+function SearchUserCard({ user }: { user: SearchUserItem }) {
+  return (
+    <Link href={`/user/${user.id}`} asChild>
+      <Pressable className="flex-row items-center gap-3 px-4 py-3 active:opacity-70">
+        <View className="size-[52px] rounded-full bg-semantic-bg-secondary overflow-hidden">
+          {user.profileImageUrl && (
+            <Image
+              source={{ uri: user.profileImageUrl }}
+              style={{ width: 52, height: 52 }}
+              contentFit="cover"
+            />
+          )}
+        </View>
+        <View className="flex-1 gap-0.5">
+          <Text
+            className="typo-body3 text-semantic-text-primary"
+            numberOfLines={1}
+          >
+            {user.nickname}
+          </Text>
+          <Text
+            className="typo-label1 text-semantic-text-tertiary"
+            numberOfLines={1}
+          >
+            팔로워 {user.followerCount.toLocaleString()}명
+          </Text>
+        </View>
+      </Pressable>
+    </Link>
+  );
+}
+
+function SearchUsersTab({ query }: { query: string }) {
+  const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
+    useSearchProfilesQuery(query);
+
+  const users =
+    data?.pages.flatMap((page) =>
+      page.type === "profile" ? page.users : [],
+    ) ?? [];
+
+  if (isLoading) {
+    return <ActivityIndicator size="large" style={{ marginTop: 50 }} />;
+  }
+
+  if (users.length === 0) {
+    return (
+      <View className="flex-1 items-center justify-center">
+        <Text className="typo-body1 text-semantic-text-primary text-center">
+          {"검색 결과가 없어요!\n다른 키워드로 검색해보세요"}
+        </Text>
+      </View>
+    );
+  }
+
+  return (
+    <FlatList
+      data={users}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => <SearchUserCard user={item} />}
+      onEndReached={() => {
+        if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+      }}
+      onEndReachedThreshold={0.5}
+      ListFooterComponent={
+        isFetchingNextPage ? (
+          <ActivityIndicator size="small" style={{ marginVertical: 12 }} />
+        ) : null
+      }
+    />
+  );
+}
+
 // ─── Results view ─────────────────────────────────────────────
 
 const ExploreResultsView = ({ query }: ExploreResultsViewProps) => {
   return (
-    <TabPager tabs={["게시글", "고양이"]}>
+    <TabPager tabs={["게시글", "고양이", "집사"]}>
       <SearchPostsTab query={query} />
       <SearchCatsTab query={query} />
+      <SearchUsersTab query={query} />
     </TabPager>
   );
 };

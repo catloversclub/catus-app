@@ -66,8 +66,8 @@ const getNewAccessToken = async (): Promise<string> => {
 apiClient.interceptors.request.use(async (config) => {
   console.log("API 요청:", {
     url: config.url,
+    params: config.params,
     method: config.method,
-    headers: config.headers,
     data: config.data,
   });
   const token = await tokenStorage.getAccess();
