@@ -11,8 +11,9 @@ import { useCatStore } from "@/store/cat/cat-store";
 
 import { useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { KeyboardAvoidingView, Text, View } from "react-native";
+import { KeyboardAvoidingView, Platform, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import Animated from "react-native-reanimated";
 
 export type CatProfileFormData = Partial<
   Omit<CatProfile, "personalities" | "appearances">
@@ -46,7 +47,8 @@ const CatProfileForm = ({
     },
   });
 
-  const keyboardAvoidingViewProps = useKeyboardAvoidingView();
+  const { keyboardAvoidingViewProps, androidBottomStyle } =
+    useKeyboardAvoidingView();
   const scrollViewRef = useRef<ScrollView>(null);
   const breedOffsetY = useRef<number>(0);
 
@@ -136,25 +138,29 @@ const CatProfileForm = ({
         </View>
         <View className="h-[80px]" />
       </ScrollView>
-      <BottomActionBar
-        buttons={[
-          {
-            label: "다음으로",
-            onPress: handleSubmit(onSubmit),
-            disabled: watch("name") === "" || isPending,
-            isPending: isPending,
-          },
-          ...(onSkip
-            ? [
-                {
-                  label: "건너뛰기",
-                  variant: "ghost" as const,
-                  onPress: onSkip,
-                },
-              ]
-            : []),
-        ]}
-      />
+      <Animated.View
+        style={Platform.OS === "android" ? androidBottomStyle : undefined}
+      >
+        <BottomActionBar
+          buttons={[
+            {
+              label: "다음으로",
+              onPress: handleSubmit(onSubmit),
+              disabled: watch("name") === "" || isPending,
+              isPending: isPending,
+            },
+            ...(onSkip
+              ? [
+                  {
+                    label: "건너뛰기",
+                    variant: "ghost" as const,
+                    onPress: onSkip,
+                  },
+                ]
+              : []),
+          ]}
+        />
+      </Animated.View>
     </KeyboardAvoidingView>
   );
 };

@@ -1,7 +1,8 @@
 // _layout.tsx
 import ErrorModal from "@/components/modal/error-modal";
 import { ToastProvider } from "@/components/ui/toast-provider";
-import { useAuthRedirect } from "@/hooks/auth/use-auth-redirect";
+import { useAuthBootstrap } from "@/hooks/auth/use-auth-redirect";
+import { useAuthStore } from "@/store/auth/auth-store";
 import { useErrorStore } from "@/store/error-store";
 import { useReactQueryDevTools } from "@dev-plugins/react-query";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
@@ -48,20 +49,31 @@ function AppContent() {
     SpaceMono: require("@/assets/fonts/PretendardVariable.ttf"),
   });
 
-  useAuthRedirect(fontsLoaded);
+  // 토큰 존재 확인 + 서버 검증 → store에 상태 기록
+  useAuthBootstrap();
+  const authStatus = useAuthStore((s) => s.status);
+
+  // 폰트와 auth 둘 다 결정될 때까지 splash 유지
+  const isReady = fontsLoaded && authStatus !== "unknown";
 
   useEffect(() => {
-    if (fontsLoaded) SplashScreen.hideAsync();
-  }, [fontsLoaded]);
+    if (isReady) SplashScreen.hideAsync();
+  }, [isReady]);
 
-  if (!fontsLoaded) return null;
+  if (!isReady) return null;
 
   return (
     <>
       <QueryClientProvider client={queryClient}>
         <GestureHandlerRootView style={{ flex: 1 }}>
           <BottomSheetModalProvider>
-            <Stack screenOptions={{ headerShown: false }}>
+            <Stack
+              screenOptions={{ headerShown: false }}
+              // auth 상태에 따라 첫 화면 결정 → router.replace 없이 한 번에 정확한 화면 진입
+              initialRouteName={
+                authStatus === "authenticated" ? "(tabs)" : "(auth)"
+              }
+            >
               <Stack.Screen name="(auth)" />
               <Stack.Screen name="(tabs)" />
               <Stack.Screen name="post" />

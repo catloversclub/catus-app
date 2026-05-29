@@ -12,7 +12,7 @@ const Step8 = () => {
         contentContainerStyle={{ flexGrow: 1, gap: 80 }}
       >
         <Text className="typo-title2 text-semantic-text-primary">
-          모든 준비가 끝났어요!{"\n"} 이제 귀여운 고양이들을 구경해볼까요? 👀
+          모든 준비가 끝났어요!{"\n"}이제 귀여운 고양이들을 구경해볼까요? 👀
         </Text>
       </ScrollView>
       <BottomActionBar
