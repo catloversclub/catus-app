@@ -1,89 +1,72 @@
-import React, { useState, useRef } from "react";
-import {
-  View,
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  Modal,
-  TextInput,
-} from "react-native";
+import ArrowLeftIcon from "@/assets/icons/arrow-left.svg";
+import IconButton from "@/components/common/icon-button";
+import { DARK } from "@/constants/editor-dark";
 import { Image } from "expo-image";
+import React, { useRef, useState } from "react";
+import {
+  Modal,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import {
+  Gesture,
+  GestureDetector,
+} from "react-native-gesture-handler";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+} from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ViewShot from "react-native-view-shot";
 
-import { GestureDetector, Gesture } from "react-native-gesture-handler";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-} from "react-native-reanimated";
-
-function TextItem({
-  content,
-  color,
-  canvasSize,
-}: {
+interface TextEntry {
+  id: number;
   content: string;
   color: string;
-  canvasSize: number;
-}) {
-  // 제스처 상태값
+}
+
+function TextItem({ entry }: { entry: TextEntry }) {
   const x = useSharedValue(0);
   const y = useSharedValue(0);
   const scale = useSharedValue(1);
   const rotation = useSharedValue(0);
-
   const savedScale = useSharedValue(1);
   const savedRotation = useSharedValue(0);
 
-  // 1. 이동 제스처
   const dragGesture = Gesture.Pan().onChange((e) => {
     x.value += e.changeX;
     y.value += e.changeY;
   });
 
-  // 2. 확대 및 회전 제스처 (인스타그램 방식)
-  const pinchAndRotateGesture = Gesture.Simultaneous(
+  const transformGesture = Gesture.Simultaneous(
     Gesture.Pinch()
-      .onChange((e) => {
-        scale.value = savedScale.value * e.scale;
-      })
-      .onEnd(() => {
-        savedScale.value = scale.value;
-      }),
+      .onChange((e) => { scale.value = savedScale.value * e.scale; })
+      .onEnd(() => { savedScale.value = scale.value; }),
     Gesture.Rotation()
-      .onChange((e) => {
-        rotation.value = savedRotation.value + e.rotation;
-      })
-      .onEnd(() => {
-        savedRotation.value = rotation.value;
-      }),
+      .onChange((e) => { rotation.value = savedRotation.value + e.rotation; })
+      .onEnd(() => { savedRotation.value = rotation.value; }),
   );
 
   const animatedStyle = useAnimatedStyle(() => ({
+    position: "absolute",
+    alignSelf: "center",
+    top: "40%",
     transform: [
       { translateX: x.value },
       { translateY: y.value },
       { scale: scale.value },
       { rotate: `${rotation.value}rad` },
     ],
-    position: "absolute",
-    alignSelf: "center",
-    top: canvasSize / 2,
   }));
 
-  const combinedGesture = Gesture.Race(dragGesture, pinchAndRotateGesture);
-
   return (
-    <GestureDetector gesture={combinedGesture}>
+    <GestureDetector gesture={Gesture.Race(dragGesture, transformGesture)}>
       <Animated.View style={animatedStyle}>
-        <Text
-          style={{
-            color,
-            fontSize: 32,
-            fontWeight: "bold",
-            textAlign: "center",
-          }}
-        >
-          {content}
+        <Text style={{ color: entry.color, fontSize: 28, fontWeight: "bold", textShadowColor: "rgba(0,0,0,0.5)", textShadowOffset: { width: 1, height: 1 }, textShadowRadius: 2 }}>
+          {entry.content}
         </Text>
       </Animated.View>
     </GestureDetector>
@@ -97,105 +80,113 @@ interface TextToolProps {
 }
 
 export default function TextTool({ uri, onSave, onCancel }: TextToolProps) {
-  const [texts, setTexts] = useState<
-    { id: number; content: string; color: string }[]
-  >([]);
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const { top, bottom } = useSafeAreaInsets();
+  const [texts, setTexts] = useState<TextEntry[]>([]);
+  const [showInput, setShowInput] = useState(false);
   const [inputText, setInputText] = useState("");
   const viewShotRef = useRef<ViewShot>(null);
 
   const handleAddText = () => {
-    if (inputText.trim()) {
-      setTexts([
-        ...texts,
-        { id: Date.now(), content: inputText, color: "#FFFFFF" },
-      ]);
-      setInputText("");
-      setIsModalVisible(false);
-    }
+    if (!inputText.trim()) return;
+    setTexts((prev) => [
+      ...prev,
+      { id: Date.now(), content: inputText.trim(), color: "#FFFFFF" },
+    ]);
+    setInputText("");
+    setShowInput(false);
+  };
+
+  const handleUndo = () => {
+    setTexts((prev) => prev.slice(0, -1));
   };
 
   const handleComplete = async () => {
     if (viewShotRef.current?.capture) {
-      const editedUri = await viewShotRef.current.capture();
-      onSave(editedUri);
+      try {
+        const editedUri = await viewShotRef.current.capture();
+        onSave(editedUri);
+      } catch (e) {
+        console.error("TextTool save failed:", e);
+      }
     }
   };
 
   return (
-    <View className="flex-1 bg-black">
-      {/* 1. 편집 캔버스 영역 */}
-      <View className="flex-1 justify-center items-center">
+    <View style={{ flex: 1, backgroundColor: DARK.bg, paddingTop: top }}>
+      {/* Header */}
+      <View style={{ flexDirection: "row", alignItems: "center", height: 52, paddingHorizontal: 12 }}>
+        <IconButton onPress={onCancel} className="p-3">
+          <ArrowLeftIcon width={20} height={20} color={DARK.text} />
+        </IconButton>
+        <Text style={{ flex: 1, textAlign: "center", color: DARK.text, fontSize: 16, fontWeight: "600", letterSpacing: -0.32, marginRight: 44 }}>
+          텍스트 입력
+        </Text>
+      </View>
+
+      {/* Canvas */}
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ViewShot
           ref={viewShotRef}
           options={{ format: "jpg", quality: 0.9 }}
           style={{ width: "100%", aspectRatio: 1 }}
         >
-          <View className="relative w-full h-full bg-zinc-900 justify-center">
-            <Image
-              source={{ uri }}
-              style={StyleSheet.absoluteFill}
-              contentFit="contain"
-            />
+          <View style={{ flex: 1, backgroundColor: "#000" }}>
+            <Image source={{ uri }} style={StyleSheet.absoluteFill} contentFit="contain" />
             {texts.map((t) => (
-              <TextItem
-                key={t.id}
-                content={t.content}
-                color={t.color}
-                canvasSize={400}
-              />
+              <TextItem key={t.id} entry={t} />
             ))}
           </View>
         </ViewShot>
       </View>
 
-      {/* 2. 하단 툴바 (기획서 반영) */}
-      <View className="bg-[#1E1E1E] p-6 pb-10">
-        <View className="flex-row justify-center items-center space-x-6 mb-8 bg-[#2A2A2A] rounded-full py-3 px-6 self-center">
+      {/* Bottom panel */}
+      <View style={{ paddingHorizontal: 12, paddingTop: 12, paddingBottom: Math.max(bottom, 12) + 12, gap: 24, alignItems: "center" }}>
+        {/* Controls row */}
+        <View style={{ flexDirection: "row", gap: 12 }}>
+          {/* Undo */}
           <TouchableOpacity
-            onPress={() => setTexts((prev) => prev.slice(0, -1))}
+            onPress={handleUndo}
+            style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: DARK.bgSecondary, alignItems: "center", justifyContent: "center" }}
           >
-            <Text className="text-white text-xl">↩️</Text>
+            <Text style={{ color: texts.length > 0 ? DARK.text : "#555", fontSize: 18 }}>↩</Text>
           </TouchableOpacity>
-          <View className="w-[1px] h-6 bg-zinc-600 mx-2" />
+          {/* Add text */}
           <TouchableOpacity
-            onPress={() => setIsModalVisible(true)}
-            className="bg-yellow-400 px-6 py-1 rounded-full"
+            onPress={() => setShowInput(true)}
+            style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: DARK.bgSecondary, alignItems: "center", justifyContent: "center" }}
           >
-            <Text className="font-bold text-black text-sm">T+ 텍스트 추가</Text>
+            <Text style={{ color: DARK.text, fontSize: 14, fontWeight: "700" }}>T</Text>
           </TouchableOpacity>
         </View>
 
+        {/* 완료 */}
         <TouchableOpacity
           onPress={handleComplete}
-          className="bg-yellow-400 py-4 rounded-xl"
+          style={{ backgroundColor: DARK.yellow, borderRadius: 4, height: 50, alignItems: "center", justifyContent: "center", width: "100%" }}
         >
-          <Text className="text-center font-bold text-lg">완료</Text>
+          <Text style={{ color: DARK.yellowText, fontSize: 16, fontWeight: "600", letterSpacing: -0.32 }}>
+            완료
+          </Text>
         </TouchableOpacity>
       </View>
 
-      {/* 텍스트 입력 모달 */}
-      <Modal visible={isModalVisible} transparent animationType="fade">
-        <View className="flex-1 bg-black/80 justify-center items-center p-6">
+      {/* Text input overlay */}
+      <Modal visible={showInput} transparent animationType="fade">
+        <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.85)", justifyContent: "center", alignItems: "center", padding: 24 }}>
           <TextInput
             autoFocus
-            style={{
-              color: "white",
-              fontSize: 30,
-              fontWeight: "bold",
-              width: "100%",
-              textAlign: "center",
-            }}
+            style={{ color: "#fff", fontSize: 26, fontWeight: "bold", width: "100%", textAlign: "center", minHeight: 60 }}
             value={inputText}
             onChangeText={setInputText}
             placeholder="문구를 입력하세요"
             placeholderTextColor="#666"
+            multiline
           />
           <TouchableOpacity
             onPress={handleAddText}
-            className="mt-10 bg-yellow-400 px-10 py-3 rounded-full"
+            style={{ marginTop: 24, backgroundColor: DARK.yellow, paddingHorizontal: 40, paddingVertical: 12, borderRadius: 100 }}
           >
-            <Text className="font-bold text-lg">확인</Text>
+            <Text style={{ fontWeight: "700", fontSize: 16, color: DARK.yellowText }}>확인</Text>
           </TouchableOpacity>
         </View>
       </Modal>
