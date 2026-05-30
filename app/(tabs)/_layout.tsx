@@ -45,7 +45,7 @@ const TAB_SCREENS: TabScreenConfig[] = [
   },
 ];
 
-export default function TabsLayout() {
+const TabsLayout = () => {
   const handleCameraPress = () => {
     router.push("/post/gallery");
   };
@@ -113,3 +113,5 @@ export default function TabsLayout() {
     </Tabs>
   );
 }
+
+export default TabsLayout;

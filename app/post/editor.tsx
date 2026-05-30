@@ -21,7 +21,7 @@ const CHIPS: { id: Exclude<EditMode, "none">; label: string }[] = [
   { id: "text", label: "텍스트" },
 ];
 
-export default function EditorScreen() {
+const EditorScreen = () => {
   const { top, bottom } = useSafeAreaInsets();
   const { colors } = useColors();
   const { imageUris } = useLocalSearchParams<{ imageUris: string }>();
@@ -190,3 +190,5 @@ export default function EditorScreen() {
     </>
   );
 }
+
+export default EditorScreen;

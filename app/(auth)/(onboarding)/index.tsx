@@ -21,7 +21,7 @@ const TERMS = [
   },
 ];
 
-export default function Step0() {
+const Step0 = () => {
   const { colors } = useColors();
   const [agreed, setAgreed] = useState<Record<string, boolean>>(
     Object.fromEntries(TERMS.map(({ key }) => [key, false])),
@@ -87,3 +87,5 @@ export default function Step0() {
     </View>
   );
 }
+
+export default Step0;

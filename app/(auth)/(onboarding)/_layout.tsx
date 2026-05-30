@@ -1,7 +1,7 @@
 import { useDefaultStackScreenOptions } from "@/hooks/use-default-screen-options";
 import { Stack } from "expo-router";
 
-export default function OnboardingLayout() {
+const OnboardingLayout = () => {
   const screenOptions = useDefaultStackScreenOptions();
 
   return (
@@ -20,3 +20,5 @@ export default function OnboardingLayout() {
     </Stack>
   );
 }
+
+export default OnboardingLayout;

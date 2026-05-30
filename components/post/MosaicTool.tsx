@@ -55,7 +55,7 @@ function MosaicItem({ item }: { item: MosaicData }) {
   );
 }
 
-export default function MosaicTool({ uri, onSave, onCancel }: MosaicToolProps) {
+const MosaicTool = ({ uri, onSave, onCancel }: MosaicToolProps) => {
   const { top, bottom } = useSafeAreaInsets();
   const [mosaics, setMosaics] = useState<MosaicData[]>([]);
   const [selectedType, setSelectedType] = useState<"rect" | "circle">("rect");
@@ -194,3 +194,5 @@ const styles = StyleSheet.create({
     borderColor: "rgba(255,215,0,0.5)",
   },
 });
+
+export default MosaicTool;

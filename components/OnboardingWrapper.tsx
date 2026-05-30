@@ -15,7 +15,7 @@ interface Props {
   nextButtonText?: string
 }
 
-export default function OnboardingWrapper({
+const OnboardingWrapper = ({
   step,
   totalSteps = 6,
   title,
@@ -23,7 +23,7 @@ export default function OnboardingWrapper({
   onNext,
   isNextEnabled,
   nextButtonText = "다음으로",
-}: Props) {
+}: Props) => {
   const router = useRouter()
 
   return (
@@ -84,3 +84,5 @@ export default function OnboardingWrapper({
     </SafeAreaView>
   )
 }
+
+export default OnboardingWrapper;

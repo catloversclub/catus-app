@@ -30,6 +30,7 @@ function FollowingFeedList() {
 
   return (
     <FlatList
+      style={{ flex: 1 }}
       data={posts}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => <FeedCard post={item} />}
@@ -63,6 +64,7 @@ function RecommendedFeedList() {
 
   return (
     <FlatList
+      style={{ flex: 1 }}
       data={posts}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => <FeedCard post={item} />}
@@ -99,7 +101,7 @@ function LogoHeader() {
   );
 }
 
-export default function HomeScreen() {
+const HomeScreen = () => {
   return (
     <SafeAreaView
       style={commonStyles.container}
@@ -126,3 +128,5 @@ export default function HomeScreen() {
     </SafeAreaView>
   );
 }
+
+export default HomeScreen;

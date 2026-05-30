@@ -36,7 +36,7 @@ const MOCK_CATS = [
   { id: "2", name: "치즈" },
 ];
 
-export default function EditListScreen() {
+const EditListScreen = () => {
   const { top, bottom } = useSafeAreaInsets();
   const { colors } = useColors();
   const toast = useToast();
@@ -646,3 +646,5 @@ export default function EditListScreen() {
     </>
   );
 }
+
+export default EditListScreen;

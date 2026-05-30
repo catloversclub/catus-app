@@ -65,7 +65,7 @@ function PostDetailContent({
 }
 
 // 💡 3. 최상위 컴포넌트 (Suspense로 로딩 상태 처리)
-export default function PostDetailScreen() {
+const PostDetailScreen = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const MoreSheetModalRef = useRef<BottomSheetModal>(null);
 
@@ -86,3 +86,5 @@ export default function PostDetailScreen() {
     </View>
   );
 }
+
+export default PostDetailScreen;

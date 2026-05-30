@@ -34,7 +34,7 @@ interface CropToolProps {
   onCancel: () => void;
 }
 
-export default function CropTool({ uri, onSave, onCancel }: CropToolProps) {
+const CropTool = ({ uri, onSave, onCancel }: CropToolProps) => {
   const { top, bottom } = useSafeAreaInsets();
   const [aspectRatio, setAspectRatio] = useState<Ratio>("자유");
 
@@ -233,3 +233,5 @@ const styles = StyleSheet.create({
     borderColor: "#fff",
   },
 });
+
+export default CropTool;

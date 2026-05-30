@@ -2,7 +2,7 @@ import { View, StyleSheet, Text } from "react-native";
 import { Image } from "expo-image";
 import { useLocalSearchParams } from "expo-router";
 
-export default function CameraScreen() {
+const CameraScreen = () => {
   const { imageUri } = useLocalSearchParams<{ imageUri?: string }>();
 
   if (!imageUri) {
@@ -43,3 +43,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
+export default CameraScreen;

@@ -25,10 +25,10 @@ interface CommentSheetProps {
   comments: Comment[];
 }
 
-export default function CommentSheet({
+const CommentSheet = ({
   commentSheetRef,
   comments,
-}: CommentSheetProps) {
+}: CommentSheetProps) => {
   const [commentText, setCommentText] = useState("");
   const [replyingTo, setReplyingTo] = useState<{
     id: string;
@@ -142,3 +142,5 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
 });
+
+export default CommentSheet;

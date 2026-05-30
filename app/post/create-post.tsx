@@ -5,7 +5,7 @@ import { useMemo, useRef, useState } from "react";
 import PagerView from "react-native-pager-view";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
-export default function CreatePostScreen() {
+const CreatePostScreen = () => {
   const { imageUris } = useLocalSearchParams<{
     imageUris: string;
   }>();
@@ -87,3 +87,5 @@ export default function CreatePostScreen() {
     </KeyboardAwareScrollView>
   );
 }
+
+export default CreatePostScreen;

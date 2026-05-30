@@ -105,7 +105,7 @@ function PhotoCell({
   );
 }
 
-export default function GalleryScreen() {
+const GalleryScreen = () => {
   const { colors } = useColors();
   const { bottom } = useSafeAreaInsets();
   const { draft, clearDraft } = useDraftStore();
@@ -405,3 +405,5 @@ export default function GalleryScreen() {
     </>
   );
 }
+
+export default GalleryScreen;

@@ -10,12 +10,12 @@ interface ImagePagerProps {
   showEditHint?: boolean;
 }
 
-export default function ImagePager({
+const ImagePager = ({
   images,
   height = 252,
   onImagePress,
   showEditHint = false,
-}: ImagePagerProps) {
+}: ImagePagerProps) => {
   const pagerRef = useRef<PagerView>(null);
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -73,3 +73,5 @@ export default function ImagePager({
     </View>
   );
 }
+
+export default ImagePager;

@@ -79,7 +79,7 @@ interface TextToolProps {
   onCancel: () => void;
 }
 
-export default function TextTool({ uri, onSave, onCancel }: TextToolProps) {
+const TextTool = ({ uri, onSave, onCancel }: TextToolProps) => {
   const { top, bottom } = useSafeAreaInsets();
   const [texts, setTexts] = useState<TextEntry[]>([]);
   const [showInput, setShowInput] = useState(false);
@@ -193,3 +193,5 @@ export default function TextTool({ uri, onSave, onCancel }: TextToolProps) {
     </View>
   );
 }
+
+export default TextTool;

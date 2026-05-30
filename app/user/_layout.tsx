@@ -4,7 +4,7 @@ import { dark, light } from "@/styles/semantic-colors";
 import { Stack, router } from "expo-router";
 import { useColorScheme } from "react-native";
 
-export default function PostLayout() {
+const PostLayout = () => {
   const scheme = useColorScheme();
   const colors = scheme === "dark" ? dark : light;
   return (
@@ -35,3 +35,5 @@ export default function PostLayout() {
     </Stack>
   );
 }
+
+export default PostLayout;

@@ -88,6 +88,8 @@ function AppContent() {
   );
 }
 
-export default function RootLayout() {
+const RootLayout = () => {
   return <AppContent />;
 }
+
+export default RootLayout;

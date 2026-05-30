@@ -44,7 +44,7 @@ const LOGIN_OPTIONS: LoginOption[] = [
     : []),
 ];
 
-export default function Index() {
+const Index = () => {
   const { mutate: login } = useLogin();
   const { colors } = useColors();
 
@@ -74,3 +74,5 @@ export default function Index() {
     </SafeAreaView>
   );
 }
+
+export default Index;

@@ -53,7 +53,7 @@ const MOCK_NOTIFICATIONS: NotificationData[] = [
   },
 ];
 
-export default function NotificationsScreen() {
+const NotificationsScreen = () => {
   const { colors } = useColors();
   const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS);
 
@@ -104,3 +104,5 @@ export default function NotificationsScreen() {
     </>
   );
 }
+
+export default NotificationsScreen;

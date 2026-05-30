@@ -19,7 +19,7 @@ interface IconTabPagerProps {
   className?: string;
 }
 
-export default function IconTabPager({ children, className }: IconTabPagerProps) {
+const IconTabPager = ({ children, className }: IconTabPagerProps) => {
   const { colors } = useColors();
   const { width } = useWindowDimensions();
   const pagerRef = useRef<PagerView>(null);
@@ -91,3 +91,5 @@ export default function IconTabPager({ children, className }: IconTabPagerProps)
     </View>
   );
 }
+
+export default IconTabPager;

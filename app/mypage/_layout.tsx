@@ -5,7 +5,7 @@ import { dark, light } from "@/styles/semantic-colors";
 import { Stack, router } from "expo-router";
 import { useColorScheme } from "react-native";
 
-export default function MypageLayout() {
+const MypageLayout = () => {
   const scheme = useColorScheme();
   const colors = scheme === "dark" ? dark : light;
 
@@ -41,3 +41,5 @@ export default function MypageLayout() {
     </Stack>
   );
 }
+
+export default MypageLayout;

@@ -171,7 +171,7 @@ function UserDetailContent({ userId }: { userId: string }) {
 }
 
 // 💡 최상위 래퍼 (Suspense)
-export default function UserDetailScreen() {
+const UserDetailScreen = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   return (
@@ -190,3 +190,5 @@ export default function UserDetailScreen() {
     </View>
   );
 }
+
+export default UserDetailScreen;

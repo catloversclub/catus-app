@@ -9,7 +9,7 @@ interface TabPagerProps {
   className?: string;
 }
 
-export default function TabPager({ tabs, children, className }: TabPagerProps) {
+const TabPager = ({ tabs, children, className }: TabPagerProps) => {
   const pagerRef = useRef<PagerView>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -60,3 +60,5 @@ export default function TabPager({ tabs, children, className }: TabPagerProps) {
     </View>
   );
 }
+
+export default TabPager;

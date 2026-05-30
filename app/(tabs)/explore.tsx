@@ -14,7 +14,7 @@ import { Keyboard, Text, View } from "react-native";
 
 type ExploreMode = "default" | "idle" | "typing" | "results";
 
-export default function ExploreScreen() {
+const ExploreScreen = () => {
   const { colors } = useColors();
   const addSearch = useSearchHistoryStore((s) => s.addSearch);
 
@@ -122,3 +122,5 @@ export default function ExploreScreen() {
     </>
   );
 }
+
+export default ExploreScreen;
