@@ -27,6 +27,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
+// 버벅임 방지: iOS 바운스 구간의 미세 진동을 무시하는 임계값
+const SCROLL_THRESHOLD = 4;
+// 탭바(46px 버튼 + 1px 디바이더)
+const TAB_BAR_HEIGHT = 47;
+
 type FeedListProps = {
   data: { pages: Post[][] };
   fetchNextPage: () => void;
@@ -91,7 +96,11 @@ const RecommendedFeedList = ({
   return <FeedList {...result} scrollHandler={scrollHandler} />;
 };
 
-const LogoHeader = ({ onLayout }: { onLayout: (e: LayoutChangeEvent) => void }) => {
+const LogoHeader = ({
+  onLayout,
+}: {
+  onLayout: (e: LayoutChangeEvent) => void;
+}) => {
   const scheme = useColorScheme();
   return (
     <View className="px-3 pt-1 pb-3" onLayout={onLayout}>
@@ -109,17 +118,15 @@ const LogoHeader = ({ onLayout }: { onLayout: (e: LayoutChangeEvent) => void }) 
 };
 
 const HomeScreen = () => {
-  const headerHeight = useSharedValue(0);
-  const headerHeightAnim = useSharedValue(0);
+  const logoHeight = useSharedValue(0);
   const lastScrollY = useSharedValue(0);
-  const targetHeight = useSharedValue(0);
+  // 0 = 완전히 숨김, 1 = 완전히 표시 — 로고·탭바 모두 이 값으로 제어
+  const headerProgress = useSharedValue(1);
+  const targetVisible = useSharedValue(1);
 
   const onHeaderLayout = useCallback((e: LayoutChangeEvent) => {
-    const h = e.nativeEvent.layout.height;
-    if (headerHeight.value === 0) {
-      headerHeight.value = h;
-      headerHeightAnim.value = h;
-      targetHeight.value = h;
+    if (logoHeight.value === 0) {
+      logoHeight.value = e.nativeEvent.layout.height;
     }
   }, []);
 
@@ -128,24 +135,28 @@ const HomeScreen = () => {
       const y = event.contentOffset.y;
       const diff = y - lastScrollY.value;
 
-      if (y <= 0 && targetHeight.value !== headerHeight.value) {
-        targetHeight.value = headerHeight.value;
-        headerHeightAnim.value = withTiming(headerHeight.value, { duration: 250 });
-      } else if (diff > 0 && targetHeight.value !== 0) {
-        targetHeight.value = 0;
-        headerHeightAnim.value = withTiming(0, { duration: 250 });
-      } else if (diff < 0 && targetHeight.value !== headerHeight.value) {
-        targetHeight.value = headerHeight.value;
-        headerHeightAnim.value = withTiming(headerHeight.value, { duration: 250 });
+      if (y <= 0 && targetVisible.value !== 1) {
+        targetVisible.value = 1;
+        headerProgress.value = withTiming(1, { duration: 200 });
+      } else if (diff > SCROLL_THRESHOLD && targetVisible.value !== 0) {
+        targetVisible.value = 0;
+        headerProgress.value = withTiming(0, { duration: 200 });
+      } else if (diff < -SCROLL_THRESHOLD && targetVisible.value !== 1) {
+        targetVisible.value = 1;
+        headerProgress.value = withTiming(1, { duration: 200 });
       }
 
       lastScrollY.value = y;
     },
   });
 
-  const headerContainerStyle = useAnimatedStyle(() => ({
-    height: headerHeightAnim.value,
+  const logoContainerStyle = useAnimatedStyle(() => ({
+    height: headerProgress.value * logoHeight.value,
     overflow: "hidden",
+  }));
+
+  const tabBarStyle = useAnimatedStyle(() => ({
+    height: headerProgress.value * TAB_BAR_HEIGHT,
   }));
 
   return (
@@ -154,10 +165,10 @@ const HomeScreen = () => {
       className="bg-semantic-bg-primary"
       edges={["top", "left", "right"]}
     >
-      <Animated.View style={headerContainerStyle}>
+      <Animated.View style={logoContainerStyle}>
         <LogoHeader onLayout={onHeaderLayout} />
       </Animated.View>
-      <TabPager tabs={["팔로잉", "추천"]}>
+      <TabPager tabs={["팔로잉", "추천"]} tabBarStyle={tabBarStyle}>
         <Suspense fallback={<FeedListSkeleton />}>
           <FollowingFeedList scrollHandler={scrollHandler} />
         </Suspense>

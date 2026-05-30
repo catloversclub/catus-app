@@ -1,15 +1,17 @@
 import { cn } from "@/lib/utils";
 import { useRef, useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { StyleProp, Text, TouchableOpacity, View, ViewStyle } from "react-native";
+import Animated from "react-native-reanimated";
 import PagerView from "react-native-pager-view";
 
 interface TabPagerProps {
   tabs: string[];
   children: React.ReactNode[];
   className?: string;
+  tabBarStyle?: StyleProp<ViewStyle>;
 }
 
-const TabPager = ({ tabs, children, className }: TabPagerProps) => {
+const TabPager = ({ tabs, children, className, tabBarStyle }: TabPagerProps) => {
   const pagerRef = useRef<PagerView>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -20,27 +22,29 @@ const TabPager = ({ tabs, children, className }: TabPagerProps) => {
 
   return (
     <View className={cn("flex-1", className)}>
-      <View className="flex-row h-[46px]">
-        {tabs.map((label, index) => (
-          <TouchableOpacity
-            key={label}
-            onPress={() => handleTabPress(index)}
-            className="flex-1 items-center justify-end pb-2"
-          >
-            <Text
-              className={cn(
-                "typo-title3",
-                activeIndex === index
-                  ? "text-semantic-text-success"
-                  : "text-semantic-text-tertiary",
-              )}
+      <Animated.View style={[{ overflow: "hidden" }, tabBarStyle]}>
+        <View className="flex-row h-[46px]">
+          {tabs.map((label, index) => (
+            <TouchableOpacity
+              key={label}
+              onPress={() => handleTabPress(index)}
+              className="flex-1 items-center justify-end pb-2"
             >
-              {label}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-      <View className="h-px bg-semantic-border-primary" />
+              <Text
+                className={cn(
+                  "typo-title3",
+                  activeIndex === index
+                    ? "text-semantic-text-success"
+                    : "text-semantic-text-tertiary",
+                )}
+              >
+                {label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+        <View className="h-px bg-semantic-border-primary" />
+      </Animated.View>
 
       <PagerView
         ref={pagerRef}
