@@ -43,13 +43,11 @@ const TabPager = ({ tabs, children, className }: TabPagerProps) => {
             </TouchableOpacity>
           ))}
         </View>
-        {/* Divider */}
-        <View className="h-px bg-semantic-border-primary" />
         <Gradient
           direction="vertical"
           width="100%"
-          height={20}
-          style={{ position: "absolute", bottom: -20, left: 0, zIndex: 10 }}
+          height={28}
+          style={{ position: "absolute", bottom: -28, left: 0, zIndex: 10 }}
         />
       </View>
 
@@ -68,6 +66,6 @@ const TabPager = ({ tabs, children, className }: TabPagerProps) => {
       </PagerView>
     </View>
   );
-}
+};
 
 export default TabPager;
