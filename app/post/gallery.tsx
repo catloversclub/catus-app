@@ -28,7 +28,7 @@ type GalleryItem =
   | { type: "camera" }
   | { type: "photo"; asset: MediaLibrary.Asset };
 
-function CameraCell({ size, onPress }: { size: number; onPress: () => void }) {
+const CameraCell = ({ size, onPress }: { size: number; onPress: () => void }) => {
   const { colors } = useColors();
   return (
     <TouchableOpacity
@@ -47,7 +47,7 @@ function CameraCell({ size, onPress }: { size: number; onPress: () => void }) {
   );
 }
 
-function PhotoCell({
+const PhotoCell = ({
   asset,
   size,
   selectionIndex,
@@ -57,7 +57,7 @@ function PhotoCell({
   size: number;
   selectionIndex: number;
   onPress: () => void;
-}) {
+}) => {
   const isSelected = selectionIndex >= 0;
   return (
     <TouchableOpacity

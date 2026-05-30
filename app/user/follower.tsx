@@ -19,7 +19,7 @@ import {
 
 // ─── Skeleton ────────────────────────────────────────────────
 
-function FollowListSkeleton() {
+const FollowListSkeleton = () => {
   const { scheme } = useColors();
   const colorMode = scheme === "dark" ? "dark" : "light";
 
@@ -48,7 +48,7 @@ function FollowListSkeleton() {
 
 // ─── Content ─────────────────────────────────────────────────
 
-function FollowerListContent() {
+const FollowerListContent = () => {
   const { data: me } = useUserProfileQuery();
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useUserFollowersQuery(me.id);

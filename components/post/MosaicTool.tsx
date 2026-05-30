@@ -30,7 +30,7 @@ interface MosaicToolProps {
   onCancel: () => void;
 }
 
-function MosaicItem({ item }: { item: MosaicData }) {
+const MosaicItem = ({ item }: { item: MosaicData }) => {
   const x = useSharedValue(item.x);
   const y = useSharedValue(item.y);
 

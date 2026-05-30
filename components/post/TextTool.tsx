@@ -28,7 +28,7 @@ interface TextEntry {
   color: string;
 }
 
-function TextItem({ entry }: { entry: TextEntry }) {
+const TextItem = ({ entry }: { entry: TextEntry }) => {
   const x = useSharedValue(0);
   const y = useSharedValue(0);
   const scale = useSharedValue(1);

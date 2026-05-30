@@ -2,7 +2,7 @@ import { STORAGE_BASE_URL } from "@/constants/api";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
-function cn(...inputs: ClassValue[]) {
+const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
 }
 

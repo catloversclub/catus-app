@@ -16,7 +16,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { commonStyles } from "@/styles/common-styles";
 
-function FollowingFeedList() {
+const FollowingFeedList = () => {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } =
     useFollowingFeedQuery();
   const posts = data.pages.flat();
@@ -50,7 +50,7 @@ function FollowingFeedList() {
   );
 }
 
-function RecommendedFeedList() {
+const RecommendedFeedList = () => {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } =
     useRecommendedFeedQuery();
   const posts = data.pages.flat();
@@ -84,7 +84,7 @@ function RecommendedFeedList() {
   );
 }
 
-function LogoHeader() {
+const LogoHeader = () => {
   const scheme = useColorScheme();
   return (
     <View className="px-3 pt-1 pb-3">

@@ -23,7 +23,7 @@ interface NotificationItemProps {
   onFollowToggle: (id: string) => void;
 }
 
-function getMessage(item: NotificationData): string {
+const getMessage = (item: NotificationData): string => {
   switch (item.type) {
     case "follow_me":
       return `${item.actor.name} 님이 나를 팔로우했어요.`;

@@ -26,7 +26,7 @@ interface ExploreResultsViewProps {
 
 // ─── Skeletons ───────────────────────────────────────────────
 
-function PostGridSkeleton() {
+const PostGridSkeleton = () => {
   const { scheme } = useColors();
   const colorMode = scheme === "dark" ? "dark" : "light";
   const { width } = useWindowDimensions();
@@ -53,7 +53,7 @@ function PostGridSkeleton() {
   );
 }
 
-function ProfileListSkeleton() {
+const ProfileListSkeleton = () => {
   const { scheme } = useColors();
   const colorMode = scheme === "dark" ? "dark" : "light";
 
@@ -83,7 +83,7 @@ function ProfileListSkeleton() {
 
 // ─── Post grid ───────────────────────────────────────────────
 
-function PostGrid({ post }: { post: Post }) {
+const PostGrid = ({ post }: { post: Post }) => {
   const { width } = useWindowDimensions();
   const size = (width - 24 - 4) / 3;
 
@@ -108,7 +108,7 @@ function PostGrid({ post }: { post: Post }) {
   );
 }
 
-function SearchPostsTab({ query }: { query: string }) {
+const SearchPostsTab = ({ query }: { query: string }) => {
   const { data, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useSearchPostsQuery(query);
 
@@ -129,6 +129,7 @@ function SearchPostsTab({ query }: { query: string }) {
 
   return (
     <FlatList
+      style={{ flex: 1 }}
       data={posts}
       keyExtractor={(item) => item.id}
       numColumns={3}
@@ -150,7 +151,7 @@ function SearchPostsTab({ query }: { query: string }) {
 
 // ─── Cat results ─────────────────────────────────────────────
 
-function SearchCatCard({ cat }: { cat: SearchCatItem }) {
+const SearchCatCard = ({ cat }: { cat: SearchCatItem }) => {
   const addViewedCat = useSearchHistoryStore((s) => s.addViewedCat);
   return (
     <Link href={`/cat/${cat.id}`} asChild>
@@ -201,7 +202,7 @@ function SearchCatCard({ cat }: { cat: SearchCatItem }) {
   );
 }
 
-function SearchCatsTab({ query }: { query: string }) {
+const SearchCatsTab = ({ query }: { query: string }) => {
   const { data, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useSearchProfilesQuery(query);
 
@@ -222,6 +223,7 @@ function SearchCatsTab({ query }: { query: string }) {
 
   return (
     <FlatList
+      style={{ flex: 1 }}
       data={cats}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => <SearchCatCard cat={item} />}
@@ -240,7 +242,7 @@ function SearchCatsTab({ query }: { query: string }) {
 
 // ─── User results ────────────────────────────────────────────
 
-function SearchUserCard({ user }: { user: SearchUserItem }) {
+const SearchUserCard = ({ user }: { user: SearchUserItem }) => {
   return (
     <Link href={`/user/${user.id}`} asChild>
       <Pressable className="flex-row items-center gap-3 px-4 py-3 active:opacity-70">
@@ -272,7 +274,7 @@ function SearchUserCard({ user }: { user: SearchUserItem }) {
   );
 }
 
-function SearchUsersTab({ query }: { query: string }) {
+const SearchUsersTab = ({ query }: { query: string }) => {
   const { data, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useSearchProfilesQuery(query);
 
@@ -293,6 +295,7 @@ function SearchUsersTab({ query }: { query: string }) {
 
   return (
     <FlatList
+      style={{ flex: 1 }}
       data={users}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => <SearchUserCard user={item} />}

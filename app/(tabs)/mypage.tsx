@@ -47,7 +47,7 @@ type ListItem = TabBarItem | PostRowItem | EmptyItem | LoaderItem;
 
 // ─── Skeleton ────────────────────────────────────────────────
 
-function PostGridSkeleton() {
+const PostGridSkeleton = () => {
   const { scheme } = useColors();
   const colorMode = scheme === "dark" ? "dark" : "light";
   const { width } = useWindowDimensions();
@@ -76,13 +76,13 @@ function PostGridSkeleton() {
 
 // ─── Tab icon bar ────────────────────────────────────────────
 
-function TabIconBar({
+const TabIconBar = ({
   activeIndex,
   onChange,
 }: {
   activeIndex: number;
   onChange: (i: number) => void;
-}) {
+}) => {
   const { colors } = useColors();
   const { width } = useWindowDimensions();
   const tabWidth = width / TAB_ICONS.length;
@@ -126,7 +126,7 @@ function TabIconBar({
 
 // ─── Post thumbnail ──────────────────────────────────────────
 
-function PostThumbnail({ post, size }: { post: Post; size: number }) {
+const PostThumbnail = ({ post, size }: { post: Post; size: number }) => {
   const imageUrl = post.images[0]?.url;
   return (
     <Link href={`/post/${post.id}`} asChild>
@@ -150,7 +150,7 @@ function PostThumbnail({ post, size }: { post: Post; size: number }) {
 
 // ─── Cat section ─────────────────────────────────────────────
 
-function MyCatListSection() {
+const MyCatListSection = () => {
   const { colors } = useColors();
   const { data: catData } = useMyCatsQuery();
   const hasCats = catData.length > 0;
@@ -189,7 +189,7 @@ function MyCatListSection() {
 
 // ─── Profile header (ListHeaderComponent) ────────────────────
 
-function ProfileHeader() {
+const ProfileHeader = () => {
   return (
     <View className="pt-6">
       <ProfileInfo />
@@ -204,7 +204,7 @@ function ProfileHeader() {
 
 // ─── Page content ────────────────────────────────────────────
 
-function MypageContent() {
+const MypageContent = () => {
   const { width } = useWindowDimensions();
   const size = (width - 4) / 3;
 

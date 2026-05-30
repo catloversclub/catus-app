@@ -13,11 +13,11 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-function Accordion({
+const Accordion = ({
   children,
   ...props
 }: Omit<AccordionPrimitive.RootProps, "asChild"> &
-  React.RefAttributes<AccordionPrimitive.RootRef>) {
+  React.RefAttributes<AccordionPrimitive.RootRef>) => {
   return (
     <LayoutAnimationConfig skipEntering>
       <AccordionPrimitive.Root
@@ -32,13 +32,13 @@ function Accordion({
   );
 }
 
-function AccordionItem({
+const AccordionItem = ({
   children,
   className,
   value,
   ...props
 }: AccordionPrimitive.ItemProps &
-  React.RefAttributes<AccordionPrimitive.ItemRef>) {
+  React.RefAttributes<AccordionPrimitive.ItemRef>) => {
   return (
     <AccordionPrimitive.Item
       className={cn(Platform.select({ web: "last:border-b-0" }), className)}
@@ -58,13 +58,13 @@ function AccordionItem({
 
 const Trigger = Platform.OS === "web" ? View : Pressable;
 
-function AccordionTrigger({
+const AccordionTrigger = ({
   className,
   children,
   ...props
 }: AccordionPrimitive.TriggerProps & {
   children?: React.ReactNode;
-} & React.RefAttributes<AccordionPrimitive.TriggerRef>) {
+} & React.RefAttributes<AccordionPrimitive.TriggerRef>) => {
   const { isExpanded } = AccordionPrimitive.useItemContext();
 
   const progress = useDerivedValue(
@@ -112,12 +112,12 @@ function AccordionTrigger({
   );
 }
 
-function AccordionContent({
+const AccordionContent = ({
   className,
   children,
   ...props
 }: AccordionPrimitive.ContentProps &
-  React.RefAttributes<AccordionPrimitive.ContentRef>) {
+  React.RefAttributes<AccordionPrimitive.ContentRef>) => {
   const { isExpanded } = AccordionPrimitive.useItemContext();
   return (
     <TextClassContext.Provider value="text-sm">

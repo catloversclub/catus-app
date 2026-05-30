@@ -18,7 +18,7 @@ import "../styles/global.css";
 
 SplashScreen.preventAutoHideAsync();
 
-function AppContent() {
+const AppContent = () => {
   const showError = useErrorStore((s) => s.showError);
 
   const queryClient = useMemo(

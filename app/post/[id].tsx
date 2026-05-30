@@ -21,10 +21,10 @@ interface PostDetailContentProps {
   MoreSheetModalRef: React.RefObject<BottomSheetModal | null>;
 }
 
-function PostDetailContent({
+const PostDetailContent = ({
   postId,
   MoreSheetModalRef,
-}: PostDetailContentProps) {
+}: PostDetailContentProps) => {
   const scheme = useColorScheme();
   const colors = scheme === "dark" ? dark : light;
   const { data: post, refetch } = usePostByIdQuery(postId);

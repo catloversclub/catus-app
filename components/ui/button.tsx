@@ -84,7 +84,7 @@ type ButtonProps = React.ComponentProps<typeof Pressable> &
   React.RefAttributes<typeof Pressable> &
   VariantProps<typeof buttonVariants>;
 
-function Button({ className, variant, size, children, ...props }: ButtonProps) {
+const Button = ({ className, variant, size, children, ...props }: ButtonProps) => {
   return (
     <TextClassContext.Provider value={buttonTextVariants({ variant, size })}>
       <Pressable

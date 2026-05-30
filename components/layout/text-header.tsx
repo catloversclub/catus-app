@@ -15,7 +15,7 @@ interface TabButtonProps {
   onPress: (value: FeedType) => void;
 }
 
-function TabButton({ label, value, isActive, onPress }: TabButtonProps) {
+const TabButton = ({ label, value, isActive, onPress }: TabButtonProps) => {
   return (
     <TouchableOpacity
       className={"flex-1 rounded-lg py-3"}
@@ -35,7 +35,7 @@ interface HeaderProps {
   onTabChange: (tab: FeedType) => void;
 }
 
-export function Header({ activeTab, onTabChange }: HeaderProps) {
+export const Header = ({ activeTab, onTabChange }: HeaderProps) => {
   return (
     <View className="px-3 pb-3 pt-1">
       {/* 로고 */}
@@ -57,7 +57,7 @@ export function Header({ activeTab, onTabChange }: HeaderProps) {
   );
 }
 
-function LogoText() {
+const LogoText = () => {
   let colorScheme = useColorScheme();
   return (
     <Image

@@ -21,7 +21,7 @@ import {
 } from "@/api/domains/user/queries";
 import { getMediaUrl } from "@/lib/utils";
 
-function UserDetailContent({ userId }: { userId: string }) {
+const UserDetailContent = ({ userId }: { userId: string }) => {
   const router = useRouter();
 
   // 💡 3열 그리드를 위해 화면 가로폭을 3으로 나눕니다.
