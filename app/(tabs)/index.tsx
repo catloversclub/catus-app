@@ -74,8 +74,10 @@ const FeedList = ({
       }}
       onEndReachedThreshold={0.5}
       ListFooterComponent={
-        isFetchingNextPage ? (
-          <ActivityIndicator size="small" style={{ marginVertical: 20 }} />
+        hasNextPage ? (
+          <View style={{ height: 56, justifyContent: "center", alignItems: "center" }}>
+            {isFetchingNextPage && <ActivityIndicator size="small" />}
+          </View>
         ) : null
       }
     />
