@@ -1,4 +1,3 @@
-import Gradient from "@/components/common/gradient";
 import { cn } from "@/lib/utils";
 import { useRef, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
@@ -21,37 +20,28 @@ const TabPager = ({ tabs, children, className }: TabPagerProps) => {
 
   return (
     <View className={cn("flex-1", className)}>
-      {/* Tab bar */}
-      <View className="relative">
-        <View className="flex-row h-[46px]">
-          {tabs.map((label, index) => (
-            <TouchableOpacity
-              key={label}
-              onPress={() => handleTabPress(index)}
-              className="flex-1 items-center justify-end pb-2"
+      <View className="flex-row h-[46px]">
+        {tabs.map((label, index) => (
+          <TouchableOpacity
+            key={label}
+            onPress={() => handleTabPress(index)}
+            className="flex-1 items-center justify-end pb-2"
+          >
+            <Text
+              className={cn(
+                "typo-title3",
+                activeIndex === index
+                  ? "text-semantic-text-success"
+                  : "text-semantic-text-tertiary",
+              )}
             >
-              <Text
-                className={cn(
-                  "typo-title3",
-                  activeIndex === index
-                    ? "text-semantic-text-success"
-                    : "text-semantic-text-tertiary",
-                )}
-              >
-                {label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-        <Gradient
-          direction="vertical"
-          width="100%"
-          height={16}
-          style={{ position: "absolute", bottom: -16, left: 0, zIndex: 10 }}
-        />
+              {label}
+            </Text>
+          </TouchableOpacity>
+        ))}
       </View>
+      <View className="h-px bg-semantic-border-primary" />
 
-      {/* Pager */}
       <PagerView
         ref={pagerRef}
         style={{ flex: 1 }}
