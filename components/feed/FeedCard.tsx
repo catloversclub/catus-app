@@ -37,12 +37,12 @@ interface FeedCardProps {
   // MoreSheetModalRef: React.RefObject<BottomSheetModal | null>;
 }
 
-export function FeedCard({
+export const FeedCard = ({
   post,
   isDetail = false,
   // CommentSheetModalRef,
   // MoreSheetModalRef,
-}: FeedCardProps) {
+}: FeedCardProps) => {
   const [current, setCurrent] = useState(0);
 
   const { width } = useWindowDimensions();
@@ -132,7 +132,7 @@ export function FeedCard({
   );
 
   return (
-    <View className="mb-5 flex-col gap-4 px-4">
+    <View className="mb-5 flex-col gap-3 px-3">
       {isDetail && ProfileInfo}
       <View className="relative overflow-hidden rounded-md">
         <FlatList
@@ -178,33 +178,30 @@ export function FeedCard({
         )}
         {/* 액션 버튼들 */}
         {!isDetail && (
-          <View className="absolute bottom-[18px] right-[14px] z-10 flex-row items-center gap-4">
-            <Pressable onPress={handleLike} className="active:opacity-60">
+          <View className="absolute bottom-[6px] right-[6px] z-10 flex-row items-center">
+            <Pressable onPress={handleLike} className="px-2 py-3 active:opacity-60">
               <Heart
                 size={20}
                 className={
                   post.isLikedByMe
                     ? "fill-semantic-icon-error text-semantic-icon-error"
-                    : "text-semantic-text-tertiary"
+                    : "text-white"
                 }
               />
             </Pressable>
 
             <Pressable
               onPress={handleCommentPress}
-              className="active:opacity-60"
+              className="px-2 py-3 active:opacity-60"
             >
-              <MessageCircle
-                size={20}
-                className="text-semantic-text-tertiary"
-              />
+              <MessageCircle size={20} className="text-white" />
             </Pressable>
 
-            <Pressable onPress={handleBookmark} className="active:opacity-60">
+            <Pressable onPress={handleBookmark} className="px-2 py-3 active:opacity-60">
               <Bookmark
                 size={20}
                 className={
-                  post.isBookmarkedByMe // 추후 북마크 상태로 변경!
+                  post.isBookmarkedByMe
                     ? "fill-semantic-icon-accent text-semantic-icon-accent"
                     : "text-white"
                 }
@@ -269,4 +266,4 @@ export function FeedCard({
       <MoreSheet MoreSheetModalRef={MoreSheetModalRef} />
     </View>
   );
-}
+};
