@@ -46,8 +46,8 @@ const TabPager = ({ tabs, children, className }: TabPagerProps) => {
         <Gradient
           direction="vertical"
           width="100%"
-          height={28}
-          style={{ position: "absolute", bottom: -28, left: 0, zIndex: 10 }}
+          height={16}
+          style={{ position: "absolute", bottom: -16, left: 0, zIndex: 10 }}
         />
       </View>
 
