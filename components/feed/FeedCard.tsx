@@ -22,6 +22,7 @@ import MoreIcon from "@/assets/icons/more.svg";
 import { CommentSheet } from "@/components/bottom-sheet/comment-sheet";
 import { MoreSheet } from "@/components/bottom-sheet/more-sheet";
 import IconButton from "@/components/common/icon-button";
+import ProfileImage from "@/components/common/profile-image";
 import { CAROUSEL_CONFIG } from "@/constants/config";
 import { Bookmark, Heart, MessageCircle } from "@/lib/icons";
 import { formatRelativeTime, getMediaUrl } from "@/lib/utils";
@@ -40,24 +41,13 @@ type ProfileInfoProps = {
 };
 
 const ProfileInfo = ({ post, onMorePress }: ProfileInfoProps) => {
-  const { colors, scheme } = useColors();
+  const { colors } = useColors();
   const catName = post.cat?.name ?? post.author.nickname;
-  const defaultAvatar =
-    scheme === "dark"
-      ? require("@/assets/images/avatar/user-dark.png")
-      : require("@/assets/images/avatar/user-light.png");
-  const imageSource = post.cat?.profileImageUrl
-    ? { uri: post.cat.profileImageUrl }
-    : defaultAvatar;
 
   return (
     <View className="flex-row items-center justify-between">
       <View className="flex-row items-center gap-3">
-        <Image
-          source={imageSource}
-          style={{ width: 36, height: 36, borderRadius: 36 }}
-          contentFit="cover"
-        />
+        <ProfileImage imageUrl={post.cat?.profileImageUrl ?? null} size="sm" />
         <View>
           <Text className="typo-body3 text-semantic-text-primary">{catName}</Text>
           <Text className="typo-label1 text-semantic-text-secondary">

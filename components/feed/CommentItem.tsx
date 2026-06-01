@@ -8,28 +8,13 @@ import {
 } from "@/components/ui/accordion";
 import { Text } from "@/components/ui/text";
 import { cn, formatRelativeTime } from "@/lib/utils";
-import { Image } from "expo-image";
 import { useState } from "react";
-import { useColors } from "@/hooks/use-colors";
 import { Pressable, View } from "react-native";
 
 const ReplyItem = ({ reply }: { reply: Comment }) => {
-  const { scheme } = useColors();
-  const defaultAvatar =
-    scheme === "dark"
-      ? require("@/assets/images/avatar/user-dark.png")
-      : require("@/assets/images/avatar/user-light.png");
-  const imageSource = reply.author.profileImageUrl
-    ? { uri: reply.author.profileImageUrl }
-    : defaultAvatar;
-
   return (
     <View className="flex-row items-start gap-3 p-3 pl-12">
-      <Image
-        source={imageSource}
-        style={{ width: 36, height: 36, borderRadius: 36 }}
-        contentFit="cover"
-      />
+      <ProfileImage imageUrl={reply.author.profileImageUrl} size="sm" />
       <View className="flex-col">
         <Text className="typo-label1 text-semantic-text-secondary">
           {reply.author.nickname}
@@ -56,19 +41,11 @@ const CommentItem = ({ comment }: CommentProps) => {
 
   const { id, author, parentId, content, isLikedByMe, createdAt, replies } =
     comment;
-  const { scheme } = useColors();
-  const defaultAvatar =
-    scheme === "dark"
-      ? require("@/assets/images/avatar/user-dark.png")
-      : require("@/assets/images/avatar/user-light.png");
-  const imageSource = author.profileImageUrl
-    ? { uri: author.profileImageUrl }
-    : defaultAvatar;
   return (
     <View className="flex-col">
       <View className="flex-row items-start gap-3 p-3">
         <ProfileImage
-          imageUrl={imageSource}
+          imageUrl={author.profileImageUrl}
           userId={author.id}
           isUserLink
           size="sm"
