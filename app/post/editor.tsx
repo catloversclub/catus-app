@@ -1,9 +1,9 @@
 import ArrowLeftIcon from "@/assets/icons/arrow-left.svg";
 import IconButton from "@/components/common/icon-button";
 import CenterModal from "@/components/modal/center-modal";
-import CropTool from "@/components/post/CropTool";
-import MosaicTool from "@/components/post/MosaicTool";
-import TextTool from "@/components/post/TextTool";
+import CropTool from "@/components/post/crop-tool";
+import MosaicTool from "@/components/post/mosaic-tool";
+import TextTool from "@/components/post/text-tool";
 import { DARK } from "@/constants/editor-dark";
 import { useColors } from "@/hooks/use-colors";
 import { Stack, router, useLocalSearchParams } from "expo-router";

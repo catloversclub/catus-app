@@ -1,11 +1,10 @@
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { Link } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { router } from "expo-router";
+import { useCallback, useState } from "react";
 import {
   FlatList,
   Pressable,
-  Image as RNImage,
   useWindowDimensions,
   View,
   ViewToken,
@@ -14,7 +13,7 @@ import {
 import { Post, PostImage } from "@/api/domains/post/types";
 import { CAROUSEL_CONFIG } from "@/constants/config";
 import { getMediaUrl } from "@/lib/utils";
-import { CarouselCounter, CarouselDots } from "./CarouselIndicator";
+import { CarouselCounter, CarouselDots } from "./carousel-indicator";
 
 interface PostCarouselProps {
   post: Post;
@@ -32,14 +31,6 @@ const PostCarousel = ({
   const { width } = useWindowDimensions();
   const carouselWidth = width - 24;
   const imageHeight = carouselWidth * aspectRatio;
-
-  useEffect(() => {
-    const firstImage = post.images[0];
-    if (!firstImage) return;
-    RNImage.getSize(getMediaUrl(firstImage.url), (w, h) => {
-      if (w > 0) setAspectRatio(h / w);
-    });
-  }, [post.images[0]?.url]);
 
   const onViewableItemsChanged = useCallback(
     ({ viewableItems }: { viewableItems: ViewToken<PostImage>[] }) => {
@@ -69,12 +60,14 @@ const PostCarousel = ({
                 source={getMediaUrl(item.url)}
                 alt={`${catName} photo ${index + 1}`}
                 style={{ width: carouselWidth, height: imageHeight }}
+                onLoad={index === 0 ? (e) => {
+                  const { width: w, height: h } = e.source;
+                  if (w > 0) setAspectRatio(h / w);
+                } : undefined}
               />
             );
             return linkable ? (
-              <Link href={`/post/${post.id}`} asChild>
-                <Pressable>{img}</Pressable>
-              </Link>
+              <Pressable onPress={() => router.push(`/post/${post.id}`)}>{img}</Pressable>
             ) : (
               img
             );

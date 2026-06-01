@@ -9,8 +9,8 @@ import {
 
 import { usePostByIdQuery } from "@/api/domains/post/queries";
 import { useColors } from "@/hooks/use-colors";
-import CommentList from "@/components/feed/CommentList";
-import PostDetailCard from "@/components/feed/PostDetailCard";
+import CommentList from "@/components/feed/comment-list";
+import PostDetailCard from "@/components/feed/post-detail-card";
 
 const PostDetailContent = ({ postId }: { postId: string }) => {
   const { colors } = useColors();

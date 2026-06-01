@@ -6,7 +6,7 @@ import CommentSheet from "@/components/bottom-sheet/comment-sheet";
 import MoreSheet from "@/components/bottom-sheet/more-sheet";
 import IconButton from "@/components/common/icon-button";
 import ProfileImage from "@/components/common/profile-image";
-import PostCarousel from "@/components/feed/PostCarousel";
+import PostCarousel from "@/components/feed/post-carousel";
 import { useColors } from "@/hooks/use-colors";
 import usePostActions from "@/hooks/use-post-actions";
 import { Bookmark, Heart } from "@/lib/icons";
