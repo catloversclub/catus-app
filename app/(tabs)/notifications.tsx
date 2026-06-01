@@ -1,7 +1,7 @@
 import NotificationItem, {
   type NotificationData,
 } from "@/components/notifications/notification-item";
-import { useColors } from "@/hooks/use-colors";
+import { useDefaultStackScreenOptions } from "@/hooks/use-default-screen-options";
 import { Stack } from "expo-router";
 import { useState } from "react";
 import { FlatList, Text, View } from "react-native";
@@ -54,7 +54,7 @@ const MOCK_NOTIFICATIONS: NotificationData[] = [
 ];
 
 const NotificationsScreen = () => {
-  const { colors } = useColors();
+  const defaultOptions = useDefaultStackScreenOptions();
   const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS);
 
   const handleDelete = (id: string) => {
@@ -69,15 +69,7 @@ const NotificationsScreen = () => {
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          headerShadowVisible: false,
-          title: "알림",
-          headerTintColor: colors.text.primary,
-          headerStyle: { backgroundColor: colors.bg.primary },
-        }}
-      />
+      <Stack.Screen options={{ ...defaultOptions, title: "알림", headerLeft: undefined }} />
 
       {notifications.length === 0 ? (
         <View className="flex-1 items-center justify-center bg-semantic-bg-primary">

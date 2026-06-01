@@ -7,6 +7,7 @@ const useDefaultStackScreenOptions = () => {
     headerShown: true,
     title: "",
     headerShadowVisible: false,
+    headerTintColor: colors.text.primary,
     headerStyle: {
       backgroundColor: colors.bg.primary,
     },

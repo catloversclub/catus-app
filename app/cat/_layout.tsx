@@ -10,6 +10,7 @@ const CatLayout = () => {
       screenOptions={{
         headerShown: true,
         headerShadowVisible: false,
+        headerTintColor: colors.text.primary,
         headerStyle: {
           backgroundColor: colors.bg.primary,
         },
@@ -21,27 +22,9 @@ const CatLayout = () => {
       }}
     >
       <Stack.Screen name="[id]" />
-      <Stack.Screen
-        name="list"
-        options={{
-          title: "함께 사는 고양이",
-          headerTintColor: colors.text.primary,
-        }}
-      />
-      <Stack.Screen
-        name="register"
-        options={{
-          title: "고양이 프로필 입력",
-          headerTintColor: colors.text.primary,
-        }}
-      />
-      <Stack.Screen
-        name="update"
-        options={{
-          title: "고양이 프로필 수정",
-          headerTintColor: colors.text.primary,
-        }}
-      />
+      <Stack.Screen name="list" options={{ title: "함께 사는 고양이" }} />
+      <Stack.Screen name="register" options={{ title: "고양이 프로필 입력" }} />
+      <Stack.Screen name="update" options={{ title: "고양이 프로필 수정" }} />
     </Stack>
   );
 }

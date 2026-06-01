@@ -15,14 +15,12 @@ import CommentInputBar, {
 } from "@/components/feed/comment-input-bar";
 import CommentList from "@/components/feed/comment-list";
 import PostDetailCard from "@/components/feed/post-detail-card";
-import { useColors } from "@/hooks/use-colors";
 import { useKeyboardAvoidingView } from "@/hooks/use-keyboard-avoiding-view";
 import { useHeaderHeight } from "@react-navigation/elements";
 import Animated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const PostDetailContent = ({ postId }: { postId: string }) => {
-  const { colors } = useColors();
   const { data: post, refetch } = usePostByIdQuery(postId);
   const [replyTarget, setReplyTarget] = useState<ReplyTarget | null>(null);
   const insets = useSafeAreaInsets();
@@ -34,12 +32,7 @@ const PostDetailContent = ({ postId }: { postId: string }) => {
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          title: `${post.author.nickname}의 게시물`,
-          headerTintColor: colors.text.primary,
-        }}
-      />
+      <Stack.Screen options={{ title: `${post.author.nickname}의 게시물` }} />
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}

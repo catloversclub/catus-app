@@ -7,14 +7,14 @@ import { useUserPostsQuery } from "@/api/domains/post/queries";
 import MoreIcon from "@/assets/icons/more.svg";
 import Button from "@/components/common/button";
 import IconButton from "@/components/common/icon-button";
-import ProfileImage from "@/components/common/profile-image";
+import ProfileHeader from "@/components/user/profile-header";
 import ProfilePostGrid, {
   PostGridSkeleton,
 } from "@/components/user/profile-post-grid";
 import { useColors } from "@/hooks/use-colors";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { Suspense } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
 // ─── Profile header ───────────────────────────────────────────
 
@@ -40,47 +40,30 @@ const UserProfileHeader = ({ userId }: { userId: string }) => {
   };
 
   return (
-    <View className="pt-6">
-      <View className="flex-col items-center">
-        <ProfileImage imageUrl={profile.profileImageUrl} size="lg" />
-        <Text className="typo-title3 mb-1 text-semantic-text-primary mt-3">
-          {profile.nickname}
-        </Text>
-        <View className="flex-row mb-6">
-          <View className="flex-row gap-1 px-3 py-1.5">
-            <Text className="typo-body4 text-semantic-text-tertiary">게시글</Text>
-            <Text className="typo-body3 text-semantic-text-secondary">
-              {posts.length}
-            </Text>
-          </View>
-          <View className="flex-row gap-1 px-3 py-1.5">
-            <Text className="typo-body4 text-semantic-text-tertiary">팔로워</Text>
-            <Text className="typo-body3 text-semantic-text-secondary">
-              {profile.followerCount}
-            </Text>
-          </View>
-          <View className="flex-row gap-1 px-3 py-1.5">
-            <Text className="typo-body4 text-semantic-text-tertiary">팔로잉</Text>
-            <Text className="typo-body3 text-semantic-text-secondary">
-              {profile.followingCount}
-            </Text>
+    <ProfileHeader
+      imageUrl={profile.profileImageUrl}
+      name={profile.nickname}
+      stats={[
+        { label: "게시글", value: posts.length },
+        { label: "팔로워", value: profile.followerCount },
+        { label: "팔로잉", value: profile.followingCount },
+      ]}
+      actions={
+        <View className="flex-row gap-1.5 w-full mb-[26px] px-5">
+          <View className="flex-1">
+            <Button
+              button={{
+                label: isFollowing ? "팔로잉" : "팔로우",
+                onPress: handleFollowToggle,
+                variant: isFollowing ? "secondary" : "primary",
+                size: "md",
+                isPending,
+              }}
+            />
           </View>
         </View>
-      </View>
-      <View className="flex-row gap-1.5 w-full mb-[26px] px-5">
-        <View className="flex-1">
-          <Button
-            button={{
-              label: isFollowing ? "팔로잉" : "팔로우",
-              onPress: handleFollowToggle,
-              variant: isFollowing ? "secondary" : "primary",
-              size: "md",
-              isPending,
-            }}
-          />
-        </View>
-      </View>
-    </View>
+      }
+    />
   );
 };
 
@@ -98,7 +81,6 @@ const UserDetailContent = ({ userId }: { userId: string }) => {
       <Stack.Screen
         options={{
           title: `${profile.nickname}님의 프로필`,
-          headerTintColor: colors.text.primary,
           headerRight: () => (
             <IconButton className="p-3 active:opacity-60">
               <MoreIcon width={24} height={24} color={colors.icon.primary} />
@@ -122,16 +104,9 @@ const UserDetailContent = ({ userId }: { userId: string }) => {
 
 const UserDetailScreen = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { colors } = useColors();
 
   return (
     <View className="flex-1 bg-semantic-bg-primary">
-      <Stack.Screen
-        options={{
-          headerTintColor: colors.text.primary,
-          headerStyle: { backgroundColor: colors.bg.primary },
-        }}
-      />
       <Suspense fallback={<PostGridSkeleton />}>
         <UserDetailContent userId={id} />
       </Suspense>

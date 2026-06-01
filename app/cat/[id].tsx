@@ -7,14 +7,14 @@ import { Gender } from "@/api/domains/cat/types";
 import { useCatPostsQuery } from "@/api/domains/post/queries";
 import MoreIcon from "@/assets/icons/more.svg";
 import IconButton from "@/components/common/icon-button";
-import ProfileImage from "@/components/common/profile-image";
+import ProfileHeader from "@/components/user/profile-header";
 import ProfilePostGrid, {
   PostGridSkeleton,
 } from "@/components/user/profile-post-grid";
 import { useColors } from "@/hooks/use-colors";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { Suspense } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
 const GENDER_LABEL: Record<Gender, string | null> = {
   FEMALE: "암컷",
@@ -29,51 +29,28 @@ const CatProfileHeader = ({ catId }: { catId: string }) => {
   const { data: appearances } = useAppearanceQuery();
   const { data: personalities } = usePersonalityQuery();
 
-  const appearanceLabels = appearances
-    .filter((a) => cat.appearances.includes(a.id))
-    .map((a) => a.label);
-
-  const personalityLabels = personalities
-    .filter((p) => cat.personalities.includes(p.id))
-    .map((p) => p.label);
-
-  const tags = [...personalityLabels, ...appearanceLabels];
+  const tags = [
+    ...personalities
+      .filter((p) => cat.personalities.includes(p.id))
+      .map((p) => p.label),
+    ...appearances
+      .filter((a) => cat.appearances.includes(a.id))
+      .map((a) => a.label),
+  ];
 
   const infoParts = [
     cat.birthDate,
     cat.gender ? GENDER_LABEL[cat.gender] : null,
     cat.breed,
-  ].filter(Boolean);
+  ].filter(Boolean) as string[];
 
   return (
-    <View className="pt-6">
-      <View className="flex-col items-center">
-        <ProfileImage imageUrl={cat.profileImageUrl} size="lg" />
-        <Text className="typo-title3 mb-1 text-semantic-text-primary mt-3">
-          {cat.name}
-        </Text>
-        {infoParts.length > 0 && (
-          <Text className="typo-body4 text-semantic-text-tertiary mb-3">
-            {infoParts.join(" · ")}
-          </Text>
-        )}
-        {tags.length > 0 && (
-          <View className="flex-row flex-wrap justify-center gap-1.5 px-5 mb-6">
-            {tags.map((tag) => (
-              <View
-                key={tag}
-                className="px-3 py-1 rounded-full bg-semantic-bg-secondary"
-              >
-                <Text className="typo-body4 text-semantic-text-secondary">
-                  {tag}
-                </Text>
-              </View>
-            ))}
-          </View>
-        )}
-        {tags.length === 0 && <View className="mb-6" />}
-      </View>
-    </View>
+    <ProfileHeader
+      imageUrl={cat.profileImageUrl}
+      name={cat.name}
+      subtitle={infoParts.length > 0 ? infoParts.join(" · ") : null}
+      tags={tags}
+    />
   );
 };
 
@@ -95,7 +72,6 @@ const CatDetailContent = ({ catId }: { catId: string }) => {
       <Stack.Screen
         options={{
           title: `${cat.name}의 프로필`,
-          headerTintColor: colors.text.primary,
           headerRight: () => (
             <IconButton className="p-3 active:opacity-60">
               <MoreIcon width={24} height={24} color={colors.icon.primary} />
@@ -119,16 +95,9 @@ const CatDetailContent = ({ catId }: { catId: string }) => {
 
 const CatDetailPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { colors } = useColors();
 
   return (
     <View className="flex-1 bg-semantic-bg-primary">
-      <Stack.Screen
-        options={{
-          headerTintColor: colors.text.primary,
-          headerStyle: { backgroundColor: colors.bg.primary },
-        }}
-      />
       <Suspense fallback={<PostGridSkeleton />}>
         <CatDetailContent catId={id} />
       </Suspense>

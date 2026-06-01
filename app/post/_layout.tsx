@@ -12,6 +12,7 @@ const PostLayout = () => {
       screenOptions={{
         headerShown: true,
         headerShadowVisible: false,
+        headerTintColor: colors.text.primary,
         headerStyle: {
           backgroundColor: colors.bg.primary,
         },

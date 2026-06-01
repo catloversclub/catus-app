@@ -10,6 +10,7 @@ const PostLayout = () => {
       screenOptions={{
         headerShown: true,
         headerShadowVisible: false,
+        headerTintColor: colors.text.primary,
         headerStyle: {
           backgroundColor: colors.bg.primary,
         },
@@ -22,14 +23,8 @@ const PostLayout = () => {
     >
       <Stack.Screen name="[id]" />
 
-      <Stack.Screen
-        name="follower"
-        options={{ title: "팔로워", headerTintColor: colors.text.primary }}
-      />
-      <Stack.Screen
-        name="following"
-        options={{ title: "팔로잉", headerTintColor: colors.text.primary }}
-      />
+      <Stack.Screen name="follower" options={{ title: "팔로워" }} />
+      <Stack.Screen name="following" options={{ title: "팔로잉" }} />
     </Stack>
   );
 }

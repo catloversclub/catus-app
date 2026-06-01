@@ -8,6 +8,7 @@ import ExploreResultsView from "@/components/explore/explore-results-view";
 import ExploreTypingView from "@/components/explore/explore-typing-view";
 import { useSearchHistoryStore } from "@/store/explore/search-history-store";
 import { useColors } from "@/hooks/use-colors";
+import { useDefaultStackScreenOptions } from "@/hooks/use-default-screen-options";
 import { Stack } from "expo-router";
 import { useState } from "react";
 import { Keyboard, Text, View } from "react-native";
@@ -16,6 +17,7 @@ type ExploreMode = "default" | "idle" | "typing" | "results";
 
 const ExploreScreen = () => {
   const { colors } = useColors();
+  const defaultOptions = useDefaultStackScreenOptions();
   const addSearch = useSearchHistoryStore((s) => s.addSearch);
 
   const [mode, setMode] = useState<ExploreMode>("default");
@@ -65,11 +67,8 @@ const ExploreScreen = () => {
     <>
       <Stack.Screen
         options={{
-          headerShown: true,
-          headerShadowVisible: false,
+          ...defaultOptions,
           title: "탐색",
-          headerTintColor: colors.text.primary,
-          headerStyle: { backgroundColor: colors.bg.primary },
           headerLeft: isSearchMode
             ? () => (
                 <IconButton onPress={handleCancel} className="p-2 pl-3">
