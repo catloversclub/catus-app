@@ -7,13 +7,15 @@ import { Skeleton } from "moti/skeleton";
 import { Suspense } from "react";
 import { Pressable, Text, View } from "react-native";
 
-export const ProfileInfo = () => {
+const ProfileInfo = () => {
   return (
     <Suspense fallback={<ProfileInfoSkeleton />}>
       <ProfileInfoContent />
     </Suspense>
   );
 };
+
+export default ProfileInfo;
 
 const ProfileInfoSkeleton = () => {
   const { scheme } = useColors();

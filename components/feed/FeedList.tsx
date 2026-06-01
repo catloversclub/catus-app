@@ -3,7 +3,7 @@ import {
   useRecommendedFeedQuery,
 } from "@/api/domains/post/queries";
 import { Post } from "@/api/domains/post/types";
-import { FeedCard } from "@/components/feed/FeedCard";
+import FeedCard from "@/components/feed/FeedCard";
 import { useScrollToTop } from "@react-navigation/native";
 import { useCallback, useState } from "react";
 import {

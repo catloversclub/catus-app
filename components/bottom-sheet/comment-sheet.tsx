@@ -1,4 +1,4 @@
-import { BaseBottomSheet } from "@/components/bottom-sheet/base-bottom-sheet";
+import BaseBottomSheet from "@/components/bottom-sheet/base-bottom-sheet";
 import CommentList from "@/components/feed/CommentList";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import React from "react";
@@ -8,7 +8,7 @@ interface CommentSheetProps {
   CommentSheetModalRef: React.RefObject<BottomSheetModal | null>;
 }
 
-export const CommentSheet = ({
+const CommentSheet = ({
   CommentSheetModalRef,
   postId,
 }: CommentSheetProps) => {
@@ -18,3 +18,5 @@ export const CommentSheet = ({
     </BaseBottomSheet>
   );
 };
+
+export default CommentSheet;

@@ -1,7 +1,7 @@
 import CameraIcon from "@/assets/icons/camera.svg";
 import AvatarDark from "@/assets/images/avatar/user-dark.png";
 import AvatarLight from "@/assets/images/avatar/user-light.png";
-import { SelectImageSheet } from "@/components/bottom-sheet/select-image-sheet";
+import SelectImageSheet from "@/components/bottom-sheet/select-image-sheet";
 import IconButton from "@/components/common/icon-button";
 import { PROFILE_SIZE } from "@/constants/user";
 import { useColors } from "@/hooks/use-colors";

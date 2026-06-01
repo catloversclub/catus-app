@@ -16,7 +16,7 @@ interface BaseBottomSheetProps {
   onDismiss?: () => void;
 }
 
-export const BaseBottomSheet = ({
+const BaseBottomSheet = ({
   BaseBottomSheetModalRef,
   children,
   onDismiss,
@@ -48,6 +48,8 @@ export const BaseBottomSheet = ({
     </BottomSheetModal>
   );
 };
+
+export default BaseBottomSheet;
 
 const styles = StyleSheet.create({
   contentContainer: {

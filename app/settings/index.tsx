@@ -1,5 +1,5 @@
 import { logoutUser } from "@/api/domains/auth/api";
-import { DisplayModeSheet } from "@/components/bottom-sheet/display-mode-sheet";
+import DisplayModeSheet from "@/components/bottom-sheet/display-mode-sheet";
 import Button from "@/components/common/button";
 import CenterModal from "@/components/modal/center-modal";
 import { SettingsLinkItem } from "@/components/settings/settings-item";

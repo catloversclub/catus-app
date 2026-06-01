@@ -2,7 +2,7 @@ import { View, Text } from "react-native"
 
 import { usePostCommentsQuery } from "@/api/domains/comment/queries" // 경로에 맞게 수정
 import { formatRelativeTime } from "@/lib/utils" // 시간 포맷팅 유틸 (앞서 쓰시던 것 재활용)
-import { CommentItem } from "@/components/feed/CommentItem"
+import CommentItem from "@/components/feed/CommentItem"
 import { Comment } from "@/api/domains/comment/types"
 
 const CommentCount = ({ count }: { count: number }) => {

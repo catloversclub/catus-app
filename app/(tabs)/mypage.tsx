@@ -14,7 +14,7 @@ import CatList from "@/components/cat/cat-list";
 import CatRegistration from "@/components/cat/cat-registration";
 import IconButton from "@/components/common/icon-button";
 import ProfileActions from "@/components/user/my-profile-actions";
-import { ProfileInfo } from "@/components/user/profile-info";
+import ProfileInfo from "@/components/user/profile-info";
 import { useColors } from "@/hooks/use-colors";
 import { Image } from "expo-image";
 import { Link, Stack } from "expo-router";

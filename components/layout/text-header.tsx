@@ -36,7 +36,7 @@ interface HeaderProps {
   onTabChange: (tab: FeedType) => void;
 }
 
-export const Header = ({ activeTab, onTabChange }: HeaderProps) => {
+const Header = ({ activeTab, onTabChange }: HeaderProps) => {
   return (
     <View className="px-3 pb-3 pt-1">
       {/* 로고 */}
@@ -57,6 +57,8 @@ export const Header = ({ activeTab, onTabChange }: HeaderProps) => {
     </View>
   );
 }
+
+export default Header;
 
 const LogoText = () => {
   const { scheme: colorScheme } = useColors();

@@ -29,9 +29,11 @@ const FeedCardSkeleton = () => {
   );
 };
 
-export const FeedListSkeleton = () => (
+const FeedListSkeleton = () => (
   <View style={{ flex: 1, paddingTop: 4 }}>
     <FeedCardSkeleton />
     <FeedCardSkeleton />
   </View>
 );
+
+export default FeedListSkeleton;

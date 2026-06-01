@@ -10,9 +10,9 @@ import {
 import { usePostByIdQuery } from "@/api/domains/post/queries";
 
 import { useColors } from "@/hooks/use-colors";
-import { MoreSheet } from "@/components/bottom-sheet/more-sheet";
+import MoreSheet from "@/components/bottom-sheet/more-sheet";
 import CommentList from "@/components/feed/CommentList";
-import { FeedCard } from "@/components/feed/FeedCard";
+import FeedCard from "@/components/feed/FeedCard";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 
 interface PostDetailContentProps {

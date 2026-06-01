@@ -1,4 +1,4 @@
-import { BaseBottomSheet } from "@/components/bottom-sheet/base-bottom-sheet";
+import BaseBottomSheet from "@/components/bottom-sheet/base-bottom-sheet";
 import WheelPicker from "@/components/common/wheel-picker";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import React, { useState } from "react";
@@ -17,7 +17,7 @@ const YEARS = Array.from(
 const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1);
 const DAYS = Array.from({ length: 31 }, (_, i) => i + 1);
 
-export const SelectDateSheet = ({
+const SelectDateSheet = ({
   date,
   onChangeDate,
   SelectDateSheetModalRef,
@@ -57,3 +57,5 @@ export const SelectDateSheet = ({
     </BaseBottomSheet>
   );
 };
+
+export default SelectDateSheet;

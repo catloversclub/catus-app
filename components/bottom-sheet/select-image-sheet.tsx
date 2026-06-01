@@ -1,4 +1,4 @@
-import { BaseBottomSheet } from "@/components/bottom-sheet/base-bottom-sheet";
+import BaseBottomSheet from "@/components/bottom-sheet/base-bottom-sheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import React from "react";
 import { Pressable, Text, View } from "react-native";
@@ -13,7 +13,7 @@ interface SelectImageSheetProps {
   handleImageUriChange: (uri: string | null) => void;
 }
 
-export const SelectImageSheet = ({
+const SelectImageSheet = ({
   SelectImageSheetModalRef,
   handleIsLoading,
   handleImageUriChange,
@@ -57,3 +57,5 @@ export const SelectImageSheet = ({
     </BaseBottomSheet>
   );
 };
+
+export default SelectImageSheet;

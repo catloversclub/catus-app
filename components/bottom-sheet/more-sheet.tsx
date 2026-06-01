@@ -1,7 +1,7 @@
 import BanIcon from "@/assets/icons/ban.svg";
 import BlockIcon from "@/assets/icons/block.svg";
 import ShareIcon from "@/assets/icons/share.svg";
-import { BaseBottomSheet } from "@/components/bottom-sheet/base-bottom-sheet";
+import BaseBottomSheet from "@/components/bottom-sheet/base-bottom-sheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import React from "react";
 import { Pressable, Text, View } from "react-native";
@@ -17,7 +17,7 @@ const MORE_SHEET_ITEMS = [
   { Icon: null, label: "집사 프로필 방문하기", onPress: () => {} },
 ] as const;
 
-export const MoreSheet = ({ MoreSheetModalRef }: MoreSheetProps) => {
+const MoreSheet = ({ MoreSheetModalRef }: MoreSheetProps) => {
   return (
     <BaseBottomSheet BaseBottomSheetModalRef={MoreSheetModalRef}>
       <View className="flex-1 flex flex-col items-center justify-center pb-16">
@@ -37,3 +37,5 @@ export const MoreSheet = ({ MoreSheetModalRef }: MoreSheetProps) => {
     </BaseBottomSheet>
   );
 };
+
+export default MoreSheet;

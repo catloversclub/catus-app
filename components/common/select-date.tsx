@@ -1,5 +1,5 @@
 import CalendarIcon from "@/assets/icons/calendar.svg";
-import { SelectDateSheet } from "@/components/bottom-sheet/select-date-sheet";
+import SelectDateSheet from "@/components/bottom-sheet/select-date-sheet";
 import { useColors } from "@/hooks/use-colors";
 import { formatDate } from "@/lib/utils";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";

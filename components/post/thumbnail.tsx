@@ -5,7 +5,7 @@ interface ThumbnailProps {
   size: number;
 }
 
-export const Thumbnail = ({ postId, size }: ThumbnailProps) => {
+const Thumbnail = ({ postId, size }: ThumbnailProps) => {
   return (
     <View
       className="bg-red-200 w-full h-full flex-row items-center justify-center"
@@ -15,3 +15,5 @@ export const Thumbnail = ({ postId, size }: ThumbnailProps) => {
     </View>
   );
 };
+
+export default Thumbnail;

@@ -114,4 +114,4 @@ const CommentItem = ({ comment }: CommentProps) => {
   );
 };
 
-export { CommentItem };
+export default CommentItem;

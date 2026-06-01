@@ -19,8 +19,8 @@ import {
 import { Post, PostImage } from "@/api/domains/post/types";
 
 import MoreIcon from "@/assets/icons/more.svg";
-import { CommentSheet } from "@/components/bottom-sheet/comment-sheet";
-import { MoreSheet } from "@/components/bottom-sheet/more-sheet";
+import CommentSheet from "@/components/bottom-sheet/comment-sheet";
+import MoreSheet from "@/components/bottom-sheet/more-sheet";
 import IconButton from "@/components/common/icon-button";
 import ProfileImage from "@/components/common/profile-image";
 import { CAROUSEL_CONFIG } from "@/constants/config";
@@ -62,7 +62,7 @@ const ProfileInfo = ({ post, onMorePress }: ProfileInfoProps) => {
   );
 };
 
-export const FeedCard = ({ post, isDetail = false }: FeedCardProps) => {
+const FeedCard = ({ post, isDetail = false }: FeedCardProps) => {
   const [current, setCurrent] = useState(0);
   const { width } = useWindowDimensions();
   const carouselWidth = width - 32;
@@ -232,3 +232,5 @@ export const FeedCard = ({ post, isDetail = false }: FeedCardProps) => {
     </View>
   );
 };
+
+export default FeedCard;

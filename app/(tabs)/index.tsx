@@ -2,7 +2,7 @@ import {
   FollowingFeedList,
   RecommendedFeedList,
 } from "@/components/feed/FeedList";
-import { FeedListSkeleton } from "@/components/feed/FeedListSkeleton";
+import FeedListSkeleton from "@/components/feed/FeedListSkeleton";
 import TabPager from "@/components/layout/tab-pager";
 import { commonStyles } from "@/styles/common-styles";
 import { useColors } from "@/hooks/use-colors";

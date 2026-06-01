@@ -1,4 +1,4 @@
-import { BaseBottomSheet } from "@/components/bottom-sheet/base-bottom-sheet";
+import BaseBottomSheet from "@/components/bottom-sheet/base-bottom-sheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import React from "react";
 import { Pressable, Text, View } from "react-native";
@@ -13,7 +13,7 @@ const DISPLAY_MODE_SHEET_ITEMS = [
   { label: "다크 모드", onPress: () => {} },
 ] as const;
 
-export const DisplayModeSheet = ({
+const DisplayModeSheet = ({
   DisplayModeSheetModalRef,
 }: DisplayModeSheetProps) => {
   return (
@@ -34,3 +34,5 @@ export const DisplayModeSheet = ({
     </BaseBottomSheet>
   );
 };
+
+export default DisplayModeSheet;
