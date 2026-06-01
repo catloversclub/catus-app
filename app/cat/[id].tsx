@@ -1,11 +1,10 @@
-import { dark, light } from "@/styles/semantic-colors";
+import { useColors } from "@/hooks/use-colors";
 import { Stack } from "expo-router";
-import { Text, useColorScheme } from "react-native";
+import { Text } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 const CatDetailPage = () => {
-  const scheme = useColorScheme();
-  const colors = scheme === "dark" ? dark : light;
+  const { colors } = useColors();
   return (
     <>
       <Stack.Screen

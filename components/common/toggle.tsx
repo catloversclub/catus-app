@@ -1,6 +1,6 @@
-import { dark, light } from "@/styles/semantic-colors";
+import { useColors } from "@/hooks/use-colors";
 import { useRef } from "react";
-import { Animated, Pressable, useColorScheme } from "react-native";
+import { Animated, Pressable } from "react-native";
 
 interface ToggleProps {
   value: boolean;
@@ -8,8 +8,7 @@ interface ToggleProps {
 }
 
 const Toggle = ({ value, onValueChange }: ToggleProps) => {
-  const scheme = useColorScheme();
-  const colors = scheme === "dark" ? dark : light;
+  const { colors } = useColors();
 
   const anim = useRef(new Animated.Value(value ? 1 : 0)).current;
 

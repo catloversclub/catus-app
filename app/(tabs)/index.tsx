@@ -5,9 +5,10 @@ import {
 import { FeedListSkeleton } from "@/components/feed/FeedListSkeleton";
 import TabPager from "@/components/layout/tab-pager";
 import { commonStyles } from "@/styles/common-styles";
+import { useColors } from "@/hooks/use-colors";
 import { Image } from "expo-image";
 import { Suspense, useState } from "react";
-import { useColorScheme, View } from "react-native";
+import { View } from "react-native";
 import Animated, {
   useAnimatedScrollHandler,
   useAnimatedStyle,
@@ -21,7 +22,7 @@ const TAB_BAR_HEIGHT = 47;
 const LOGO_HEADER_HEIGHT = 42;
 
 const LogoHeader = () => {
-  const scheme = useColorScheme();
+  const { scheme } = useColors();
   return (
     <View className="px-3 pt-1 pb-3">
       <Image

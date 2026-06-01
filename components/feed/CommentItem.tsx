@@ -10,10 +10,11 @@ import { Text } from "@/components/ui/text";
 import { cn, formatRelativeTime } from "@/lib/utils";
 import { Image } from "expo-image";
 import { useState } from "react";
-import { Pressable, useColorScheme, View } from "react-native";
+import { useColors } from "@/hooks/use-colors";
+import { Pressable, View } from "react-native";
 
 const ReplyItem = ({ reply }: { reply: Comment }) => {
-  const scheme = useColorScheme();
+  const { scheme } = useColors();
   const defaultAvatar =
     scheme === "dark"
       ? require("@/assets/images/avatar/user-dark.png")
@@ -55,7 +56,7 @@ const CommentItem = ({ comment }: CommentProps) => {
 
   const { id, author, parentId, content, isLikedByMe, createdAt, replies } =
     comment;
-  const scheme = useColorScheme();
+  const { scheme } = useColors();
   const defaultAvatar =
     scheme === "dark"
       ? require("@/assets/images/avatar/user-dark.png")

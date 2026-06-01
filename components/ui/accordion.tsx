@@ -1,9 +1,9 @@
 import ChevronRightIcon from "@/assets/icons/chevron-right.svg";
 import { TextClassContext } from "@/components/ui/text";
 import { cn } from "@/lib/utils";
-import { dark, light } from "@/styles/semantic-colors";
+import { useColors } from "@/hooks/use-colors";
 import * as AccordionPrimitive from "@rn-primitives/accordion";
-import { Platform, Pressable, useColorScheme, View } from "react-native";
+import { Platform, Pressable, View } from "react-native";
 import Animated, {
   FadeOutUp,
   LayoutAnimationConfig,
@@ -77,8 +77,7 @@ const AccordionTrigger = ({
   const chevronStyle = useAnimatedStyle(() => ({
     transform: [{ rotate: `${90 + progress.value * 180}deg` }],
   }));
-  const scheme = useColorScheme();
-  const colors = scheme === "dark" ? dark : light;
+  const { colors } = useColors();
   return (
     <TextClassContext.Provider
       value={cn(

@@ -1,7 +1,8 @@
 import { FeedType } from "@/constants/tab";
 import { Image } from "expo-image";
 import React from "react";
-import { Text, TouchableOpacity, useColorScheme, View } from "react-native";
+import { useColors } from "@/hooks/use-colors";
+import { Text, TouchableOpacity, View } from "react-native";
 
 const TABS: { label: string; value: FeedType }[] = [
   { label: "팔로잉", value: "following" },
@@ -58,7 +59,7 @@ export const Header = ({ activeTab, onTabChange }: HeaderProps) => {
 }
 
 const LogoText = () => {
-  let colorScheme = useColorScheme();
+  const { scheme: colorScheme } = useColors();
   return (
     <Image
       style={{ width: 82, height: 26 }}

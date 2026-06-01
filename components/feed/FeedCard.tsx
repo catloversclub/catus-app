@@ -5,7 +5,6 @@ import {
   FlatList,
   Pressable,
   Text,
-  useColorScheme,
   useWindowDimensions,
   View,
   ViewToken,
@@ -26,7 +25,7 @@ import IconButton from "@/components/common/icon-button";
 import { CAROUSEL_CONFIG } from "@/constants/config";
 import { Bookmark, Heart, MessageCircle } from "@/lib/icons";
 import { formatRelativeTime, getMediaUrl } from "@/lib/utils";
-import { dark, light } from "@/styles/semantic-colors";
+import { useColors } from "@/hooks/use-colors";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -41,8 +40,7 @@ type ProfileInfoProps = {
 };
 
 const ProfileInfo = ({ post, onMorePress }: ProfileInfoProps) => {
-  const scheme = useColorScheme();
-  const colors = scheme === "dark" ? dark : light;
+  const { colors, scheme } = useColors();
   const catName = post.cat?.name ?? post.author.nickname;
   const defaultAvatar =
     scheme === "dark"

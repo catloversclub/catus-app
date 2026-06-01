@@ -1,14 +1,13 @@
 import { useMyCatsQuery } from "@/api/domains/cat/queries";
 import PlusIcon from "@/assets/icons/plus.svg";
 import CatCard from "@/components/cat/cat-card";
-import { dark, light } from "@/styles/semantic-colors";
+import { useColors } from "@/hooks/use-colors";
 import { Link } from "expo-router";
-import { Pressable, Text, useColorScheme, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 const CatList = () => {
-  const scheme = useColorScheme();
-  const colors = scheme === "dark" ? dark : light;
+  const { colors } = useColors();
   const { data: catData } = useMyCatsQuery();
   return (
     <ScrollView className="flex-1 bg-semantic-bg-primary py-6 px-5">

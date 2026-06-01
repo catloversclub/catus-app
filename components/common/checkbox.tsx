@@ -1,7 +1,7 @@
 import CheckboxFilled from "@/assets/icons/checkbox-filled.svg";
 import CheckboxOutline from "@/assets/icons/checkbox-outline.svg";
-import { dark, light } from "@/styles/semantic-colors";
-import { Pressable, Text, useColorScheme } from "react-native";
+import { useColors } from "@/hooks/use-colors";
+import { Pressable, Text } from "react-native";
 
 interface CheckboxProps {
   isChecked: boolean;
@@ -10,8 +10,7 @@ interface CheckboxProps {
 }
 
 const Checkbox = ({ isChecked, onToggle, label }: CheckboxProps) => {
-  const scheme = useColorScheme();
-  const colors = scheme === "dark" ? dark : light;
+  const { colors } = useColors();
   return (
     <Pressable className="flex-row items-center gap-1.5" onPress={onToggle}>
       {isChecked ? (

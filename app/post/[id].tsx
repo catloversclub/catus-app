@@ -4,16 +4,15 @@ import {
   ActivityIndicator,
   RefreshControl,
   ScrollView,
-  useColorScheme,
   View,
 } from "react-native";
 
 import { usePostByIdQuery } from "@/api/domains/post/queries";
 
+import { useColors } from "@/hooks/use-colors";
 import { MoreSheet } from "@/components/bottom-sheet/more-sheet";
 import CommentList from "@/components/feed/CommentList";
 import { FeedCard } from "@/components/feed/FeedCard";
-import { dark, light } from "@/styles/semantic-colors";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 
 interface PostDetailContentProps {
@@ -25,8 +24,7 @@ const PostDetailContent = ({
   postId,
   MoreSheetModalRef,
 }: PostDetailContentProps) => {
-  const scheme = useColorScheme();
-  const colors = scheme === "dark" ? dark : light;
+  const { colors } = useColors();
   const { data: post, refetch } = usePostByIdQuery(postId);
   const [refreshing, setRefreshing] = useState(false);
 

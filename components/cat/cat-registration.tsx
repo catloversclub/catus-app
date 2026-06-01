@@ -1,10 +1,9 @@
 import PlusIcon from "@/assets/icons/plus.svg";
-import { dark, light } from "@/styles/semantic-colors";
-import { Text, useColorScheme, View } from "react-native";
+import { useColors } from "@/hooks/use-colors";
+import { Text, View } from "react-native";
 
 const CatRegistration = () => {
-  const scheme = useColorScheme();
-  const colors = scheme === "dark" ? dark : light;
+  const { colors } = useColors();
   return (
     <View className="flex-col gap-1">
       <View className="size-[54px] rounded-full bg-semantic-bg-secondary border border-semantic-border-primary items-center justify-center">

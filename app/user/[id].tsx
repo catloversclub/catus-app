@@ -7,7 +7,6 @@ import {
   Pressable,
   RefreshControl,
   Text,
-  useColorScheme,
   useWindowDimensions,
   View,
 } from "react-native";
@@ -19,6 +18,7 @@ import {
   useUnfollowUserMutation,
   useUserDetailQuery, // 특정 유저 조회 훅 (useUserProfileQuery는 /me 이므로 이걸 써야 합니다)
 } from "@/api/domains/user/queries";
+import { useColors } from "@/hooks/use-colors";
 import { getMediaUrl } from "@/lib/utils";
 
 const UserDetailContent = ({ userId }: { userId: string }) => {
@@ -60,7 +60,7 @@ const UserDetailContent = ({ userId }: { userId: string }) => {
   };
 
   const nickname = profile.nickname || "알 수 없는 사용자";
-  const scheme = useColorScheme();
+  const { scheme } = useColors();
   const defaultAvatar =
     scheme === "dark"
       ? require("@/assets/images/avatar/user-dark.png")

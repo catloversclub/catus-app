@@ -2,8 +2,8 @@ import AppsIcon from "@/assets/icons/apps.svg";
 import BookmarkIcon from "@/assets/icons/bookmark.svg";
 import HeartIcon from "@/assets/icons/heart-outline.svg";
 import { ViewType } from "@/constants/tab";
-import { dark, light } from "@/styles/semantic-colors";
-import { TouchableOpacity, useColorScheme, View } from "react-native";
+import { useColors } from "@/hooks/use-colors";
+import { TouchableOpacity, View } from "react-native";
 
 const TABS: { Icon: React.ElementType; value: ViewType }[] = [
   { Icon: AppsIcon, value: "all" },
@@ -19,8 +19,7 @@ interface TabButtonProps {
 }
 
 const TabButton = ({ Icon, value, isActive, onPress }: TabButtonProps) => {
-  const scheme = useColorScheme();
-  const colors = scheme === "dark" ? dark : light;
+  const { colors } = useColors();
   return (
     <TouchableOpacity
       className={`flex-1 items-center py-3 ${isActive ? "border-0 border-b-[1px] border-semantic-border-accent" : ""}`}

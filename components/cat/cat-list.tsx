@@ -1,13 +1,12 @@
 import { useMyCatsQuery } from "@/api/domains/cat/queries";
 import CatItem from "@/components/cat/cat-item";
-import { dark, light } from "@/styles/semantic-colors";
+import { useColors } from "@/hooks/use-colors";
 import { LinearGradient } from "expo-linear-gradient";
 import { Link } from "expo-router";
-import { Pressable, ScrollView, useColorScheme, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 
 const CatList = () => {
-  const scheme = useColorScheme();
-  const colors = scheme === "dark" ? dark : light;
+  const { colors, scheme } = useColors();
   const bgTransparent =
     scheme === "dark" ? "rgba(24, 24, 27, 0)" : "rgba(255, 255, 255, 0)";
   const { data: catData } = useMyCatsQuery();

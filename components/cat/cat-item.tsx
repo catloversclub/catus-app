@@ -1,14 +1,15 @@
 // components/cat/cat-item.tsx
 import { Cat } from "@/api/domains/cat/types";
 import { Image } from "expo-image";
-import { Text, useColorScheme, View } from "react-native";
+import { useColors } from "@/hooks/use-colors";
+import { Text, View } from "react-native";
 
 interface CatItemProps {
   cat: Cat;
 }
 
 const CatItem = ({ cat }: CatItemProps) => {
-  const scheme = useColorScheme();
+  const { scheme } = useColors();
   const defaultAvatar =
     scheme === "dark"
       ? require("@/assets/images/avatar/user-dark.png")

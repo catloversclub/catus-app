@@ -1,11 +1,11 @@
-import { dark, light } from "@/styles/semantic-colors";
+import { useColors } from "@/hooks/use-colors";
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
 import React from "react";
-import { StyleSheet, useColorScheme } from "react-native";
+import { StyleSheet } from "react-native";
 
 const INDICATOR_WIDTH = 120;
 const INDICATOR_HEIGHT = 6;
@@ -21,8 +21,7 @@ export const BaseBottomSheet = ({
   children,
   onDismiss,
 }: BaseBottomSheetProps) => {
-  const scheme = useColorScheme();
-  const colors = scheme === "dark" ? dark : light;
+  const { colors } = useColors();
 
   return (
     <BottomSheetModal
