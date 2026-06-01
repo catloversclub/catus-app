@@ -2,7 +2,7 @@ import { Platform } from "react-native";
 import { useAnimatedKeyboard, useAnimatedStyle } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-export const useKeyboardAvoidingView = () => {
+const useKeyboardAvoidingView = () => {
   const insets = useSafeAreaInsets();
   const keyboard = useAnimatedKeyboard();
 
@@ -20,3 +20,5 @@ export const useKeyboardAvoidingView = () => {
     androidBottomStyle,
   };
 };
+
+export { useKeyboardAvoidingView };

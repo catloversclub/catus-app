@@ -5,7 +5,7 @@ import { useOidcStore } from "@/store/auth/oidc-store";
 import { useOnboardingStore } from "@/store/auth/onboarding-store";
 import { useState } from "react";
 
-export const useCreateUser = () => {
+const useCreateUser = () => {
   const { idToken, provider } = useOidcStore();
   const { setCurrentNickname } = useOnboardingStore();
   const { mutateAsync: createUser, isPending: isCreating } =
@@ -32,3 +32,5 @@ export const useCreateUser = () => {
 
   return { submit, isPending };
 };
+
+export { useCreateUser };

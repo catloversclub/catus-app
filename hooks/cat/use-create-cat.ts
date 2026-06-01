@@ -1,7 +1,7 @@
 import { useCreateCatMutation } from "@/api/domains/cat/queries";
 import { CreateCatRequest } from "@/api/domains/cat/types";
 
-export const useCreateCat = () => {
+const useCreateCat = () => {
   const { mutateAsync: createCat, isPending } = useCreateCatMutation();
 
   const submit = async (catData: CreateCatRequest) => {
@@ -10,3 +10,5 @@ export const useCreateCat = () => {
 
   return { submit, isPending };
 };
+
+export { useCreateCat };

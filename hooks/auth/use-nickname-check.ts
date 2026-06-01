@@ -2,7 +2,7 @@
 import { useCheckNicknameQuery } from "@/api/domains/user/queries";
 import { useState } from "react";
 
-export const useNicknameCheck = (currentNickname?: string) => {
+const useNicknameCheck = (currentNickname?: string) => {
   const [nickname, setNickname] = useState(currentNickname ?? "");
   const [checkedNickname, setCheckedNickname] = useState(
     currentNickname ?? "",
@@ -45,3 +45,5 @@ export const useNicknameCheck = (currentNickname?: string) => {
     confirmCheck,
   };
 };
+
+export { useNicknameCheck };

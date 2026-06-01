@@ -1,7 +1,7 @@
 import { useErrorStore } from "@/store/error-store";
 import * as ImagePicker from "expo-image-picker";
 
-export const useImagePicker = () => {
+const useImagePicker = () => {
   const showError = useErrorStore((s) => s.showError);
 
   const pickImages = async ({
@@ -53,3 +53,5 @@ export const useImagePicker = () => {
 
   return { pickImages, takePhoto };
 };
+
+export { useImagePicker };

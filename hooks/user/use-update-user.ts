@@ -6,7 +6,7 @@ import {
 } from "@/api/domains/user/queries";
 import { STORAGE_BASE_URL } from "@/constants/api";
 
-export const useUpdateUser = () => {
+const useUpdateUser = () => {
   const {
     mutateAsync: getProfileImageUploadUrl,
     isPending: isGettingUploadUrl,
@@ -34,3 +34,5 @@ export const useUpdateUser = () => {
     isPending,
   };
 };
+
+export { useUpdateUser };

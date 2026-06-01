@@ -1,7 +1,7 @@
 import RouteBack from "@/components/layout/route-back";
 import { useColors } from "@/hooks/use-colors";
 
-export const useDefaultStackScreenOptions = () => {
+const useDefaultStackScreenOptions = () => {
   const { colors } = useColors();
   return {
     headerShown: true,
@@ -13,3 +13,5 @@ export const useDefaultStackScreenOptions = () => {
     headerLeft: () => <RouteBack />,
   };
 };
+
+export { useDefaultStackScreenOptions };

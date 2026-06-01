@@ -82,7 +82,7 @@ const FeedList = ({
   );
 };
 
-export const FollowingFeedList = ({
+const FollowingFeedList = ({
   scrollHandler,
   isActive,
 }: Pick<FeedListProps, "scrollHandler" | "isActive">) => {
@@ -92,7 +92,7 @@ export const FollowingFeedList = ({
   );
 };
 
-export const RecommendedFeedList = ({
+const RecommendedFeedList = ({
   scrollHandler,
   isActive,
 }: Pick<FeedListProps, "scrollHandler" | "isActive">) => {
@@ -101,3 +101,5 @@ export const RecommendedFeedList = ({
     <FeedList {...result} scrollHandler={scrollHandler} isActive={isActive} />
   );
 };
+
+export { FollowingFeedList, RecommendedFeedList };

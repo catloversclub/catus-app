@@ -17,7 +17,7 @@ type LoaderItem = { type: "loader" };
 type TabBarItem = { type: "tabBar" };
 type ListItem = TabBarItem | PostRowItem | EmptyItem | LoaderItem;
 
-export const PostGridSkeleton = () => {
+const PostGridSkeleton = () => {
   const { width } = useWindowDimensions();
   const size = Math.floor((width - 4) / 3);
 
@@ -38,7 +38,7 @@ export const PostGridSkeleton = () => {
   );
 };
 
-export const PostThumbnail = ({ post, size }: { post: Post; size: number }) => {
+const PostThumbnail = ({ post, size }: { post: Post; size: number }) => {
   const imageUrl = post.images[0]?.url;
   return (
     <Link href={`/post/${post.id}`} asChild>
@@ -152,4 +152,5 @@ const ProfilePostGrid = ({
   );
 };
 
+export { PostGridSkeleton, PostThumbnail };
 export default ProfilePostGrid;

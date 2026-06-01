@@ -5,7 +5,7 @@ import {
 } from "@/api/domains/cat/queries";
 import { STORAGE_BASE_URL } from "@/constants/api";
 
-export const useUpdateCat = () => {
+const useUpdateCat = () => {
   const { mutateAsync: getCatImageUploadUrl, isPending: isGettingUploadUrl } =
     useGetCatImageUploadUrlMutation();
 
@@ -41,3 +41,5 @@ export const useUpdateCat = () => {
     isPending,
   };
 };
+
+export { useUpdateCat };
