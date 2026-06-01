@@ -4,12 +4,11 @@ import {
 } from "@/api/domains/post/queries";
 import { Post } from "@/api/domains/post/types";
 import FeedCard from "@/components/feed/feed-card";
+import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
 import { useScrollToTop } from "@react-navigation/native";
-import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
-  RefreshControl,
   View,
 } from "react-native";
 import Animated, {
@@ -41,25 +40,20 @@ const FeedList = ({
   const listRef = useAnimatedRef<Animated.FlatList<Post>>();
   useScrollToTop(listRef as React.RefObject<FlatList<Post>>);
 
-  const [refreshing, setRefreshing] = useState(false);
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    await refetch();
-    setRefreshing(false);
-  }, [refetch]);
+  const { refreshControl, logoOverlay } = useLogoRefreshControl({ onRefresh: refetch });
 
   return (
-    <Animated.FlatList
-      ref={listRef}
-      scrollsToTop={isActive}
-      style={{ flex: 1 }}
-      data={posts}
-      keyExtractor={(item) => item.id}
-      renderItem={({ item }) => <FeedCard post={item} />}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-      onScroll={scrollHandler}
+    <View style={{ flex: 1 }}>
+      {logoOverlay}
+      <Animated.FlatList
+        ref={listRef}
+        scrollsToTop={isActive}
+        style={{ flex: 1 }}
+        data={posts}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => <FeedCard post={item} />}
+        refreshControl={refreshControl}
+        onScroll={scrollHandler}
       scrollEventThrottle={16}
       onEndReached={() => {
         if (hasNextPage && !isFetchingNextPage) fetchNextPage();
@@ -78,7 +72,8 @@ const FeedList = ({
           </View>
         ) : null
       }
-    />
+      />
+    </View>
   );
 };
 

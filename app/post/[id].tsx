@@ -1,15 +1,15 @@
 import { Stack, useLocalSearchParams } from "expo-router";
-import { Suspense, useCallback, useState } from "react";
+import { Suspense } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
-  RefreshControl,
   ScrollView,
   View,
 } from "react-native";
 
 import { usePostByIdQuery } from "@/api/domains/post/queries";
+import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
 import CommentInputBar, { ReplyTarget } from "@/components/feed/comment-input-bar";
 import CommentList from "@/components/feed/comment-list";
 import PostDetailCard from "@/components/feed/post-detail-card";
@@ -22,17 +22,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 const PostDetailContent = ({ postId }: { postId: string }) => {
   const { colors } = useColors();
   const { data: post, refetch } = usePostByIdQuery(postId);
-  const [refreshing, setRefreshing] = useState(false);
   const [replyTarget, setReplyTarget] = useState<ReplyTarget | null>(null);
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const { androidBottomStyle } = useKeyboardAvoidingView();
-
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    await refetch();
-    setRefreshing(false);
-  }, [refetch]);
+  const { refreshControl, logoOverlay } = useLogoRefreshControl({ onRefresh: refetch });
 
   return (
     <>
@@ -48,11 +42,10 @@ const PostDetailContent = ({ postId }: { postId: string }) => {
         keyboardVerticalOffset={headerHeight}
       >
         <Animated.View style={[{ flex: 1 }, androidBottomStyle]}>
+          {logoOverlay}
           <ScrollView
             showsVerticalScrollIndicator={false}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
+            refreshControl={refreshControl}
             contentContainerStyle={{
               paddingBottom: 16,
               rowGap: 24,
