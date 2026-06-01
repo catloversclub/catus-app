@@ -2,10 +2,7 @@ import { logoutUser } from "@/api/domains/auth/api";
 import { DisplayModeSheet } from "@/components/bottom-sheet/display-mode-sheet";
 import Button from "@/components/common/button";
 import CenterModal from "@/components/modal/center-modal";
-import {
-  SettingsLinkItem,
-  SettingsToggleItem,
-} from "@/components/settings/settings-item";
+import { SettingsLinkItem } from "@/components/settings/settings-item";
 import SettingsSection from "@/components/settings/settings-section";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
@@ -15,7 +12,6 @@ import { Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 const Follower = () => {
-  const [isNotificationEnabled, setIsNotificationEnabled] = useState(false);
   const [isLogoutModalVisible, setIsLogoutModalVisible] = useState(false);
   const DisplayModeSheetModalRef = useRef<BottomSheetModal>(null);
   const handleDisplayModePress = useCallback(() => {
@@ -28,10 +24,9 @@ const Follower = () => {
         contentContainerClassName="py-6 px-5 gap-7 flex-col"
       >
         <SettingsSection title="일반">
-          <SettingsToggleItem
+          <SettingsLinkItem
             label="알림"
-            value={isNotificationEnabled}
-            onValueChange={setIsNotificationEnabled}
+            onPress={() => router.push("/settings/terms-of-service")}
           />
           <SettingsLinkItem
             label="디스플레이"
@@ -39,10 +34,10 @@ const Follower = () => {
             onPress={handleDisplayModePress}
           />
         </SettingsSection>
-        <SettingsSection title="문의">
+        {/* <SettingsSection title="문의">
           <SettingsLinkItem label="FAQ" onPress={() => {}} />
           <SettingsLinkItem label="CatUs에 직접 문의하기" onPress={() => {}} />
-        </SettingsSection>
+        </SettingsSection> */}
         <SettingsSection title="기타">
           <SettingsLinkItem label="버전 정보" value="1.0.0" hideButton />
           <SettingsLinkItem

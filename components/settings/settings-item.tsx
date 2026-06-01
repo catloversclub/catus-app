@@ -1,7 +1,7 @@
 import ChevronRightIcon from "@/assets/icons/chevron-right.svg";
 import Toggle from "@/components/common/toggle";
-import { dark, light } from "@/styles/semantic-colors";
-import { Text, useColorScheme, View } from "react-native";
+import { useColors } from "@/hooks/use-colors";
+import { Text, View } from "react-native";
 import { Pressable } from "react-native-gesture-handler";
 
 interface SettingsSectionProps {
@@ -36,8 +36,7 @@ const SettingsLinkItem = ({
   onPress,
   hideButton = false,
 }: SettingsLinkItemProps) => {
-  const scheme = useColorScheme();
-  const colors = scheme === "dark" ? dark : light;
+  const { colors } = useColors();
   return (
     <Pressable onPress={onPress}>
       <View className="flex-row justify-between items-center py-4 px-3">
