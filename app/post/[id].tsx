@@ -2,20 +2,31 @@ import { Stack, useLocalSearchParams } from "expo-router";
 import { Suspense, useCallback, useState } from "react";
 import {
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
   RefreshControl,
   ScrollView,
   View,
 } from "react-native";
 
 import { usePostByIdQuery } from "@/api/domains/post/queries";
-import { useColors } from "@/hooks/use-colors";
+import CommentInputBar, { ReplyTarget } from "@/components/feed/comment-input-bar";
 import CommentList from "@/components/feed/comment-list";
 import PostDetailCard from "@/components/feed/post-detail-card";
+import { useColors } from "@/hooks/use-colors";
+import { useKeyboardAvoidingView } from "@/hooks/use-keyboard-avoiding-view";
+import { useHeaderHeight } from "@react-navigation/elements";
+import Animated from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const PostDetailContent = ({ postId }: { postId: string }) => {
   const { colors } = useColors();
   const { data: post, refetch } = usePostByIdQuery(postId);
   const [refreshing, setRefreshing] = useState(false);
+  const [replyTarget, setReplyTarget] = useState<ReplyTarget | null>(null);
+  const insets = useSafeAreaInsets();
+  const headerHeight = useHeaderHeight();
+  const { androidBottomStyle } = useKeyboardAvoidingView();
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -31,19 +42,33 @@ const PostDetailContent = ({ postId }: { postId: string }) => {
           headerTintColor: colors.text.primary,
         }}
       />
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        contentContainerStyle={{
-          paddingBottom: 40,
-          rowGap: 24,
-        }}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={headerHeight}
       >
-        <PostDetailCard post={post} />
-        <CommentList postId={post.id} />
-      </ScrollView>
+        <Animated.View style={[{ flex: 1 }, androidBottomStyle]}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+            contentContainerStyle={{
+              paddingBottom: 16,
+              rowGap: 24,
+            }}
+          >
+            <PostDetailCard post={post} />
+            <CommentList postId={post.id} onReply={setReplyTarget} />
+          </ScrollView>
+          <CommentInputBar
+            postId={post.id}
+            replyTarget={replyTarget}
+            onClearReply={() => setReplyTarget(null)}
+            paddingBottom={insets.bottom}
+          />
+        </Animated.View>
+      </KeyboardAvoidingView>
     </>
   );
 };
@@ -52,7 +77,7 @@ const PostDetailScreen = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   return (
-    <View className="bg-semantic-bg-primary">
+    <View style={{ flex: 1 }} className="bg-semantic-bg-primary">
       <Suspense
         fallback={
           <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>

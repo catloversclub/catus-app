@@ -1,5 +1,5 @@
 import { cssInterop } from "nativewind"
-import { Heart, MessageCircle, Bookmark, MoreVertical } from "lucide-react-native"
+import { Heart, MessageCircle, Bookmark, MoreVertical, X } from "lucide-react-native"
 
 cssInterop(Heart, {
   className: {
@@ -29,5 +29,13 @@ cssInterop(Bookmark, {
     },
   },
 })
+cssInterop(X, {
+  className: {
+    target: "style",
+    nativeStyleToProp: {
+      color: true,
+    },
+  },
+})
 
-export { Heart, MessageCircle, Bookmark, MoreVertical }
+export { Heart, MessageCircle, Bookmark, MoreVertical, X }

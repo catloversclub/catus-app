@@ -14,12 +14,18 @@ interface BaseBottomSheetProps {
   BaseBottomSheetModalRef: React.RefObject<BottomSheetModal | null>;
   children: React.ReactNode;
   onDismiss?: () => void;
+  snapPoints?: string[];
+  keyboardBehavior?: "extend" | "fillParent" | "interactive";
+  keyboardBlurBehavior?: "none" | "restore";
 }
 
 const BaseBottomSheet = ({
   BaseBottomSheetModalRef,
   children,
   onDismiss,
+  snapPoints,
+  keyboardBehavior,
+  keyboardBlurBehavior,
 }: BaseBottomSheetProps) => {
   const { colors } = useColors();
 
@@ -41,6 +47,9 @@ const BaseBottomSheet = ({
       }}
       ref={BaseBottomSheetModalRef}
       onDismiss={onDismiss}
+      snapPoints={snapPoints}
+      keyboardBehavior={keyboardBehavior}
+      keyboardBlurBehavior={keyboardBlurBehavior}
     >
       <BottomSheetView style={styles.contentContainer}>
         {children}
@@ -54,8 +63,6 @@ export default BaseBottomSheet;
 const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
-    flexDirection: "row",
-    maxHeight: 668,
-    alignItems: "center",
+    flexDirection: "column",
   },
 });

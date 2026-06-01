@@ -15,7 +15,9 @@ interface ProfileImageProps {
   imageUrl: string | null;
   size: "sm" | "md" | "lg";
   userId?: string;
+  catId?: string;
   isUserLink?: boolean;
+  isCatLink?: boolean;
   isEditMode?: boolean;
   handleImageUriChange?: (uri: string | null) => void;
 }
@@ -23,7 +25,9 @@ interface ProfileImageProps {
 const ProfileImage = ({
   imageUrl,
   userId,
+  catId,
   isUserLink = false,
+  isCatLink = false,
   isEditMode = false,
   size,
   handleImageUriChange,
@@ -83,6 +87,14 @@ const ProfileImage = ({
   if (isUserLink) {
     return (
       <Link href={`/user/${userId}`} asChild>
+        <Pressable className="active:opacity-60">{image}</Pressable>
+      </Link>
+    );
+  }
+
+  if (isCatLink) {
+    return (
+      <Link href={`/cat/${catId}`} asChild>
         <Pressable className="active:opacity-60">{image}</Pressable>
       </Link>
     );

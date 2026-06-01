@@ -1,0 +1,155 @@
+import { Post } from "@/api/domains/post/types";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Image } from "expo-image";
+import { Link } from "expo-router";
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  Text,
+  View,
+  useWindowDimensions,
+} from "react-native";
+
+type PostRowItem = { type: "row"; posts: Post[] };
+type EmptyItem = { type: "empty"; message: string };
+type LoaderItem = { type: "loader" };
+type TabBarItem = { type: "tabBar" };
+type ListItem = TabBarItem | PostRowItem | EmptyItem | LoaderItem;
+
+export const PostGridSkeleton = () => {
+  const { width } = useWindowDimensions();
+  const size = Math.floor((width - 4) / 3);
+
+  return (
+    <View style={{ gap: 2 }}>
+      {[0, 1, 2].map((row) => (
+        <View key={row} style={{ flexDirection: "row", gap: 2 }}>
+          {[0, 1, 2].map((col) => (
+            <Skeleton
+              key={col}
+              className="rounded-none"
+              style={{ width: size, height: size }}
+            />
+          ))}
+        </View>
+      ))}
+    </View>
+  );
+};
+
+export const PostThumbnail = ({ post, size }: { post: Post; size: number }) => {
+  const imageUrl = post.images[0]?.url;
+  return (
+    <Link href={`/post/${post.id}`} asChild>
+      <Pressable style={{ width: size, height: size }}>
+        {imageUrl ? (
+          <Image
+            source={{ uri: imageUrl }}
+            style={{ width: size, height: size }}
+            contentFit="cover"
+          />
+        ) : (
+          <View
+            style={{ width: size, height: size }}
+            className="bg-semantic-bg-secondary"
+          />
+        )}
+      </Pressable>
+    </Link>
+  );
+};
+
+interface ProfilePostGridProps {
+  ListHeaderComponent: React.ComponentType;
+  tabBar?: React.ReactElement;
+  posts: Post[];
+  isFetchingNextPage: boolean;
+  hasNextPage: boolean;
+  fetchNextPage: () => void;
+  emptyMessage: string;
+}
+
+const ProfilePostGrid = ({
+  ListHeaderComponent,
+  tabBar,
+  posts,
+  isFetchingNextPage,
+  hasNextPage,
+  fetchNextPage,
+  emptyMessage,
+}: ProfilePostGridProps) => {
+  const { width } = useWindowDimensions();
+  const size = (width - 4) / 3;
+
+  const hasStickyTabBar = !!tabBar;
+
+  const postRows: PostRowItem[] = [];
+  for (let i = 0; i < posts.length; i += 3) {
+    postRows.push({ type: "row", posts: posts.slice(i, i + 3) });
+  }
+
+  const data: ListItem[] = [
+    ...(hasStickyTabBar ? [{ type: "tabBar" as const }] : []),
+    ...(posts.length === 0
+      ? [{ type: "empty" as const, message: emptyMessage }]
+      : postRows),
+    ...(isFetchingNextPage ? [{ type: "loader" as const }] : []),
+  ];
+
+  const renderItem = ({ item }: { item: ListItem }) => {
+    if (item.type === "tabBar") {
+      return tabBar ?? null;
+    }
+    if (item.type === "empty") {
+      return (
+        <View className="py-12 items-center justify-center">
+          <Text className="typo-body1 text-semantic-text-tertiary">
+            {item.message}
+          </Text>
+        </View>
+      );
+    }
+    if (item.type === "loader") {
+      return (
+        <ActivityIndicator size="small" style={{ marginVertical: 12 }} />
+      );
+    }
+    return (
+      <View style={{ flexDirection: "row", gap: 2 }}>
+        {item.posts.map((post) => (
+          <PostThumbnail key={post.id} post={post} size={size} />
+        ))}
+      </View>
+    );
+  };
+
+  return (
+    <FlatList
+      style={{ flex: 1 }}
+      ListHeaderComponent={ListHeaderComponent}
+      data={data}
+      stickyHeaderIndices={hasStickyTabBar ? [0] : undefined}
+      keyExtractor={(item, index) => {
+        if (item.type === "tabBar") return "tabBar";
+        if (item.type === "empty") return "empty";
+        if (item.type === "loader") return "loader";
+        return `row-${index}`;
+      }}
+      renderItem={renderItem}
+      ItemSeparatorComponent={({ leadingItem }) =>
+        hasStickyTabBar && (leadingItem as ListItem)?.type === "tabBar"
+          ? null
+          : <View style={{ height: 2 }} />
+      }
+      onEndReached={() => {
+        if (hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      }}
+      onEndReachedThreshold={0.5}
+    />
+  );
+};
+
+export default ProfilePostGrid;
