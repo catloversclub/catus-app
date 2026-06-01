@@ -4,7 +4,13 @@ import IconButton from "@/components/common/icon-button";
 import { useColors } from "@/hooks/use-colors";
 import { useSearchHistoryStore } from "@/store/explore/search-history-store";
 import { useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  Keyboard,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import ViewedCatItem from "./viewed-cat-item";
 
 interface ExploreIdleViewProps {
@@ -32,6 +38,10 @@ const ExploreIdleView = ({ onSearchPress }: ExploreIdleViewProps) => {
   const hasSearches = recentSearches.length > 0;
   const hasCats = viewedCats.length > 0;
 
+  const handleOnScroll = () => {
+    Keyboard.dismiss();
+  };
+
   if (!hasSearches && !hasCats) return null;
 
   return (
@@ -40,6 +50,7 @@ const ExploreIdleView = ({ onSearchPress }: ExploreIdleViewProps) => {
       contentContainerClassName="px-3 pt-6 pb-8 gap-6"
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
+      onScroll={handleOnScroll}
     >
       {hasSearches && (
         <View className="gap-3">
@@ -73,10 +84,7 @@ const ExploreIdleView = ({ onSearchPress }: ExploreIdleViewProps) => {
                 >
                   {item}
                 </Text>
-                <IconButton
-                  onPress={() => removeSearch(index)}
-                  className="p-3"
-                >
+                <IconButton onPress={() => removeSearch(index)} className="p-3">
                   <DeleteIcon
                     width={16}
                     height={16}
