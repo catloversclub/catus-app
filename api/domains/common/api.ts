@@ -16,8 +16,8 @@ const uploadImage = async ({
   formData.append("file", {
     uri: fileUri,
     type: fields["Content-Type"],
-    name: fileUri.split("/").pop() || "profile.png",
-  } as unknown as Blob);
+    name: fileUri.split("/").pop() ?? "profile.png",
+  });
 
   const response = await fetch(STORAGE_BASE_URL, {
     method: "POST",
