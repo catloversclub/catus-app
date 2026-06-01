@@ -1,19 +1,19 @@
 import { Image } from "expo-image";
+import { LinearGradient } from "expo-linear-gradient";
 import { Link } from "expo-router";
 import { useCallback, useState } from "react";
 import {
   FlatList,
   Pressable,
-  Text,
   useWindowDimensions,
   View,
   ViewToken,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 
 import { Post, PostImage } from "@/api/domains/post/types";
 import { CAROUSEL_CONFIG } from "@/constants/config";
 import { getMediaUrl } from "@/lib/utils";
+import { CarouselCounter, CarouselDots } from "./CarouselIndicator";
 
 interface PostCarouselProps {
   post: Post;
@@ -21,7 +21,11 @@ interface PostCarouselProps {
   linkable?: boolean;
 }
 
-const PostCarousel = ({ post, overlay, linkable = true }: PostCarouselProps) => {
+const PostCarousel = ({
+  post,
+  overlay,
+  linkable = true,
+}: PostCarouselProps) => {
   const [current, setCurrent] = useState(0);
   const { width } = useWindowDimensions();
   const carouselWidth = width - 32;
@@ -68,35 +72,25 @@ const PostCarousel = ({ post, overlay, linkable = true }: PostCarouselProps) => 
 
         <LinearGradient
           colors={["transparent", "rgba(0,0,0,0.6)"]}
-          style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 80 }}
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: 80,
+          }}
           pointerEvents="none"
         />
 
         {post.images.length > 1 && (
-          <View
-            className="absolute right-1.5 top-1.5 z-10 rounded bg-semantic-dimmed-primary px-2 py-1.5"
-            pointerEvents="none"
-          >
-            <Text className="typo-label2 text-gray-0">
-              {current + 1} / {post.images.length}
-            </Text>
-          </View>
+          <CarouselCounter current={current} total={post.images.length} />
         )}
 
         {overlay}
       </View>
 
       {post.images.length > 1 && (
-        <View className="w-full flex-row justify-center gap-1.5">
-          {post.images.map((_, index) => (
-            <View
-              key={index}
-              className={`h-1.5 w-1.5 rounded-full ${
-                index === current ? "bg-semantic-icon-accent" : "bg-semantic-icon-minor"
-              }`}
-            />
-          ))}
-        </View>
+        <CarouselDots count={post.images.length} current={current} />
       )}
     </>
   );
