@@ -9,7 +9,7 @@ import ProfileImage from "@/components/common/profile-image";
 import PostCarousel from "@/components/feed/PostCarousel";
 import { useColors } from "@/hooks/use-colors";
 import usePostActions from "@/hooks/use-post-actions";
-import { Bookmark, Heart, MessageCircle } from "@/lib/icons";
+import { Bookmark, Heart } from "@/lib/icons";
 import { formatRelativeTime } from "@/lib/utils";
 
 const ProfileInfo = ({ post, onMorePress }: { post: Post; onMorePress: () => void }) => {
@@ -34,52 +34,48 @@ const ProfileInfo = ({ post, onMorePress }: { post: Post; onMorePress: () => voi
   );
 };
 
-const FeedCard = ({ post }: { post: Post }) => {
+const PostDetailCard = ({ post }: { post: Post }) => {
   const {
     commentSheetRef,
     moreSheetRef,
     handleLike,
     handleBookmark,
-    handleCommentPress,
     handleMorePress,
   } = usePostActions(post);
 
-  const overlay = (
-    <View className="absolute bottom-1.5 right-1.5 z-10 flex-row items-center">
-      <Pressable onPress={handleLike} className="px-2 py-3 active:opacity-60">
-        <Heart
-          size={20}
-          className={
-            post.isLikedByMe
-              ? "fill-semantic-icon-error text-semantic-icon-error"
-              : "text-white"
-          }
-        />
-      </Pressable>
-      <Pressable onPress={handleCommentPress} className="px-2 py-3 active:opacity-60">
-        <MessageCircle size={20} className="text-white" />
-      </Pressable>
-      <Pressable onPress={handleBookmark} className="px-2 py-3 active:opacity-60">
-        <Bookmark
-          size={20}
-          className={
-            post.isBookmarkedByMe
-              ? "fill-semantic-icon-accent text-semantic-icon-accent"
-              : "text-white"
-          }
-        />
-      </Pressable>
-    </View>
-  );
-
   return (
-    <View className="mb-5 flex-col gap-3 px-3">
-      <PostCarousel post={post} overlay={overlay} />
+    <View className="flex-col gap-3 px-3">
       <ProfileInfo post={post} onMorePress={handleMorePress} />
+      <PostCarousel post={post} linkable={false} />
+      <View className="typo-body4">
+        <Text className="text-semantic-text-primary">{post.content}</Text>
+      </View>
+      <View className="flex-row items-center justify-end gap-4">
+        <Pressable onPress={handleLike} className="active:opacity-60">
+          <Heart
+            size={20}
+            className={
+              post.isLikedByMe
+                ? "fill-semantic-icon-error text-semantic-icon-error"
+                : "text-semantic-text-tertiary"
+            }
+          />
+        </Pressable>
+        <Pressable onPress={handleBookmark} className="active:opacity-60">
+          <Bookmark
+            size={20}
+            className={
+              post.isBookmarkedByMe
+                ? "fill-semantic-icon-accent text-semantic-icon-accent"
+                : "text-semantic-text-tertiary"
+            }
+          />
+        </Pressable>
+      </View>
       <CommentSheet CommentSheetModalRef={commentSheetRef} postId={post.id} />
       <MoreSheet MoreSheetModalRef={moreSheetRef} />
     </View>
   );
 };
 
-export default FeedCard;
+export default PostDetailCard;
