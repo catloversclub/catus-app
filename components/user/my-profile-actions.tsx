@@ -1,4 +1,3 @@
-import { testNotification } from "@/api/domains/notification/api";
 import Button from "@/components/common/button";
 
 import { router } from "expo-router";
@@ -12,9 +11,6 @@ const ProfileActions = () => {
     });
   };
 
-  const handleNotificationTest = async () => {
-    await testNotification();
-  };
   return (
     <View className="flex-row gap-1.5 w-full mb-[26px] px-5">
       <View className="flex-1">
@@ -32,17 +28,6 @@ const ProfileActions = () => {
           button={{
             label: "프로필 공유",
             onPress: handleShare,
-            variant: "secondary",
-            size: "md",
-          }}
-        />
-      </View>
-      <View className="flex-1">
-        {" "}
-        <Button
-          button={{
-            label: "푸시 알림 테스트",
-            onPress: handleNotificationTest,
             variant: "secondary",
             size: "md",
           }}

@@ -274,7 +274,7 @@ const MypageContent = () => {
       }}
       renderItem={renderItem}
       ItemSeparatorComponent={({ leadingItem }) =>
-        (leadingItem as ListItem).type === "tabBar" ? null : (
+        leadingItem?.type === "tabBar" ? null : (
           <View style={{ height: 2 }} />
         )
       }

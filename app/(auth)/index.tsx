@@ -18,6 +18,14 @@ interface LoginOption {
   Icon: React.ElementType;
 }
 
+const appleOption: LoginOption = {
+  id: "apple",
+  label: "Apple 로그인",
+  containerClass: "bg-black dark:bg-gray-0",
+  textClass: "text-white dark:text-black",
+  Icon: AppleLogo,
+};
+
 const LOGIN_OPTIONS: LoginOption[] = [
   {
     id: "kakao",
@@ -31,17 +39,7 @@ const LOGIN_OPTIONS: LoginOption[] = [
     containerClass: "bg-[#F2F2F2]",
     Icon: GoogleLogo,
   },
-  ...(Platform.OS === "ios"
-    ? [
-        {
-          id: "apple" as Provider,
-          label: "Apple 로그인",
-          containerClass: "bg-black dark:bg-gray-0",
-          textClass: "text-white dark:text-black",
-          Icon: AppleLogo,
-        },
-      ]
-    : []),
+  ...(Platform.OS === "ios" ? [appleOption] : []),
 ];
 
 const Index = () => {
