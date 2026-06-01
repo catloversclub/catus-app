@@ -17,14 +17,14 @@ export function WebViewPage({ url, onMessage }: WebViewPageProps) {
     await new Promise<void>((resolve) => setTimeout(resolve, 1000))
   }, [])
 
-  const { refreshControl, logoOverlay } = useLogoRefreshControl({ onRefresh })
+  const { onScrollEndDrag, logoOverlay } = useLogoRefreshControl({ onRefresh })
 
   return (
     <View style={{ flex: 1 }}>
       {logoOverlay}
       <ScrollView
         contentContainerStyle={{ flex: 1 }}
-        refreshControl={refreshControl}
+        onScrollEndDrag={onScrollEndDrag}
       >
         <WebView
           ref={webViewRef}

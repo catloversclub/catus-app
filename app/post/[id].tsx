@@ -1,5 +1,5 @@
 import { Stack, useLocalSearchParams } from "expo-router";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -10,7 +10,9 @@ import {
 
 import { usePostByIdQuery } from "@/api/domains/post/queries";
 import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
-import CommentInputBar, { ReplyTarget } from "@/components/feed/comment-input-bar";
+import CommentInputBar, {
+  ReplyTarget,
+} from "@/components/feed/comment-input-bar";
 import CommentList from "@/components/feed/comment-list";
 import PostDetailCard from "@/components/feed/post-detail-card";
 import { useColors } from "@/hooks/use-colors";
@@ -26,7 +28,9 @@ const PostDetailContent = ({ postId }: { postId: string }) => {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const { androidBottomStyle } = useKeyboardAvoidingView();
-  const { refreshControl, logoOverlay } = useLogoRefreshControl({ onRefresh: refetch });
+  const { onScrollEndDrag, logoOverlay } = useLogoRefreshControl({
+    onRefresh: refetch,
+  });
 
   return (
     <>
@@ -45,7 +49,7 @@ const PostDetailContent = ({ postId }: { postId: string }) => {
           {logoOverlay}
           <ScrollView
             showsVerticalScrollIndicator={false}
-            refreshControl={refreshControl}
+            onScrollEndDrag={onScrollEndDrag}
             contentContainerStyle={{
               paddingBottom: 16,
               rowGap: 24,
@@ -73,7 +77,9 @@ const PostDetailScreen = () => {
     <View style={{ flex: 1 }} className="bg-semantic-bg-primary">
       <Suspense
         fallback={
-          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
             <ActivityIndicator size="large" color="#000" />
           </View>
         }

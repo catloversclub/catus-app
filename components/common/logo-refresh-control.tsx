@@ -1,7 +1,8 @@
 import { useColors } from "@/hooks/use-colors";
 import { Image } from "expo-image";
+import * as Haptics from "expo-haptics";
 import { useCallback, useEffect, useState } from "react";
-import { RefreshControl, View } from "react-native";
+import { NativeScrollEvent, NativeSyntheticEvent, View } from "react-native";
 import Animated, {
   cancelAnimation,
   Easing,
@@ -11,6 +12,8 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
+const THRESHOLD = 80;
+
 type Options = {
   onRefresh: () => Promise<unknown> | void;
 };
@@ -19,6 +22,7 @@ const useLogoRefreshControl = ({ onRefresh }: Options) => {
   const [refreshing, setRefreshing] = useState(false);
   const { scheme } = useColors();
   const rotation = useSharedValue(0);
+  const overlayOpacity = useSharedValue(0);
 
   useEffect(() => {
     if (refreshing) {
@@ -28,48 +32,58 @@ const useLogoRefreshControl = ({ onRefresh }: Options) => {
         -1,
         false,
       );
+      overlayOpacity.value = withTiming(1, { duration: 150 });
     } else {
       cancelAnimation(rotation);
       rotation.value = 0;
+      overlayOpacity.value = withTiming(0, { duration: 150 });
     }
-  }, [refreshing, rotation]);
+  }, [refreshing, rotation, overlayOpacity]);
 
-  const handleRefresh = useCallback(async () => {
+  const triggerRefresh = useCallback(async () => {
+    if (refreshing) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setRefreshing(true);
     try {
       await onRefresh();
     } finally {
       setRefreshing(false);
     }
-  }, [onRefresh]);
+  }, [refreshing, onRefresh]);
 
-  const animatedStyle = useAnimatedStyle(() => ({
+  const onScrollEndDrag = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      if (event.nativeEvent.contentOffset.y < -THRESHOLD) {
+        triggerRefresh();
+      }
+    },
+    [triggerRefresh],
+  );
+
+  const spinStyle = useAnimatedStyle(() => ({
     transform: [{ rotate: `${rotation.value}deg` }],
   }));
 
-  const refreshControl = (
-    <RefreshControl
-      refreshing={refreshing}
-      onRefresh={handleRefresh}
-      tintColor="transparent"
-      colors={["transparent"]}
-    />
-  );
+  const overlayStyle = useAnimatedStyle(() => ({
+    opacity: overlayOpacity.value,
+  }));
 
   const logoOverlay = (
-    <View
+    <Animated.View
       pointerEvents="none"
-      style={{
-        position: "absolute",
-        top: 8,
-        left: 0,
-        right: 0,
-        alignItems: "center",
-        zIndex: 100,
-        opacity: refreshing ? 1 : 0,
-      }}
+      style={[
+        {
+          position: "absolute",
+          top: 8,
+          left: 0,
+          right: 0,
+          alignItems: "center",
+          zIndex: 100,
+        },
+        overlayStyle,
+      ]}
     >
-      <Animated.View style={animatedStyle}>
+      <Animated.View style={spinStyle}>
         <Image
           source={
             scheme === "dark"
@@ -80,10 +94,10 @@ const useLogoRefreshControl = ({ onRefresh }: Options) => {
           contentFit="contain"
         />
       </Animated.View>
-    </View>
+    </Animated.View>
   );
 
-  return { refreshControl, logoOverlay, refreshing };
+  return { onScrollEndDrag, logoOverlay, refreshing };
 };
 
 export { useLogoRefreshControl };

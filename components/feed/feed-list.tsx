@@ -40,7 +40,7 @@ const FeedList = ({
   const listRef = useAnimatedRef<Animated.FlatList<Post>>();
   useScrollToTop(listRef as React.RefObject<FlatList<Post>>);
 
-  const { refreshControl, logoOverlay } = useLogoRefreshControl({ onRefresh: refetch });
+  const { onScrollEndDrag, logoOverlay } = useLogoRefreshControl({ onRefresh: refetch });
 
   return (
     <View style={{ flex: 1 }}>
@@ -52,7 +52,7 @@ const FeedList = ({
         data={posts}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <FeedCard post={item} />}
-        refreshControl={refreshControl}
+        onScrollEndDrag={onScrollEndDrag}
         onScroll={scrollHandler}
       scrollEventThrottle={16}
       onEndReached={() => {
