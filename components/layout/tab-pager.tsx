@@ -1,23 +1,37 @@
 import { cn } from "@/lib/utils";
 import { useRef, useState } from "react";
-import { StyleProp, Text, TouchableOpacity, View, ViewStyle } from "react-native";
-import Animated from "react-native-reanimated";
+import {
+  StyleProp,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from "react-native";
 import PagerView from "react-native-pager-view";
+import Animated from "react-native-reanimated";
 
 interface TabPagerProps {
   tabs: string[];
   children: React.ReactNode[];
   className?: string;
   tabBarStyle?: StyleProp<ViewStyle>;
+  onTabChange?: (index: number) => void;
 }
 
-const TabPager = ({ tabs, children, className, tabBarStyle }: TabPagerProps) => {
+const TabPager = ({
+  tabs,
+  children,
+  className,
+  tabBarStyle,
+  onTabChange,
+}: TabPagerProps) => {
   const pagerRef = useRef<PagerView>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
   const handleTabPress = (index: number) => {
     setActiveIndex(index);
     pagerRef.current?.setPage(index);
+    onTabChange?.(index);
   };
 
   return (
@@ -43,14 +57,17 @@ const TabPager = ({ tabs, children, className, tabBarStyle }: TabPagerProps) => 
             </TouchableOpacity>
           ))}
         </View>
-        <View className="h-px bg-semantic-border-primary" />
       </Animated.View>
 
       <PagerView
         ref={pagerRef}
         style={{ flex: 1 }}
         initialPage={0}
-        onPageSelected={(e) => setActiveIndex(e.nativeEvent.position)}
+        onPageSelected={(e) => {
+          const index = e.nativeEvent.position;
+          setActiveIndex(index);
+          onTabChange?.(index);
+        }}
       >
         {children.map((child, index) => (
           <View key={index} style={{ flex: 1 }}>
