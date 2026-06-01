@@ -1,10 +1,9 @@
 import { useDailyPopularPostsQuery } from "@/api/domains/post/queries";
 import { Post } from "@/api/domains/post/types";
-import { useColors } from "@/hooks/use-colors";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getMediaUrl } from "@/lib/utils";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
-import { Skeleton } from "moti/skeleton";
 import { Suspense } from "react";
 import {
   Pressable,
@@ -15,29 +14,23 @@ import {
 } from "react-native";
 
 const DailyPopularSkeleton = () => {
-  const { scheme } = useColors();
-  const colorMode = scheme === "dark" ? "dark" : "light";
   const { width } = useWindowDimensions();
   const size = Math.floor((width - 24 - 4) / 3);
 
   return (
-    <Skeleton.Group show>
-      <View style={{ gap: 2 }}>
-        {[0, 1, 2].map((row) => (
-          <View key={row} style={{ flexDirection: "row", gap: 2 }}>
-            {[0, 1, 2].map((col) => (
-              <Skeleton
-                key={col}
-                colorMode={colorMode}
-                width={size}
-                height={size}
-                radius={0}
-              />
-            ))}
-          </View>
-        ))}
-      </View>
-    </Skeleton.Group>
+    <View style={{ gap: 2 }}>
+      {[0, 1, 2].map((row) => (
+        <View key={row} style={{ flexDirection: "row", gap: 2 }}>
+          {[0, 1, 2].map((col) => (
+            <Skeleton
+              key={col}
+              className="rounded-none"
+              style={{ width: size, height: size }}
+            />
+          ))}
+        </View>
+      ))}
+    </View>
   );
 }
 

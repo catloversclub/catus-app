@@ -1,9 +1,8 @@
 import { useMyPostsQuery } from "@/api/domains/post/queries";
 import { useUserProfileQuery } from "@/api/domains/user/queries";
 import ProfileImage from "@/components/common/profile-image";
-import { useColors } from "@/hooks/use-colors";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "expo-router";
-import { Skeleton } from "moti/skeleton";
 import { Suspense } from "react";
 import { Pressable, Text, View } from "react-native";
 
@@ -18,31 +17,27 @@ const ProfileInfo = () => {
 export default ProfileInfo;
 
 const ProfileInfoSkeleton = () => {
-  const { scheme } = useColors();
-  const colorMode = scheme === "dark" ? "dark" : "light";
   return (
-    <Skeleton.Group show={true}>
-      <View className="flex-col items-center">
-        <Skeleton colorMode={colorMode} radius="round" height={80} width={80} />
-        <View className="mt-3 mb-1">
-          <Skeleton colorMode={colorMode} height={22} width={100} radius={4} />
+    <View className="flex-col items-center">
+      <Skeleton className="rounded-full" style={{ width: 80, height: 80 }} />
+      <View className="mt-3 mb-1">
+        <Skeleton className="rounded" style={{ width: 100, height: 22 }} />
+      </View>
+      <View className="mb-3">
+        <Skeleton className="rounded" style={{ width: 72, height: 16 }} />
+      </View>
+      <View className="flex-row mb-6">
+        <View className="flex-row gap-1 px-3 py-1.5">
+          <Skeleton className="rounded" style={{ width: 60, height: 16 }} />
         </View>
-        <View className="mb-3">
-          <Skeleton colorMode={colorMode} height={16} width={72} radius={4} />
+        <View className="flex-row gap-1 px-3 py-1.5">
+          <Skeleton className="rounded" style={{ width: 60, height: 16 }} />
         </View>
-        <View className="flex-row mb-6">
-          <View className="flex-row gap-1 px-3 py-1.5">
-            <Skeleton colorMode={colorMode} height={16} width={60} radius={4} />
-          </View>
-          <View className="flex-row gap-1 px-3 py-1.5">
-            <Skeleton colorMode={colorMode} height={16} width={60} radius={4} />
-          </View>
-          <View className="flex-row gap-1 px-3 py-1.5">
-            <Skeleton colorMode={colorMode} height={16} width={60} radius={4} />
-          </View>
+        <View className="flex-row gap-1 px-3 py-1.5">
+          <Skeleton className="rounded" style={{ width: 60, height: 16 }} />
         </View>
       </View>
-    </Skeleton.Group>
+    </View>
   );
 };
 

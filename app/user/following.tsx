@@ -6,8 +6,8 @@ import {
 } from "@/api/domains/user/queries";
 import ProfileImage from "@/components/common/profile-image";
 import { useColors } from "@/hooks/use-colors";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "expo-router";
-import { Skeleton } from "moti/skeleton";
 import { Suspense } from "react";
 import {
   ActivityIndicator,
@@ -20,11 +20,8 @@ import {
 // ─── Skeleton ────────────────────────────────────────────────
 
 const FollowListSkeleton = () => {
-  const { scheme } = useColors();
-  const colorMode = scheme === "dark" ? "dark" : "light";
-
   return (
-    <Skeleton.Group show>
+    <>
       {[0, 1, 2, 3, 4].map((i) => (
         <View
           key={i}
@@ -36,13 +33,13 @@ const FollowListSkeleton = () => {
             paddingVertical: 12,
           }}
         >
-          <Skeleton colorMode={colorMode} width={48} height={48} radius="round" />
-          <Skeleton colorMode={colorMode} width={120} height={16} radius={4} />
+          <Skeleton className="rounded-full" style={{ width: 48, height: 48 }} />
+          <Skeleton className="rounded" style={{ width: 120, height: 16 }} />
           <View style={{ flex: 1 }} />
-          <Skeleton colorMode={colorMode} width={72} height={32} radius={6} />
+          <Skeleton style={{ width: 72, height: 32 }} />
         </View>
       ))}
-    </Skeleton.Group>
+    </>
   );
 }
 

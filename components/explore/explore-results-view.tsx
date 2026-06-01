@@ -6,10 +6,9 @@ import { SearchCatItem, SearchUserItem } from "@/api/domains/search/types";
 import { Post } from "@/api/domains/post/types";
 import { useSearchHistoryStore } from "@/store/explore/search-history-store";
 import TabPager from "@/components/layout/tab-pager";
-import { useColors } from "@/hooks/use-colors";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
-import { Skeleton } from "moti/skeleton";
 import { Suspense } from "react";
 import {
   ActivityIndicator,
@@ -27,38 +26,29 @@ interface ExploreResultsViewProps {
 // ─── Skeletons ───────────────────────────────────────────────
 
 const PostGridSkeleton = () => {
-  const { scheme } = useColors();
-  const colorMode = scheme === "dark" ? "dark" : "light";
   const { width } = useWindowDimensions();
   const size = Math.floor((width - 24 - 4) / 3);
 
   return (
-    <Skeleton.Group show>
-      <View style={{ padding: 12, gap: 2 }}>
-        {[0, 1, 2].map((row) => (
-          <View key={row} style={{ flexDirection: "row", gap: 2 }}>
-            {[0, 1, 2].map((col) => (
-              <Skeleton
-                key={col}
-                colorMode={colorMode}
-                width={size}
-                height={size}
-                radius={0}
-              />
-            ))}
-          </View>
-        ))}
-      </View>
-    </Skeleton.Group>
+    <View style={{ padding: 12, gap: 2 }}>
+      {[0, 1, 2].map((row) => (
+        <View key={row} style={{ flexDirection: "row", gap: 2 }}>
+          {[0, 1, 2].map((col) => (
+            <Skeleton
+              key={col}
+              className="rounded-none"
+              style={{ width: size, height: size }}
+            />
+          ))}
+        </View>
+      ))}
+    </View>
   );
 }
 
 const ProfileListSkeleton = () => {
-  const { scheme } = useColors();
-  const colorMode = scheme === "dark" ? "dark" : "light";
-
   return (
-    <Skeleton.Group show>
+    <>
       {[0, 1, 2, 3].map((i) => (
         <View
           key={i}
@@ -70,14 +60,14 @@ const ProfileListSkeleton = () => {
             paddingVertical: 12,
           }}
         >
-          <Skeleton colorMode={colorMode} width={52} height={52} radius="round" />
+          <Skeleton className="rounded-full" style={{ width: 52, height: 52 }} />
           <View style={{ gap: 6 }}>
-            <Skeleton colorMode={colorMode} width={130} height={16} radius={4} />
-            <Skeleton colorMode={colorMode} width={80} height={12} radius={4} />
+            <Skeleton className="rounded" style={{ width: 130, height: 16 }} />
+            <Skeleton className="rounded" style={{ width: 80, height: 12 }} />
           </View>
         </View>
       ))}
-    </Skeleton.Group>
+    </>
   );
 }
 
