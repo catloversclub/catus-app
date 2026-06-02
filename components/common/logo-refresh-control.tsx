@@ -1,13 +1,12 @@
 import { useColors } from "@/hooks/use-colors";
-import { Image } from "expo-image";
 import * as Haptics from "expo-haptics";
+import { Image } from "expo-image";
 import { useCallback, useEffect, useState } from "react";
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
   ScrollView,
   ScrollViewProps,
-  View,
 } from "react-native";
 import Animated, {
   cancelAnimation,
@@ -142,4 +141,4 @@ const RefreshableScrollView = ({
   );
 };
 
-export { useLogoRefreshControl, RefreshableScrollView };
+export { RefreshableScrollView, useLogoRefreshControl };

@@ -42,7 +42,7 @@ const PostDetailScreen = () => {
                 }),
               ])
             }
-            // contentContainerStyle={{ paddingBottom: 16, rowGap: 24 }}
+            contentContainerStyle={{ paddingBottom: 16, rowGap: 24 }}
           >
             <Suspense fallback={<PostDetailCardSkeleton />}>
               <PostDetailCard postId={id} />
