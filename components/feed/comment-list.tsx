@@ -2,6 +2,7 @@ import { usePostCommentsQuery } from "@/api/domains/comment/queries";
 import { Comment } from "@/api/domains/comment/types";
 import { ReplyTarget } from "@/components/feed/comment-input-bar";
 import CommentItem from "@/components/feed/comment-item";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
 import { View } from "react-native";
 
@@ -37,4 +38,25 @@ const CommentList = ({ postId, onReply }: CommentListProps) => {
   );
 };
 
+const CommentItemSkeleton = () => (
+  <View className="flex-row items-start gap-3 p-3">
+    <Skeleton className="rounded-full" style={{ width: 36, height: 36 }} />
+    <View className="flex-1 flex-col" style={{ gap: 6 }}>
+      <Skeleton className="rounded" style={{ width: 80, height: 12 }} />
+      <Skeleton className="rounded" style={{ width: 160, height: 14 }} />
+      <Skeleton className="rounded" style={{ width: 48, height: 11 }} />
+    </View>
+    <Skeleton className="rounded" style={{ width: 14, height: 14 }} />
+  </View>
+);
+
+const CommentListSkeleton = () => (
+  <View>
+    {[0, 1, 2].map((i) => (
+      <CommentItemSkeleton key={i} />
+    ))}
+  </View>
+);
+
+export { CommentListSkeleton };
 export default CommentList;

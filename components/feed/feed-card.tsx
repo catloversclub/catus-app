@@ -29,6 +29,7 @@ const ProfileInfo = ({
           imageUrl={post.cat?.profileImageUrl ?? null}
           size="sm"
           isCatLink
+          catId={post.cat?.id}
         />
         <View>
           <Text className="typo-body3 text-semantic-text-primary">
