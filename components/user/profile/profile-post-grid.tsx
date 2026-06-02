@@ -1,12 +1,11 @@
 import { Post } from "@/api/domains/post/types";
 import { LoadMoreFooter } from "@/components/common/load-more-footer";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getMediaUrl } from "@/lib/utils";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
 import {
   FlatList,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
   Pressable,
   Text,
   View,
@@ -52,7 +51,7 @@ const PostThumbnail = ({ post, size }: PostThumbnailProps) => {
       <Pressable style={{ width: size, height: size }}>
         {imageUrl ? (
           <Image
-            source={{ uri: imageUrl }}
+            source={{ uri: getMediaUrl(imageUrl) }}
             style={{ width: size, height: size }}
             contentFit="cover"
           />
@@ -75,9 +74,8 @@ interface ProfilePostGridProps {
   hasNextPage: boolean;
   fetchNextPage: () => void;
   emptyMessage: string;
-  onScrollEndDrag?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
   logoOverlay?: React.ReactNode;
-  scrollEnabled?: boolean;
+  loadMoreRef?: React.RefObject<(() => void) | null>;
 }
 
 const ProfilePostGrid = ({
@@ -88,10 +86,17 @@ const ProfilePostGrid = ({
   hasNextPage,
   fetchNextPage,
   emptyMessage,
-  onScrollEndDrag,
   logoOverlay,
-  scrollEnabled = true,
+  loadMoreRef,
 }: ProfilePostGridProps) => {
+  if (loadMoreRef) {
+    loadMoreRef.current = () => {
+      if (hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    };
+  }
+
   const { width } = useWindowDimensions();
   const size = (width - 4) / 3;
 
@@ -142,7 +147,6 @@ const ProfilePostGrid = ({
         style={{ flex: 1 }}
         ListHeaderComponent={ListHeaderComponent}
         data={data}
-        stickyHeaderIndices={hasStickyTabBar && scrollEnabled ? [0] : undefined}
         keyExtractor={(item, index) => {
           if (item.type === "tabBar") return "tabBar";
           if (item.type === "empty") return "empty";
@@ -151,18 +155,12 @@ const ProfilePostGrid = ({
         }}
         renderItem={renderItem}
         ItemSeparatorComponent={({ leadingItem }) =>
-          hasStickyTabBar && (leadingItem as ListItem)?.type === "tabBar"
-            ? null
-            : <View style={{ height: 2 }} />
+          hasStickyTabBar &&
+          (leadingItem as ListItem)?.type === "tabBar" ? null : (
+            <View style={{ height: 2 }} />
+          )
         }
-        scrollEnabled={scrollEnabled}
-        onEndReached={scrollEnabled ? () => {
-          if (hasNextPage && !isFetchingNextPage) {
-            fetchNextPage();
-          }
-        } : undefined}
-        onEndReachedThreshold={0.5}
-        onScrollEndDrag={scrollEnabled ? onScrollEndDrag : undefined}
+        scrollEnabled={false}
       />
     </View>
   );

@@ -31,12 +31,6 @@ const MypagePostGrid = ({
   const activeQuery = queries[activeTab];
   const posts = activeQuery.data.pages.flat();
 
-  loadMoreRef.current = () => {
-    if (activeQuery.hasNextPage && !activeQuery.isFetchingNextPage) {
-      activeQuery.fetchNextPage();
-    }
-  };
-
   return (
     <ProfilePostGrid
       tabBar={<TabIconBar activeIndex={activeTab} onChange={onTabChange} />}
@@ -45,7 +39,7 @@ const MypagePostGrid = ({
       hasNextPage={activeQuery.hasNextPage}
       fetchNextPage={activeQuery.fetchNextPage}
       emptyMessage={EMPTY_MESSAGES[activeTab]}
-      scrollEnabled={false}
+      loadMoreRef={loadMoreRef}
     />
   );
 };
