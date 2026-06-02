@@ -1,4 +1,3 @@
-import { useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 import { Suspense, useState } from "react";
 import { KeyboardAvoidingView, View } from "react-native";
@@ -6,6 +5,7 @@ import { KeyboardAvoidingView, View } from "react-native";
 import { commentKeys } from "@/api/domains/comment/queries";
 import { postKeys } from "@/api/domains/post/queries";
 import { RefreshableScrollView } from "@/components/common/logo-refresh-control";
+import { useRefreshQueries } from "@/hooks/use-refresh-queries";
 import CommentInputBar, {
   ReplyTarget,
 } from "@/components/feed/comment-input-bar";
@@ -21,27 +21,18 @@ import Animated from "react-native-reanimated";
 
 const PostDetailScreen = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const queryClient = useQueryClient();
   const [replyTarget, setReplyTarget] = useState<ReplyTarget | null>(null);
   const headerHeight = useHeaderHeight();
   const { keyboardAvoidingViewProps, containerStyle, insets } =
     useKeyboardAvoidingView(headerHeight);
+  const onRefresh = useRefreshQueries([postKeys.detail(id), commentKeys.byPost(id)]);
 
   return (
     <View style={{ flex: 1 }} className="bg-semantic-bg-primary">
       <KeyboardAvoidingView style={{ flex: 1 }} {...keyboardAvoidingViewProps}>
         <Animated.View style={[{ flex: 1 }, containerStyle]}>
           <RefreshableScrollView
-            onRefresh={() =>
-              Promise.all([
-                queryClient.invalidateQueries({
-                  queryKey: postKeys.detail(id),
-                }),
-                queryClient.invalidateQueries({
-                  queryKey: commentKeys.byPost(id),
-                }),
-              ])
-            }
+            onRefresh={onRefresh}
             contentContainerStyle={{ paddingBottom: 16, rowGap: 24 }}
           >
             <Suspense fallback={<PostDetailCardSkeleton />}>

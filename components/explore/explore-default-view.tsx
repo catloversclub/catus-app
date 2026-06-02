@@ -1,13 +1,14 @@
-import { useDailyPopularPostsQuery } from "@/api/domains/post/queries";
+import { postKeys, useDailyPopularPostsQuery } from "@/api/domains/post/queries";
 import { Post } from "@/api/domains/post/types";
+import { RefreshableScrollView } from "@/components/common/logo-refresh-control";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useRefreshQueries } from "@/hooks/use-refresh-queries";
 import { getMediaUrl } from "@/lib/utils";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
 import { Suspense } from "react";
 import {
   Pressable,
-  ScrollView,
   Text,
   useWindowDimensions,
   View,
@@ -82,34 +83,37 @@ const DailyPopularGrid = () => {
   );
 }
 
-const ExploreDefaultView = () => (
-  <ScrollView
-    className="flex-1"
-    contentContainerClassName="gap-6 pb-6"
-    showsVerticalScrollIndicator={false}
-  >
-    <View className="px-3 pt-6 gap-6">
-      <Pressable className="px-3 py-4 rounded gap-0.5 border border-[#C2E9FF] bg-[#EBF8FF]">
-        <Text className="typo-title3 text-semantic-text-primary">
-          천하제일 내 고양이 자랑대회
-        </Text>
-        <Text className="typo-body4 text-semantic-text-secondary">
-          우리 고양이를 더 널리 알려보세요!
-        </Text>
-      </Pressable>
-    </View>
-
-    <View className="gap-3">
-      <Text className="typo-title3 text-semantic-text-primary px-3">
-        오늘의 인기 게시물
-      </Text>
-      <View className="px-3">
-        <Suspense fallback={<DailyPopularSkeleton />}>
-          <DailyPopularGrid />
-        </Suspense>
+const ExploreDefaultView = () => {
+  const refreshQueries = useRefreshQueries([postKeys.dailyPopular()]);
+  return (
+    <RefreshableScrollView
+      onRefresh={refreshQueries}
+      className="flex-1"
+      contentContainerClassName="gap-6 pb-6"
+    >
+      <View className="px-3 pt-6 gap-6">
+        <Pressable className="px-3 py-4 rounded gap-0.5 border border-[#C2E9FF] bg-[#EBF8FF]">
+          <Text className="typo-title3 text-semantic-text-primary">
+            천하제일 내 고양이 자랑대회
+          </Text>
+          <Text className="typo-body4 text-semantic-text-secondary">
+            우리 고양이를 더 널리 알려보세요!
+          </Text>
+        </Pressable>
       </View>
-    </View>
-  </ScrollView>
-);
+
+      <View className="gap-3">
+        <Text className="typo-title3 text-semantic-text-primary px-3">
+          오늘의 인기 게시물
+        </Text>
+        <View className="px-3">
+          <Suspense fallback={<DailyPopularSkeleton />}>
+            <DailyPopularGrid />
+          </Suspense>
+        </View>
+      </View>
+    </RefreshableScrollView>
+  );
+};
 
 export default ExploreDefaultView;
