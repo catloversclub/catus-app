@@ -7,10 +7,10 @@ import { Gender } from "@/api/domains/cat/types";
 import { useCatPostsQuery } from "@/api/domains/post/queries";
 import MoreIcon from "@/assets/icons/more.svg";
 import IconButton from "@/components/common/icon-button";
-import ProfileHeader from "@/components/user/profile-header";
+import { CatProfileHeader } from "@/components/cat/profile-header";
 import ProfilePostGrid, {
   PostGridSkeleton,
-} from "@/components/user/profile-post-grid";
+} from "@/components/user/profile/profile-post-grid";
 import { useColors } from "@/hooks/use-colors";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { Suspense } from "react";
@@ -24,7 +24,7 @@ const GENDER_LABEL: Record<Gender, string | null> = {
 
 // ─── Profile header ───────────────────────────────────────────
 
-const CatProfileHeader = ({ catId }: { catId: string }) => {
+const CatDetailProfileHeader = ({ catId }: { catId: string }) => {
   const { data: cat } = useCatByIdQuery(catId);
   const { data: appearances } = useAppearanceQuery();
   const { data: personalities } = usePersonalityQuery();
@@ -45,7 +45,7 @@ const CatProfileHeader = ({ catId }: { catId: string }) => {
   ].filter(Boolean) as string[];
 
   return (
-    <ProfileHeader
+    <CatProfileHeader
       imageUrl={cat.profileImageUrl}
       name={cat.name}
       subtitle={infoParts.length > 0 ? infoParts.join(" · ") : null}
@@ -80,7 +80,7 @@ const CatDetailContent = ({ catId }: { catId: string }) => {
         }}
       />
       <ProfilePostGrid
-        ListHeaderComponent={() => <CatProfileHeader catId={catId} />}
+        ListHeaderComponent={() => <CatDetailProfileHeader catId={catId} />}
         posts={posts}
         isFetchingNextPage={isFetchingNextPage}
         hasNextPage={hasNextPage}

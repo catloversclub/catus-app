@@ -1,0 +1,52 @@
+import ProfileImage from "@/components/common/profile-image";
+import { Text, View } from "react-native";
+
+interface CatProfileHeaderProps {
+  imageUrl?: string | null;
+  name: string;
+  subtitle?: string | null;
+  tags?: string[];
+}
+
+const CatProfileHeader = ({
+  imageUrl,
+  name,
+  subtitle,
+  tags,
+}: CatProfileHeaderProps) => {
+  const hasTags = !!tags?.length;
+
+  return (
+    <View className="pt-6">
+      <View className="flex-col items-center">
+        <ProfileImage imageUrl={imageUrl ?? null} size="lg" />
+        <Text className="typo-title3 mb-1 text-semantic-text-primary mt-3">
+          {name}
+        </Text>
+        {subtitle != null && (
+          <Text className="typo-body4 mb-3 text-semantic-text-tertiary">
+            {subtitle}
+          </Text>
+        )}
+        {hasTags ? (
+          <View className="flex-row flex-wrap justify-center gap-1.5 px-5 mb-6">
+            {tags!.map((tag) => (
+              <View
+                key={tag}
+                className="px-3 py-1 rounded-full bg-semantic-bg-secondary"
+              >
+                <Text className="typo-body4 text-semantic-text-secondary">
+                  {tag}
+                </Text>
+              </View>
+            ))}
+          </View>
+        ) : (
+          <View className="mb-6" />
+        )}
+      </View>
+    </View>
+  );
+};
+
+export { CatProfileHeader };
