@@ -39,6 +39,7 @@ const ProfileImage = ({
   const sizeValue = PROFILE_SIZE[size];
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isImageLoading, setIsImageLoading] = useState(!!imageUrl);
 
   const SelectImageSheetModalRef = useRef<BottomSheetModal>(null);
 
@@ -60,7 +61,19 @@ const ProfileImage = ({
           }}
           contentFit="cover"
           alt={`${userId ?? "User"} profile`}
+          onLoad={() => setIsImageLoading(false)}
         />
+        {isImageLoading && (
+          <View
+            style={{
+              position: "absolute",
+              width: sizeValue,
+              height: sizeValue,
+              borderRadius: sizeValue,
+            }}
+            className="bg-accent animate-pulse"
+          />
+        )}
         {isEditMode && (
           <IconButton
             onPress={handleSelectImagePress}
