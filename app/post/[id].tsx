@@ -30,9 +30,7 @@ const PostDetailScreen = () => {
   return (
     <View style={{ flex: 1 }} className="bg-semantic-bg-primary">
       <KeyboardAvoidingView style={{ flex: 1 }} {...keyboardAvoidingViewProps}>
-        <Animated.View
-          style={[{ flex: 1 }, containerStyle]}
-        >
+        <Animated.View style={[{ flex: 1 }, containerStyle]}>
           <RefreshableScrollView
             onRefresh={() =>
               Promise.all([
@@ -44,7 +42,7 @@ const PostDetailScreen = () => {
                 }),
               ])
             }
-            contentContainerStyle={{ paddingBottom: 16, rowGap: 24 }}
+            // contentContainerStyle={{ paddingBottom: 16, rowGap: 24 }}
           >
             <Suspense fallback={<PostDetailCardSkeleton />}>
               <PostDetailCard postId={id} />
