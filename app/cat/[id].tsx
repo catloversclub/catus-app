@@ -2,16 +2,19 @@ import {
   useAppearanceQuery,
   usePersonalityQuery,
 } from "@/api/domains/attribute/queries";
-import { useCatByIdQuery } from "@/api/domains/cat/queries";
+import { catKeys, useCatByIdQuery } from "@/api/domains/cat/queries";
 import { Gender } from "@/api/domains/cat/types";
-import { useCatPostsQuery } from "@/api/domains/post/queries";
+import { postKeys, useCatPostsQuery } from "@/api/domains/post/queries";
 import MoreIcon from "@/assets/icons/more.svg";
 import IconButton from "@/components/common/icon-button";
 import { CatProfileHeader } from "@/components/cat/profile-header";
+import { RefreshableScrollView } from "@/components/common/logo-refresh-control";
 import ProfilePostGrid, {
   PostGridSkeleton,
 } from "@/components/user/profile/profile-post-grid";
 import { useColors } from "@/hooks/use-colors";
+import { useLoadMoreScroll } from "@/hooks/use-load-more-scroll";
+import { useRefreshQueries } from "@/hooks/use-refresh-queries";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { Suspense } from "react";
 import { View } from "react-native";
@@ -66,6 +69,11 @@ const CatDetailContent = ({ catId }: { catId: string }) => {
     isFetchingNextPage,
   } = useCatPostsQuery(catId);
   const posts = postsData.pages.flat();
+  const { handleScroll, loadMoreRef } = useLoadMoreScroll();
+  const refreshQueries = useRefreshQueries([
+    catKeys.detail(catId),
+    postKeys.catPosts(catId),
+  ]);
 
   return (
     <>
@@ -79,14 +87,21 @@ const CatDetailContent = ({ catId }: { catId: string }) => {
           ),
         }}
       />
-      <ProfilePostGrid
-        ListHeaderComponent={() => <CatDetailProfileHeader catId={catId} />}
-        posts={posts}
-        isFetchingNextPage={isFetchingNextPage}
-        hasNextPage={hasNextPage}
-        fetchNextPage={fetchNextPage}
-        emptyMessage="아직 작성한 게시글이 없어요"
-      />
+      <RefreshableScrollView
+        onRefresh={refreshQueries}
+        onScroll={handleScroll}
+        scrollEventThrottle={100}
+      >
+        <CatDetailProfileHeader catId={catId} />
+        <ProfilePostGrid
+          posts={posts}
+          isFetchingNextPage={isFetchingNextPage}
+          hasNextPage={hasNextPage}
+          fetchNextPage={fetchNextPage}
+          emptyMessage="아직 작성한 게시글이 없어요"
+          loadMoreRef={loadMoreRef}
+        />
+      </RefreshableScrollView>
     </>
   );
 };
