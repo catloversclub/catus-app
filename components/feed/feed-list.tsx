@@ -3,14 +3,11 @@ import {
   useRecommendedFeedQuery,
 } from "@/api/domains/post/queries";
 import { Post } from "@/api/domains/post/types";
-import FeedCard from "@/components/feed/feed-card";
+import { LoadMoreFooter } from "@/components/common/load-more-footer";
 import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
+import FeedCard from "@/components/feed/feed-card";
 import { useScrollToTop } from "@react-navigation/native";
-import {
-  ActivityIndicator,
-  FlatList,
-  View,
-} from "react-native";
+import { View } from "react-native";
 import Animated, {
   useAnimatedRef,
   useAnimatedScrollHandler,
@@ -38,9 +35,11 @@ const FeedList = ({
   const posts = data.pages.flat();
 
   const listRef = useAnimatedRef<Animated.FlatList<Post>>();
-  useScrollToTop(listRef as React.RefObject<FlatList<Post>>);
+  useScrollToTop(listRef);
 
-  const { onScrollEndDrag, logoOverlay } = useLogoRefreshControl({ onRefresh: refetch });
+  const { onScrollEndDrag, logoOverlay } = useLogoRefreshControl({
+    onRefresh: refetch,
+  });
 
   return (
     <View style={{ flex: 1 }}>
@@ -54,24 +53,12 @@ const FeedList = ({
         renderItem={({ item }) => <FeedCard post={item} />}
         onScrollEndDrag={onScrollEndDrag}
         onScroll={scrollHandler}
-      scrollEventThrottle={16}
-      onEndReached={() => {
-        if (hasNextPage && !isFetchingNextPage) fetchNextPage();
-      }}
-      onEndReachedThreshold={0.5}
-      ListFooterComponent={
-        hasNextPage ? (
-          <View
-            style={{
-              height: 56,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            {isFetchingNextPage && <ActivityIndicator size="small" />}
-          </View>
-        ) : null
-      }
+        scrollEventThrottle={16}
+        onEndReached={() => {
+          if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+        }}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={isFetchingNextPage ? <LoadMoreFooter /> : null}
       />
     </View>
   );
