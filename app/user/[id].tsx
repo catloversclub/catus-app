@@ -1,16 +1,12 @@
-import {
-  useFollowUserMutation,
-  useUnfollowUserMutation,
-  useUserDetailQuery,
-} from "@/api/domains/user/queries";
+import { useUserDetailQuery } from "@/api/domains/user/queries";
 import { useUserPostsQuery } from "@/api/domains/post/queries";
 import MoreIcon from "@/assets/icons/more.svg";
-import Button from "@/components/common/button";
 import IconButton from "@/components/common/icon-button";
-import ProfileHeader from "@/components/user/profile-header";
+import { UserProfileHeader } from "@/components/user/profile/profile-header";
 import ProfilePostGrid, {
   PostGridSkeleton,
-} from "@/components/user/profile-post-grid";
+} from "@/components/user/profile/profile-post-grid";
+import OtherProfileActions from "@/components/user/profile/other-profile-actions";
 import { useColors } from "@/hooks/use-colors";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { Suspense } from "react";
@@ -18,29 +14,13 @@ import { View } from "react-native";
 
 // ─── Profile header ───────────────────────────────────────────
 
-const UserProfileHeader = ({ userId }: { userId: string }) => {
+const UserDetailProfileHeader = ({ userId }: { userId: string }) => {
   const { data: profile } = useUserDetailQuery(userId);
   const { data: postsData } = useUserPostsQuery(userId);
   const posts = postsData.pages.flat();
 
-  const { mutate: followUser, isPending: isFollowPending } =
-    useFollowUserMutation();
-  const { mutate: unfollowUser, isPending: isUnfollowPending } =
-    useUnfollowUserMutation();
-
-  const isFollowing = profile.isFollowing;
-  const isPending = isFollowPending || isUnfollowPending;
-
-  const handleFollowToggle = () => {
-    if (isFollowing) {
-      unfollowUser(userId);
-    } else {
-      followUser(userId);
-    }
-  };
-
   return (
-    <ProfileHeader
+    <UserProfileHeader
       imageUrl={profile.profileImageUrl}
       name={profile.nickname}
       stats={[
@@ -48,21 +28,7 @@ const UserProfileHeader = ({ userId }: { userId: string }) => {
         { label: "팔로워", value: profile.followerCount },
         { label: "팔로잉", value: profile.followingCount },
       ]}
-      actions={
-        <View className="flex-row gap-1.5 w-full mb-[26px] px-5">
-          <View className="flex-1">
-            <Button
-              button={{
-                label: isFollowing ? "팔로잉" : "팔로우",
-                onPress: handleFollowToggle,
-                variant: isFollowing ? "secondary" : "primary",
-                size: "md",
-                isPending,
-              }}
-            />
-          </View>
-        </View>
-      }
+      actions={<OtherProfileActions userId={userId} />}
     />
   );
 };
@@ -89,7 +55,7 @@ const UserDetailContent = ({ userId }: { userId: string }) => {
         }}
       />
       <ProfilePostGrid
-        ListHeaderComponent={() => <UserProfileHeader userId={userId} />}
+        ListHeaderComponent={() => <UserDetailProfileHeader userId={userId} />}
         posts={posts}
         isFetchingNextPage={isFetchingNextPage}
         hasNextPage={hasNextPage}
