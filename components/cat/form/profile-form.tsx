@@ -11,7 +11,7 @@ import { useCatStore } from "@/store/cat/cat-store";
 
 import { useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { KeyboardAvoidingView, Platform, Text, View } from "react-native";
+import { KeyboardAvoidingView, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
 
@@ -47,7 +47,7 @@ const CatProfileForm = ({
     },
   });
 
-  const { keyboardAvoidingViewProps, androidBottomStyle } =
+  const { keyboardAvoidingViewProps, containerStyle } =
     useKeyboardAvoidingView();
   const scrollViewRef = useRef<ScrollView>(null);
   const breedOffsetY = useRef<number>(0);
@@ -139,7 +139,7 @@ const CatProfileForm = ({
         <View className="h-[80px]" />
       </ScrollView>
       <Animated.View
-        style={Platform.OS === "android" ? androidBottomStyle : undefined}
+        style={containerStyle}
       >
         <BottomActionBar
           buttons={[

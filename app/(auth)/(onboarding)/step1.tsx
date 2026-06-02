@@ -9,7 +9,7 @@ import { useUpdateUser } from "@/hooks/user/use-update-user";
 import { cn } from "@/lib/utils";
 import { useOnboardingStore } from "@/store/auth/onboarding-store";
 import { router } from "expo-router";
-import { KeyboardAvoidingView, Platform, Text, View } from "react-native";
+import { KeyboardAvoidingView, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
 
@@ -18,7 +18,7 @@ interface Step1FormProps {
 }
 
 const Step1Form = ({ currentNickname }: Step1FormProps) => {
-  const { keyboardAvoidingViewProps, androidBottomStyle } =
+  const { keyboardAvoidingViewProps, containerStyle } =
     useKeyboardAvoidingView();
   const isEditMode = !!currentNickname;
 
@@ -93,7 +93,7 @@ const Step1Form = ({ currentNickname }: Step1FormProps) => {
         </View>
       </ScrollView>
       <Animated.View
-        style={Platform.OS === "android" ? androidBottomStyle : undefined}
+        style={containerStyle}
       >
         <BottomActionBar
           buttons={[
