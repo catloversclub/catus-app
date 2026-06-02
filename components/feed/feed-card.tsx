@@ -71,7 +71,7 @@ const FeedCard = ({ post }: { post: Post }) => {
       <PostCarousel post={post} overlay={overlay} />
       <ProfileInfo post={post} onMorePress={handleMorePress} />
       <CommentSheet CommentSheetModalRef={commentSheetRef} postId={post.id} />
-      <MoreSheet MoreSheetModalRef={moreSheetRef} />
+      <MoreSheet MoreSheetModalRef={moreSheetRef} post={post} />
     </View>
   );
 };

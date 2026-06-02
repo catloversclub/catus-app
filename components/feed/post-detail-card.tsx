@@ -78,7 +78,7 @@ const PostDetailCard = ({ postId }: { postId: string }) => {
         </Pressable>
       </View>
       <CommentSheet CommentSheetModalRef={commentSheetRef} postId={post.id} />
-      <MoreSheet MoreSheetModalRef={moreSheetRef} />
+      <MoreSheet MoreSheetModalRef={moreSheetRef} post={post} />
     </View>
   );
 };

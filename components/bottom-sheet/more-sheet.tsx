@@ -2,22 +2,92 @@ import BanIcon from "@/assets/icons/ban.svg";
 import BlockIcon from "@/assets/icons/block.svg";
 import ShareIcon from "@/assets/icons/share.svg";
 import BaseBottomSheet from "@/components/bottom-sheet/base-bottom-sheet";
+import { useBlockUserMutation } from "@/api/domains/user/queries";
+import { useReportPostMutation } from "@/api/domains/post/queries";
+import { Post } from "@/api/domains/post/types";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { router } from "expo-router";
 import React from "react";
-import { Pressable, Text, View } from "react-native";
+import { Alert, Pressable, Share, Text, View } from "react-native";
+import Toast from "react-native-toast-message";
 
 interface MoreSheetProps {
   MoreSheetModalRef: React.RefObject<BottomSheetModal | null>;
+  post: Post;
 }
 
-const MORE_SHEET_ITEMS = [
-  { Icon: BanIcon, label: "신고하기", onPress: () => {} },
-  { Icon: BlockIcon, label: "차단하기", onPress: () => {} },
-  { Icon: ShareIcon, label: "공유하기", onPress: () => {} },
-  { Icon: null, label: "집사 프로필 방문하기", onPress: () => {} },
-] as const;
+const MoreSheet = ({ MoreSheetModalRef, post }: MoreSheetProps) => {
+  const { mutate: reportPost } = useReportPostMutation();
+  const { mutate: blockUser } = useBlockUserMutation();
 
-const MoreSheet = ({ MoreSheetModalRef }: MoreSheetProps) => {
+  const dismiss = () => MoreSheetModalRef.current?.dismiss();
+
+  const handleReport = () => {
+    Alert.alert("신고하기", "이 게시물을 신고하시겠습니까?", [
+      { text: "취소", style: "cancel" },
+      {
+        text: "신고",
+        style: "destructive",
+        onPress: () => {
+          reportPost(post.id, {
+            onSuccess: () => {
+              dismiss();
+              Toast.show({ type: "success", text1: "신고가 접수되었습니다." });
+            },
+            onError: () => {
+              Toast.show({ type: "error", text1: "신고에 실패했습니다." });
+            },
+          });
+        },
+      },
+    ]);
+  };
+
+  const handleBlock = () => {
+    Alert.alert(
+      "차단하기",
+      `${post.author.nickname}님을 차단하시겠습니까?`,
+      [
+        { text: "취소", style: "cancel" },
+        {
+          text: "차단",
+          style: "destructive",
+          onPress: () => {
+            blockUser(post.author.id, {
+              onSuccess: () => {
+                dismiss();
+                Toast.show({
+                  type: "success",
+                  text1: `${post.author.nickname}님을 차단했습니다.`,
+                });
+              },
+              onError: () => {
+                Toast.show({ type: "error", text1: "차단에 실패했습니다." });
+              },
+            });
+          },
+        },
+      ],
+    );
+  };
+
+  const handleShare = async () => {
+    await Share.share({ url: `catus://post/${post.id}` });
+    dismiss();
+  };
+
+  const handleVisitProfile = () => {
+    dismiss();
+    router.push(`/user/${post.author.id}`);
+  };
+
+  const MORE_SHEET_ITEMS = [
+    { Icon: BanIcon, label: "신고하기", onPress: handleReport },
+    { Icon: BlockIcon, label: "차단하기", onPress: handleBlock },
+    { Icon: ShareIcon, label: "공유하기", onPress: handleShare },
+    { Icon: null, label: "집사 프로필 방문하기", onPress: handleVisitProfile },
+  ];
+
   return (
     <BaseBottomSheet BaseBottomSheetModalRef={MoreSheetModalRef}>
       <View className="flex-1 flex flex-col items-center justify-center pb-16">
