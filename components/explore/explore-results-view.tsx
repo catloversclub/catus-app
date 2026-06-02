@@ -1,12 +1,13 @@
+import { Post } from "@/api/domains/post/types";
 import {
   useSearchPostsQuery,
   useSearchProfilesQuery,
 } from "@/api/domains/search/queries";
 import { SearchCatItem, SearchUserItem } from "@/api/domains/search/types";
-import { Post } from "@/api/domains/post/types";
-import { useSearchHistoryStore } from "@/store/explore/search-history-store";
 import TabPager from "@/components/layout/tab-pager";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getMediaUrl } from "@/lib/utils";
+import { useSearchHistoryStore } from "@/store/explore/search-history-store";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
 import { Suspense } from "react";
@@ -44,7 +45,7 @@ const PostGridSkeleton = () => {
       ))}
     </View>
   );
-}
+};
 
 const ProfileListSkeleton = () => {
   return (
@@ -60,7 +61,10 @@ const ProfileListSkeleton = () => {
             paddingVertical: 12,
           }}
         >
-          <Skeleton className="rounded-full" style={{ width: 52, height: 52 }} />
+          <Skeleton
+            className="rounded-full"
+            style={{ width: 52, height: 52 }}
+          />
           <View style={{ gap: 6 }}>
             <Skeleton className="rounded" style={{ width: 130, height: 16 }} />
             <Skeleton className="rounded" style={{ width: 80, height: 12 }} />
@@ -69,7 +73,7 @@ const ProfileListSkeleton = () => {
       ))}
     </>
   );
-}
+};
 
 // ─── Post grid ───────────────────────────────────────────────
 
@@ -83,7 +87,7 @@ const PostGrid = ({ post }: { post: Post }) => {
       <Pressable style={{ width: size, height: size }}>
         {imageUrl ? (
           <Image
-            source={{ uri: imageUrl }}
+            source={{ uri: getMediaUrl(imageUrl) }}
             style={{ width: size, height: size }}
             contentFit="cover"
           />
@@ -96,16 +100,15 @@ const PostGrid = ({ post }: { post: Post }) => {
       </Pressable>
     </Link>
   );
-}
+};
 
 const SearchPostsTab = ({ query }: { query: string }) => {
   const { data, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useSearchPostsQuery(query);
 
-  const posts =
-    data.pages.flatMap((page) =>
-      page.type === "post" ? page.posts : [],
-    );
+  const posts = data.pages.flatMap((page) =>
+    page.type === "post" ? page.posts : [],
+  );
 
   if (posts.length === 0) {
     return (
@@ -137,7 +140,7 @@ const SearchPostsTab = ({ query }: { query: string }) => {
       }
     />
   );
-}
+};
 
 // ─── Cat results ─────────────────────────────────────────────
 
@@ -190,16 +193,15 @@ const SearchCatCard = ({ cat }: { cat: SearchCatItem }) => {
       </Pressable>
     </Link>
   );
-}
+};
 
 const SearchCatsTab = ({ query }: { query: string }) => {
   const { data, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useSearchProfilesQuery(query);
 
-  const cats =
-    data.pages.flatMap((page) =>
-      page.type === "profile" ? page.cats : [],
-    );
+  const cats = data.pages.flatMap((page) =>
+    page.type === "profile" ? page.cats : [],
+  );
 
   if (cats.length === 0) {
     return (
@@ -228,7 +230,7 @@ const SearchCatsTab = ({ query }: { query: string }) => {
       }
     />
   );
-}
+};
 
 // ─── User results ────────────────────────────────────────────
 
@@ -262,16 +264,15 @@ const SearchUserCard = ({ user }: { user: SearchUserItem }) => {
       </Pressable>
     </Link>
   );
-}
+};
 
 const SearchUsersTab = ({ query }: { query: string }) => {
   const { data, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useSearchProfilesQuery(query);
 
-  const users =
-    data.pages.flatMap((page) =>
-      page.type === "profile" ? page.users : [],
-    );
+  const users = data.pages.flatMap((page) =>
+    page.type === "profile" ? page.users : [],
+  );
 
   if (users.length === 0) {
     return (
@@ -300,7 +301,7 @@ const SearchUsersTab = ({ query }: { query: string }) => {
       }
     />
   );
-}
+};
 
 // ─── Results view ─────────────────────────────────────────────
 

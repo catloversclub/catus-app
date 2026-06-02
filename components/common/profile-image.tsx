@@ -51,6 +51,8 @@ const ProfileImage = ({
       <View style={{ width: sizeValue, height: sizeValue }}>
         <Image
           source={imageSource}
+          placeholder={defaultAvatar}
+          transition={150}
           style={{
             width: sizeValue,
             height: sizeValue,

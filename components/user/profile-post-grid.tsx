@@ -5,6 +5,8 @@ import { Link } from "expo-router";
 import {
   ActivityIndicator,
   FlatList,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
   Pressable,
   Text,
   View,
@@ -61,13 +63,16 @@ const PostThumbnail = ({ post, size }: { post: Post; size: number }) => {
 };
 
 interface ProfilePostGridProps {
-  ListHeaderComponent: React.ComponentType;
+  ListHeaderComponent?: React.ComponentType;
   tabBar?: React.ReactElement;
   posts: Post[];
   isFetchingNextPage: boolean;
   hasNextPage: boolean;
   fetchNextPage: () => void;
   emptyMessage: string;
+  onScrollEndDrag?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  logoOverlay?: React.ReactNode;
+  scrollEnabled?: boolean;
 }
 
 const ProfilePostGrid = ({
@@ -78,6 +83,9 @@ const ProfilePostGrid = ({
   hasNextPage,
   fetchNextPage,
   emptyMessage,
+  onScrollEndDrag,
+  logoOverlay,
+  scrollEnabled = true,
 }: ProfilePostGridProps) => {
   const { width } = useWindowDimensions();
   const size = (width - 4) / 3;
@@ -125,30 +133,35 @@ const ProfilePostGrid = ({
   };
 
   return (
-    <FlatList
-      style={{ flex: 1 }}
-      ListHeaderComponent={ListHeaderComponent}
-      data={data}
-      stickyHeaderIndices={hasStickyTabBar ? [0] : undefined}
-      keyExtractor={(item, index) => {
-        if (item.type === "tabBar") return "tabBar";
-        if (item.type === "empty") return "empty";
-        if (item.type === "loader") return "loader";
-        return `row-${index}`;
-      }}
-      renderItem={renderItem}
-      ItemSeparatorComponent={({ leadingItem }) =>
-        hasStickyTabBar && (leadingItem as ListItem)?.type === "tabBar"
-          ? null
-          : <View style={{ height: 2 }} />
-      }
-      onEndReached={() => {
-        if (hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
+    <View style={{ flex: 1 }}>
+      {logoOverlay}
+      <FlatList
+        style={{ flex: 1 }}
+        ListHeaderComponent={ListHeaderComponent}
+        data={data}
+        stickyHeaderIndices={hasStickyTabBar && scrollEnabled ? [0] : undefined}
+        keyExtractor={(item, index) => {
+          if (item.type === "tabBar") return "tabBar";
+          if (item.type === "empty") return "empty";
+          if (item.type === "loader") return "loader";
+          return `row-${index}`;
+        }}
+        renderItem={renderItem}
+        ItemSeparatorComponent={({ leadingItem }) =>
+          hasStickyTabBar && (leadingItem as ListItem)?.type === "tabBar"
+            ? null
+            : <View style={{ height: 2 }} />
         }
-      }}
-      onEndReachedThreshold={0.5}
-    />
+        scrollEnabled={scrollEnabled}
+        onEndReached={scrollEnabled ? () => {
+          if (hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+          }
+        } : undefined}
+        onEndReachedThreshold={0.5}
+        onScrollEndDrag={scrollEnabled ? onScrollEndDrag : undefined}
+      />
+    </View>
   );
 };
 
