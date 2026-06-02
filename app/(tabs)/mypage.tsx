@@ -1,189 +1,33 @@
-import { useMyCatsQuery } from "@/api/domains/cat/queries";
-import {
-  useMyBookmarkedPostsQuery,
-  useMyLikedPostsQuery,
-  useMyPostsQuery,
-} from "@/api/domains/post/queries";
-import { useUserProfileQuery } from "@/api/domains/user/queries";
-import ChevronRightIcon from "@/assets/icons/chevron-right.svg";
+import { catKeys } from "@/api/domains/cat/queries";
+import { postKeys } from "@/api/domains/post/queries";
+import { userKeys } from "@/api/domains/user/queries";
 import SettingsIcon from "@/assets/icons/settings.svg";
-import CatList from "@/components/cat/cat-list";
-import CatRegistration from "@/components/cat/cat-registration";
 import IconButton from "@/components/common/icon-button";
 import { RefreshableScrollView } from "@/components/common/logo-refresh-control";
-import ProfileActions from "@/components/user/my-profile-actions";
-import TabIconBar from "@/components/layout/tab-icon-bar";
-import ProfileHeader, {
-  ProfileHeaderSkeleton,
-} from "@/components/user/profile-header";
-import ProfilePostGrid, {
-  PostGridSkeleton,
-} from "@/components/user/profile-post-grid";
+import MyProfileHeaderContent from "@/components/user/mypage/my-profile-header-content";
+import MypagePostGrid from "@/components/user/mypage/mypage-post-grid";
+import { ProfileHeaderSkeleton } from "@/components/user/profile/profile-header";
+import { PostGridSkeleton } from "@/components/user/profile/profile-post-grid";
 import { useColors } from "@/hooks/use-colors";
 import { useDefaultStackScreenOptions } from "@/hooks/use-default-screen-options";
-import { useQueryClient } from "@tanstack/react-query";
+import { useLoadMoreScroll } from "@/hooks/use-load-more-scroll";
+import { useRefreshQueries } from "@/hooks/use-refresh-queries";
 import { Link, Stack } from "expo-router";
-import { Suspense, useEffect, useRef, useState } from "react";
-import {
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  Text,
-  View,
-} from "react-native";
-
-const EMPTY_MESSAGES = [
-  "게시글이 없어요",
-  "좋아요한 게시글이 없어요",
-  "저장한 게시글이 없어요",
-];
-
-// ─── Cat section ─────────────────────────────────────────────
-
-const MyCatListSection = () => {
-  const { colors } = useColors();
-  const { data: catData } = useMyCatsQuery();
-  const hasCats = catData.length > 0;
-
-  return (
-    <>
-      <View className="w-full flex-row justify-between items-center px-5 mb-3">
-        <Text className="text-semantic-text-secondary typo-body3">
-          함께 사는 고양이
-        </Text>
-        <Link href="/cat/list" asChild>
-          <IconButton className="active:opacity-60">
-            <ChevronRightIcon
-              width={16}
-              height={16}
-              color={colors.icon.secondary}
-            />
-          </IconButton>
-        </Link>
-      </View>
-      {hasCats ? (
-        <View className="flex-row items-center pr-5">
-          <View className="flex-1">
-            <CatList />
-          </View>
-          <CatRegistration />
-        </View>
-      ) : (
-        <View className="pl-5">
-          <CatRegistration />
-        </View>
-      )}
-    </>
-  );
-};
-
-// ─── Profile header ──────────────────────────────────────────
-
-const MyProfileHeaderContent = () => {
-  const { data: userData } = useUserProfileQuery();
-  const { data: myPostsData } = useMyPostsQuery();
-  const postCount = myPostsData.pages.flat().length;
-
-  return (
-    <ProfileHeader
-      imageUrl={userData.profileImageUrl}
-      name={userData.nickname}
-      subtitle={userData.isLivingWithCat ? "고양이 집사" : "랜선 집사"}
-      stats={[
-        { label: "게시글", value: postCount },
-        { label: "팔로워", value: userData.followerCount, href: "/user/follower" as const },
-        { label: "팔로잉", value: userData.followingCount, href: "/user/following" as const },
-      ]}
-      actions={<ProfileActions />}
-    >
-      <Suspense fallback={null}>
-        <MyCatListSection />
-      </Suspense>
-      <View className="h-6" />
-    </ProfileHeader>
-  );
-};
-
-// ─── Post grid ───────────────────────────────────────────────
-
-const MypagePostGrid = ({
-  activeTab,
-  onTabChange,
-  loadMoreRef,
-}: {
-  activeTab: number;
-  onTabChange: (i: number) => void;
-  loadMoreRef: React.MutableRefObject<(() => void) | null>;
-}) => {
-  const myPostsQuery = useMyPostsQuery();
-  const likedQuery = useMyLikedPostsQuery();
-  const bookmarkedQuery = useMyBookmarkedPostsQuery();
-
-  const queries = [myPostsQuery, likedQuery, bookmarkedQuery];
-  const activeQuery = queries[activeTab];
-  const posts = activeQuery.data.pages.flat();
-
-  useEffect(() => {
-    loadMoreRef.current = () => {
-      if (activeQuery.hasNextPage && !activeQuery.isFetchingNextPage) {
-        activeQuery.fetchNextPage();
-      }
-    };
-  }, [activeQuery, loadMoreRef]);
-
-  return (
-    <ProfilePostGrid
-      tabBar={<TabIconBar activeIndex={activeTab} onChange={onTabChange} />}
-      posts={posts}
-      isFetchingNextPage={activeQuery.isFetchingNextPage}
-      hasNextPage={activeQuery.hasNextPage}
-      fetchNextPage={activeQuery.fetchNextPage}
-      emptyMessage={EMPTY_MESSAGES[activeTab]}
-      scrollEnabled={false}
-    />
-  );
-};
-
-// ─── Page content ────────────────────────────────────────────
-
-const MypageContent = () => {
-  const [activeTab, setActiveTab] = useState(0);
-  const loadMoreRef = useRef<(() => void) | null>(null);
-  const queryClient = useQueryClient();
-
-  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
-    if (layoutMeasurement.height + contentOffset.y >= contentSize.height - 200) {
-      loadMoreRef.current?.();
-    }
-  };
-
-  return (
-    <View style={{ flex: 1 }}>
-      <RefreshableScrollView
-        onRefresh={() => queryClient.refetchQueries({ type: "active" })}
-        onScroll={handleScroll}
-        scrollEventThrottle={100}
-      >
-        <Suspense fallback={<ProfileHeaderSkeleton />}>
-          <MyProfileHeaderContent />
-        </Suspense>
-        <Suspense fallback={<PostGridSkeleton />}>
-          <MypagePostGrid
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            loadMoreRef={loadMoreRef}
-          />
-        </Suspense>
-      </RefreshableScrollView>
-    </View>
-  );
-};
-
-// ─── Page ────────────────────────────────────────────────────
+import { Suspense, useState } from "react";
+import { View } from "react-native";
 
 const Mypage = () => {
   const { colors } = useColors();
   const defaultOptions = useDefaultStackScreenOptions();
+  const [activeTab, setActiveTab] = useState(0);
+  const { handleScroll, loadMoreRef } = useLoadMoreScroll();
+  const refreshQueries = useRefreshQueries([
+    userKeys.me(),
+    postKeys.myPosts(),
+    postKeys.myLikedPosts(),
+    postKeys.myBookmarkedPosts(),
+    catKeys.list(),
+  ]);
 
   return (
     <>
@@ -207,7 +51,22 @@ const Mypage = () => {
       />
 
       <View className="flex-1 bg-semantic-bg-primary">
-        <MypageContent />
+        <RefreshableScrollView
+          onRefresh={refreshQueries}
+          onScroll={handleScroll}
+          scrollEventThrottle={100}
+        >
+          <Suspense fallback={<ProfileHeaderSkeleton />}>
+            <MyProfileHeaderContent />
+          </Suspense>
+          <Suspense fallback={<PostGridSkeleton />}>
+            <MypagePostGrid
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              loadMoreRef={loadMoreRef}
+            />
+          </Suspense>
+        </RefreshableScrollView>
       </View>
     </>
   );

@@ -4,7 +4,7 @@ import {
   useMyPostsQuery,
 } from "@/api/domains/post/queries";
 import TabIconBar from "@/components/layout/tab-icon-bar";
-import ProfilePostGrid from "@/components/user/profile-post-grid";
+import ProfilePostGrid from "@/components/user/profile/profile-post-grid";
 
 const EMPTY_MESSAGES = [
   "게시글이 없어요",
