@@ -2,7 +2,13 @@ import { useColors } from "@/hooks/use-colors";
 import { Image } from "expo-image";
 import * as Haptics from "expo-haptics";
 import { useCallback, useEffect, useState } from "react";
-import { NativeScrollEvent, NativeSyntheticEvent, View } from "react-native";
+import {
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  ScrollView,
+  ScrollViewProps,
+  View,
+} from "react-native";
 import Animated, {
   cancelAnimation,
   Easing,
@@ -100,4 +106,40 @@ const useLogoRefreshControl = ({ onRefresh }: Options) => {
   return { onScrollEndDrag, logoOverlay, refreshing };
 };
 
-export { useLogoRefreshControl };
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface RefreshableScrollViewProps extends ScrollViewProps {
+  onRefresh: () => Promise<unknown> | void;
+}
+
+const RefreshableScrollView = ({
+  onRefresh,
+  children,
+  onScrollEndDrag: onScrollEndDragProp,
+  ...props
+}: RefreshableScrollViewProps) => {
+  const { onScrollEndDrag, logoOverlay } = useLogoRefreshControl({ onRefresh });
+
+  const handleScrollEndDrag = useCallback(
+    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+      onScrollEndDrag(e);
+      onScrollEndDragProp?.(e);
+    },
+    [onScrollEndDrag, onScrollEndDragProp],
+  );
+
+  return (
+    <>
+      {logoOverlay}
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        onScrollEndDrag={handleScrollEndDrag}
+        {...props}
+      >
+        {children}
+      </ScrollView>
+    </>
+  );
+};
+
+export { useLogoRefreshControl, RefreshableScrollView };

@@ -1,7 +1,7 @@
-import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
+import { RefreshableScrollView } from "@/components/common/logo-refresh-control";
 import { commonStyles } from "@/styles/common-styles"
 import React, { useCallback, useRef } from "react"
-import { View, ScrollView } from "react-native"
+import { View } from "react-native"
 import { WebView, WebViewMessageEvent } from "react-native-webview"
 
 interface WebViewPageProps {
@@ -17,15 +17,9 @@ export function WebViewPage({ url, onMessage }: WebViewPageProps) {
     await new Promise<void>((resolve) => setTimeout(resolve, 1000))
   }, [])
 
-  const { onScrollEndDrag, logoOverlay } = useLogoRefreshControl({ onRefresh })
-
   return (
     <View style={{ flex: 1 }}>
-      {logoOverlay}
-      <ScrollView
-        contentContainerStyle={{ flex: 1 }}
-        onScrollEndDrag={onScrollEndDrag}
-      >
+      <RefreshableScrollView onRefresh={onRefresh} contentContainerStyle={{ flex: 1 }}>
         <WebView
           ref={webViewRef}
           source={{ uri: url }}
@@ -37,7 +31,7 @@ export function WebViewPage({ url, onMessage }: WebViewPageProps) {
           startInLoadingState={true}
           onMessage={onMessage}
         />
-      </ScrollView>
+      </RefreshableScrollView>
     </View>
   )
 }

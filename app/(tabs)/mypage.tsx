@@ -10,6 +10,7 @@ import SettingsIcon from "@/assets/icons/settings.svg";
 import CatList from "@/components/cat/cat-list";
 import CatRegistration from "@/components/cat/cat-registration";
 import IconButton from "@/components/common/icon-button";
+import { RefreshableScrollView } from "@/components/common/logo-refresh-control";
 import ProfileActions from "@/components/user/my-profile-actions";
 import TabIconBar from "@/components/layout/tab-icon-bar";
 import ProfileHeader, {
@@ -20,9 +21,15 @@ import ProfilePostGrid, {
 } from "@/components/user/profile-post-grid";
 import { useColors } from "@/hooks/use-colors";
 import { useDefaultStackScreenOptions } from "@/hooks/use-default-screen-options";
+import { useQueryClient } from "@tanstack/react-query";
 import { Link, Stack } from "expo-router";
-import { Suspense, useState } from "react";
-import { Text, View } from "react-native";
+import { Suspense, useEffect, useRef, useState } from "react";
+import {
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  Text,
+  View,
+} from "react-native";
 
 const EMPTY_MESSAGES = [
   "게시글이 없어요",
@@ -101,9 +108,11 @@ const MyProfileHeaderContent = () => {
 const MypagePostGrid = ({
   activeTab,
   onTabChange,
+  loadMoreRef,
 }: {
   activeTab: number;
   onTabChange: (i: number) => void;
+  loadMoreRef: React.MutableRefObject<(() => void) | null>;
 }) => {
   const myPostsQuery = useMyPostsQuery();
   const likedQuery = useMyLikedPostsQuery();
@@ -113,6 +122,14 @@ const MypagePostGrid = ({
   const activeQuery = queries[activeTab];
   const posts = activeQuery.data.pages.flat();
 
+  useEffect(() => {
+    loadMoreRef.current = () => {
+      if (activeQuery.hasNextPage && !activeQuery.isFetchingNextPage) {
+        activeQuery.fetchNextPage();
+      }
+    };
+  }, [activeQuery, loadMoreRef]);
+
   return (
     <ProfilePostGrid
       tabBar={<TabIconBar activeIndex={activeTab} onChange={onTabChange} />}
@@ -121,6 +138,7 @@ const MypagePostGrid = ({
       hasNextPage={activeQuery.hasNextPage}
       fetchNextPage={activeQuery.fetchNextPage}
       emptyMessage={EMPTY_MESSAGES[activeTab]}
+      scrollEnabled={false}
     />
   );
 };
@@ -129,16 +147,35 @@ const MypagePostGrid = ({
 
 const MypageContent = () => {
   const [activeTab, setActiveTab] = useState(0);
+  const loadMoreRef = useRef<(() => void) | null>(null);
+  const queryClient = useQueryClient();
+
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+    if (layoutMeasurement.height + contentOffset.y >= contentSize.height - 200) {
+      loadMoreRef.current?.();
+    }
+  };
 
   return (
-    <>
-      <Suspense fallback={<ProfileHeaderSkeleton />}>
-        <MyProfileHeaderContent />
-      </Suspense>
-      <Suspense fallback={<PostGridSkeleton />}>
-        <MypagePostGrid activeTab={activeTab} onTabChange={setActiveTab} />
-      </Suspense>
-    </>
+    <View style={{ flex: 1 }}>
+      <RefreshableScrollView
+        onRefresh={() => queryClient.refetchQueries({ type: "active" })}
+        onScroll={handleScroll}
+        scrollEventThrottle={100}
+      >
+        <Suspense fallback={<ProfileHeaderSkeleton />}>
+          <MyProfileHeaderContent />
+        </Suspense>
+        <Suspense fallback={<PostGridSkeleton />}>
+          <MypagePostGrid
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            loadMoreRef={loadMoreRef}
+          />
+        </Suspense>
+      </RefreshableScrollView>
+    </View>
   );
 };
 
