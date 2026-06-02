@@ -23,7 +23,7 @@ const PostLayout = () => {
         ),
       }}
     >
-      <Stack.Screen name="[id]" />
+      <Stack.Screen name="[id]" options={{ title: "" }} />
     </Stack>
   );
 }

@@ -1,84 +1,66 @@
-import { Stack, useLocalSearchParams } from "expo-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { useLocalSearchParams } from "expo-router";
 import { Suspense, useState } from "react";
-import {
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  View,
-} from "react-native";
+import { KeyboardAvoidingView, View } from "react-native";
 
-import { usePostByIdQuery } from "@/api/domains/post/queries";
-import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
+import { commentKeys } from "@/api/domains/comment/queries";
+import { postKeys } from "@/api/domains/post/queries";
+import { RefreshableScrollView } from "@/components/common/logo-refresh-control";
 import CommentInputBar, {
   ReplyTarget,
 } from "@/components/feed/comment-input-bar";
-import CommentList from "@/components/feed/comment-list";
-import PostDetailCard from "@/components/feed/post-detail-card";
+import CommentList, {
+  CommentListSkeleton,
+} from "@/components/feed/comment-list";
+import PostDetailCard, {
+  PostDetailCardSkeleton,
+} from "@/components/feed/post-detail-card";
 import { useKeyboardAvoidingView } from "@/hooks/use-keyboard-avoiding-view";
 import { useHeaderHeight } from "@react-navigation/elements";
 import Animated from "react-native-reanimated";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const PostDetailContent = ({ postId }: { postId: string }) => {
-  const { data: post, refetch } = usePostByIdQuery(postId);
+const PostDetailScreen = () => {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const queryClient = useQueryClient();
   const [replyTarget, setReplyTarget] = useState<ReplyTarget | null>(null);
-  const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
-  const { androidBottomStyle } = useKeyboardAvoidingView();
-  const { onScrollEndDrag, logoOverlay } = useLogoRefreshControl({
-    onRefresh: refetch,
-  });
+  const { keyboardAvoidingViewProps, containerStyle, insets } =
+    useKeyboardAvoidingView(headerHeight);
 
   return (
-    <>
-      <Stack.Screen options={{ title: `${post.author.nickname}의 게시물` }} />
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        keyboardVerticalOffset={headerHeight}
-      >
-        <Animated.View style={[{ flex: 1 }, androidBottomStyle]}>
-          {logoOverlay}
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            onScrollEndDrag={onScrollEndDrag}
-            contentContainerStyle={{
-              paddingBottom: 16,
-              rowGap: 24,
-            }}
+    <View style={{ flex: 1 }} className="bg-semantic-bg-primary">
+      <KeyboardAvoidingView style={{ flex: 1 }} {...keyboardAvoidingViewProps}>
+        <Animated.View
+          style={[{ flex: 1 }, containerStyle]}
+        >
+          <RefreshableScrollView
+            onRefresh={() =>
+              Promise.all([
+                queryClient.invalidateQueries({
+                  queryKey: postKeys.detail(id),
+                }),
+                queryClient.invalidateQueries({
+                  queryKey: commentKeys.byPost(id),
+                }),
+              ])
+            }
+            contentContainerStyle={{ paddingBottom: 16, rowGap: 24 }}
           >
-            <PostDetailCard post={post} />
-            <CommentList postId={post.id} onReply={setReplyTarget} />
-          </ScrollView>
+            <Suspense fallback={<PostDetailCardSkeleton />}>
+              <PostDetailCard postId={id} />
+            </Suspense>
+            <Suspense fallback={<CommentListSkeleton />}>
+              <CommentList postId={id} onReply={setReplyTarget} />
+            </Suspense>
+          </RefreshableScrollView>
           <CommentInputBar
-            postId={post.id}
+            postId={id}
             replyTarget={replyTarget}
             onClearReply={() => setReplyTarget(null)}
             paddingBottom={insets.bottom}
           />
         </Animated.View>
       </KeyboardAvoidingView>
-    </>
-  );
-};
-
-const PostDetailScreen = () => {
-  const { id } = useLocalSearchParams<{ id: string }>();
-
-  return (
-    <View style={{ flex: 1 }} className="bg-semantic-bg-primary">
-      <Suspense
-        fallback={
-          <View
-            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-          >
-            <ActivityIndicator size="large" color="#000" />
-          </View>
-        }
-      >
-        <PostDetailContent postId={id} />
-      </Suspense>
     </View>
   );
 };
