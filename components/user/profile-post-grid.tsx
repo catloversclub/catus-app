@@ -1,9 +1,9 @@
 import { Post } from "@/api/domains/post/types";
+import { LoadMoreFooter } from "@/components/common/load-more-footer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
 import {
-  ActivityIndicator,
   FlatList,
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -40,7 +40,12 @@ const PostGridSkeleton = () => {
   );
 };
 
-const PostThumbnail = ({ post, size }: { post: Post; size: number }) => {
+interface PostThumbnailProps {
+  post: Post;
+  size: number;
+}
+
+const PostThumbnail = ({ post, size }: PostThumbnailProps) => {
   const imageUrl = post.images[0]?.url;
   return (
     <Link href={`/post/${post.id}`} asChild>
@@ -119,9 +124,7 @@ const ProfilePostGrid = ({
       );
     }
     if (item.type === "loader") {
-      return (
-        <ActivityIndicator size="small" style={{ marginVertical: 12 }} />
-      );
+      return <LoadMoreFooter />;
     }
     return (
       <View style={{ flexDirection: "row", gap: 2 }}>

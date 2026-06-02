@@ -6,13 +6,12 @@ import { TouchableOpacity, View, useWindowDimensions } from "react-native";
 
 const TAB_ICONS = [AppsIcon, HeartOutlineIcon, BookmarkIcon] as const;
 
-const TabIconBar = ({
-  activeIndex,
-  onChange,
-}: {
+interface TabIconBarProps {
   activeIndex: number;
   onChange: (i: number) => void;
-}) => {
+}
+
+const TabIconBar = ({ activeIndex, onChange }: TabIconBarProps) => {
   const { colors } = useColors();
   const { width } = useWindowDimensions();
   const tabWidth = width / TAB_ICONS.length;

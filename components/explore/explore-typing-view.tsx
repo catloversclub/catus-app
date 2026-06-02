@@ -8,13 +8,12 @@ interface ExploreTypingViewProps {
   onPress: (text: string) => void;
 }
 
-const HighlightedText = ({
-  text,
-  highlight,
-}: {
+interface HighlightedTextProps {
   text: string;
   highlight: string;
-}) => {
+}
+
+const HighlightedText = ({ text, highlight }: HighlightedTextProps) => {
   const idx = highlight
     ? text.toLowerCase().indexOf(highlight.toLowerCase())
     : -1;
@@ -42,15 +41,13 @@ const HighlightedText = ({
   );
 };
 
-const ProfileRow = ({
-  item,
-  query,
-  onPress,
-}: {
+interface ProfileRowProps {
   item: AutocompleteProfileItem;
   query: string;
   onPress: (text: string) => void;
-}) => (
+}
+
+const ProfileRow = ({ item, query, onPress }: ProfileRowProps) => (
   <TouchableOpacity
     onPress={() => onPress(item.profileName)}
     className="flex-row items-center gap-1.5 h-[46px] p-3"

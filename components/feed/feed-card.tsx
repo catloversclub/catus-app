@@ -12,13 +12,12 @@ import { useColors } from "@/hooks/use-colors";
 import usePostActions from "@/hooks/use-post-actions";
 import { formatRelativeTime } from "@/lib/utils";
 
-const ProfileInfo = ({
-  post,
-  onMorePress,
-}: {
+interface ProfileInfoProps {
   post: Post;
   onMorePress: () => void;
-}) => {
+}
+
+const ProfileInfo = ({ post, onMorePress }: ProfileInfoProps) => {
   const { colors } = useColors();
   const catName = post.cat?.name ?? post.author.nickname;
 
