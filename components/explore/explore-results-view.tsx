@@ -6,7 +6,6 @@ import {
 import { SearchCatItem, SearchUserItem } from "@/api/domains/search/types";
 import TabPager from "@/components/layout/tab-pager";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getMediaUrl } from "@/lib/utils";
 import { useSearchHistoryStore } from "@/store/explore/search-history-store";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
@@ -87,7 +86,7 @@ const PostGrid = ({ post }: { post: Post }) => {
       <Pressable style={{ width: size, height: size }}>
         {imageUrl ? (
           <Image
-            source={{ uri: getMediaUrl(imageUrl) }}
+            source={{ uri: imageUrl }}
             style={{ width: size, height: size }}
             contentFit="cover"
           />

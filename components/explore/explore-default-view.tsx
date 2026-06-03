@@ -3,7 +3,6 @@ import { Post } from "@/api/domains/post/types";
 import { RefreshableScrollView } from "@/components/common/logo-refresh-control";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
-import { getMediaUrl } from "@/lib/utils";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
 import { Suspense } from "react";
@@ -45,7 +44,7 @@ const PostGridItem = ({ post }: { post: Post }) => {
       <Pressable style={{ width: size, height: size }}>
         {imageUrl ? (
           <Image
-            source={{ uri: getMediaUrl(imageUrl) }}
+            source={{ uri: imageUrl }}
             style={{ width: size, height: size }}
             contentFit="cover"
           />

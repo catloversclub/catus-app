@@ -12,7 +12,6 @@ import {
 
 import { Post, PostImage } from "@/api/domains/post/types";
 import { CAROUSEL_CONFIG } from "@/constants/config";
-import { getMediaUrl } from "@/lib/utils";
 import { CarouselCounter, CarouselDots } from "./carousel-indicator";
 
 interface PostCarouselProps {
@@ -57,7 +56,7 @@ const PostCarousel = ({
           renderItem={({ item, index }) => {
             const img = (
               <Image
-                source={getMediaUrl(item.url)}
+                source={{ uri: item.url }}
                 alt={`${catName} photo ${index + 1}`}
                 style={{ width: carouselWidth, height: imageHeight }}
                 onLoad={index === 0 ? (e) => {

@@ -1,4 +1,3 @@
-import { STORAGE_BASE_URL } from "@/constants/api";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -44,20 +43,6 @@ const formatRelativeTime = (dateString: string): string => {
   return "방금 전";
 };
 
-/**
- * 이미지 경로(url)를 받아 전체 스토리지 URL을 반환합니다.
- * @param path - 이미지 상대 경로 (예: "cats/image.jpg")
- * @returns - 전체 URL 문자열
- */
-const getMediaUrl = (path: string | undefined | null): string => {
-  if (!path) return ""; // 경로가 없을 경우 빈 문자열 반환 (필요시 기본 이미지 URL 반환 가능)
-
-  // 중복된 슬래시(//) 방지 및 결합
-  const baseUrl = STORAGE_BASE_URL.replace(/\/$/, ""); // 끝의 / 제거
-  const relativePath = path.replace(/^\//, ""); // 앞의 / 제거
-
-  return `${baseUrl}/${relativePath}`;
-};
 
 const formatDate = (date: string | null): string => {
   if (!date) return "YYYY-MM-DD";
@@ -69,4 +54,4 @@ const formatDate = (date: string | null): string => {
   return `${year}-${month}-${day}`;
 };
 
-export { cn, formatDate, formatRelativeTime, getMediaUrl };
+export { cn, formatDate, formatRelativeTime };

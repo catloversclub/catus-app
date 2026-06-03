@@ -1,7 +1,6 @@
 import { Post } from "@/api/domains/post/types";
 import { LoadMoreFooter } from "@/components/common/load-more-footer";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getMediaUrl } from "@/lib/utils";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
 import {
@@ -51,7 +50,7 @@ const PostThumbnail = ({ post, size }: PostThumbnailProps) => {
       <Pressable style={{ width: size, height: size }}>
         {imageUrl ? (
           <Image
-            source={{ uri: getMediaUrl(imageUrl) }}
+            source={{ uri: imageUrl }}
             style={{ width: size, height: size }}
             contentFit="cover"
           />
