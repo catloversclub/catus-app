@@ -1,13 +1,14 @@
 import { cn } from "@/lib/utils";
 import { useRef, useState } from "react";
 import {
+  ScrollView,
   StyleProp,
   Text,
   TouchableOpacity,
+  useWindowDimensions,
   View,
   ViewStyle,
 } from "react-native";
-import PagerView from "react-native-pager-view";
 import Animated from "react-native-reanimated";
 
 interface TabPagerProps {
@@ -25,13 +26,24 @@ const TabPager = ({
   tabBarStyle,
   onTabChange,
 }: TabPagerProps) => {
-  const pagerRef = useRef<PagerView>(null);
+  const scrollRef = useRef<ScrollView>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const { width } = useWindowDimensions();
 
   const handleTabPress = (index: number) => {
     setActiveIndex(index);
-    pagerRef.current?.setPage(index);
+    scrollRef.current?.scrollTo({ x: index * width, animated: true });
     onTabChange?.(index);
+  };
+
+  const handleMomentumScrollEnd = (
+    e: Parameters<NonNullable<ScrollView["props"]["onMomentumScrollEnd"]>>[0],
+  ) => {
+    const index = Math.round(e.nativeEvent.contentOffset.x / width);
+    if (index !== activeIndex) {
+      setActiveIndex(index);
+      onTabChange?.(index);
+    }
   };
 
   return (
@@ -59,22 +71,21 @@ const TabPager = ({
         </View>
       </Animated.View>
 
-      <PagerView
-        ref={pagerRef}
+      <ScrollView
+        ref={scrollRef}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        scrollEventThrottle={16}
+        onMomentumScrollEnd={handleMomentumScrollEnd}
         style={{ flex: 1 }}
-        initialPage={0}
-        onPageSelected={(e) => {
-          const index = e.nativeEvent.position;
-          setActiveIndex(index);
-          onTabChange?.(index);
-        }}
       >
         {children.map((child, index) => (
-          <View key={index} style={{ flex: 1 }}>
+          <View key={index} style={{ width, flex: 1 }}>
             {child}
           </View>
         ))}
-      </PagerView>
+      </ScrollView>
     </View>
   );
 };
