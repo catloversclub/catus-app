@@ -1,6 +1,6 @@
 import { useMyPostsQuery } from "@/api/domains/post/queries";
 import { useUserProfileQuery } from "@/api/domains/user/queries";
-import ProfileImage from "@/components/common/profile-image";
+import UserProfileImage from "@/components/user/profile-image";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "expo-router";
 import { Suspense } from "react";
@@ -52,7 +52,7 @@ const ProfileInfoContent = () => {
 
   return (
     <View className="flex-col items-center">
-      <ProfileImage imageUrl={userData.profileImageUrl} size="lg" />
+      <UserProfileImage imageUrl={userData.profileImageUrl} size="lg" />
       <Text className="typo-title3 mb-1 text-semantic-text-primary mt-3">
         {name}
       </Text>

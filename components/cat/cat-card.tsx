@@ -2,7 +2,7 @@ import { Cat } from "@/api/domains/cat/types";
 import UpdateIcon from "@/assets/icons/update.svg";
 import GenderIcon from "@/components/cat/gender";
 import IconButton from "@/components/common/icon-button";
-import ProfileImage from "@/components/common/profile-image";
+import CatProfileImage from "@/components/cat/profile-image";
 import { ROUTES } from "@/constants/route";
 import { useColors } from "@/hooks/use-colors";
 import { formatDate } from "@/lib/utils";
@@ -50,7 +50,7 @@ const CatCard = ({ cat, routeToDetail = true }: CatCardProps) => {
           </IconButton>
 
           <View className="flex-col items-center">
-            <ProfileImage imageUrl={cat.profileImageUrl} size="md" />
+            <CatProfileImage imageUrl={cat.profileImageUrl} size="md" />
             <View className="h-3" />
             <Text className="typo-body3 text-semantic-text-primary">
               {cat.name}

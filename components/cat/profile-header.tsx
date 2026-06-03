@@ -1,4 +1,4 @@
-import ProfileImage from "@/components/common/profile-image";
+import CatProfileImage from "@/components/cat/profile-image";
 import { Text, View } from "react-native";
 
 interface CatProfileHeaderProps {
@@ -19,7 +19,7 @@ const CatProfileHeader = ({
   return (
     <View className="pt-6">
       <View className="flex-col items-center">
-        <ProfileImage imageUrl={imageUrl ?? null} size="lg" />
+        <CatProfileImage imageUrl={imageUrl ?? null} size="lg" />
         <Text className="typo-title3 mb-1 text-semantic-text-primary mt-3">
           {name}
         </Text>

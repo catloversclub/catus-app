@@ -4,7 +4,7 @@ import {
   useUserFollowingsQuery,
   useUserProfileQuery,
 } from "@/api/domains/user/queries";
-import ProfileImage from "@/components/common/profile-image";
+import UserProfileImage from "@/components/user/profile-image";
 import { useColors } from "@/hooks/use-colors";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "expo-router";
@@ -75,7 +75,7 @@ const FollowingListContent = () => {
         <View className="flex-row items-center gap-3 px-4 py-3">
           <Link href={`/user/${item.id}`} asChild>
             <Pressable className="active:opacity-70">
-              <ProfileImage imageUrl={item.profileImageUrl} size="sm" />
+              <UserProfileImage imageUrl={item.profileImageUrl} size="sm" />
             </Pressable>
           </Link>
           <Link href={`/user/${item.id}`} asChild>

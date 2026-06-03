@@ -14,20 +14,16 @@ import { ActivityIndicator, Pressable, View } from "react-native";
 interface ProfileImageProps {
   imageUrl: string | null;
   size: "sm" | "md" | "lg";
-  userId?: string;
-  catId?: string;
-  isUserLink?: boolean;
-  isCatLink?: boolean;
+  href?: string;
+  alt?: string;
   isEditMode?: boolean;
   handleImageUriChange?: (uri: string | null) => void;
 }
 
 const ProfileImage = ({
   imageUrl,
-  userId,
-  catId,
-  isUserLink = false,
-  isCatLink = false,
+  href,
+  alt,
   isEditMode = false,
   size,
   handleImageUriChange,
@@ -60,7 +56,7 @@ const ProfileImage = ({
             borderRadius: sizeValue,
           }}
           contentFit="cover"
-          alt={`${userId ?? "User"} profile`}
+          alt={alt ?? "profile"}
           onLoad={() => setIsImageLoading(false)}
         />
         {isImageLoading && (
@@ -99,17 +95,9 @@ const ProfileImage = ({
     </>
   );
 
-  if (isUserLink) {
+  if (href) {
     return (
-      <Link href={`/user/${userId}`} asChild>
-        <Pressable className="active:opacity-60">{image}</Pressable>
-      </Link>
-    );
-  }
-
-  if (isCatLink) {
-    return (
-      <Link href={`/cat/${catId}`} asChild>
+      <Link href={href as never} asChild>
         <Pressable className="active:opacity-60">{image}</Pressable>
       </Link>
     );

@@ -1,14 +1,14 @@
 import { Text, useWindowDimensions, View } from "react-native";
 
 import { Post } from "@/api/domains/post/types";
-import { Skeleton } from "@/components/ui/skeleton";
 import MoreIcon from "@/assets/icons/more.svg";
 import CommentSheet from "@/components/bottom-sheet/comment-sheet";
 import MoreSheet from "@/components/bottom-sheet/more-sheet";
 import IconButton from "@/components/common/icon-button";
-import ProfileImage from "@/components/common/profile-image";
+import CatProfileImage from "@/components/cat/profile-image";
 import PostCarousel from "@/components/feed/post-carousel";
 import PostOverlayActions from "@/components/feed/post-overlay-actions";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useColors } from "@/hooks/use-colors";
 import usePostActions from "@/hooks/use-post-actions";
 import { formatRelativeTime } from "@/lib/utils";
@@ -20,16 +20,15 @@ interface ProfileInfoProps {
 
 const ProfileInfo = ({ post, onMorePress }: ProfileInfoProps) => {
   const { colors } = useColors();
-  const catName = post.cat?.name ?? post.author.nickname;
+  const catName = post.cat.name;
 
   return (
     <View className="flex-row items-center justify-between">
       <View className="flex-row items-center gap-3">
-        <ProfileImage
-          imageUrl={post.cat?.profileImageUrl ?? null}
+        <CatProfileImage
+          imageUrl={post.cat.profileImageUrl}
           size="sm"
-          isCatLink
-          catId={post.cat?.id}
+          catId={post.cat.id}
         />
         <View>
           <Text className="typo-body3 text-semantic-text-primary">
@@ -86,7 +85,11 @@ const FeedCardSkeleton = () => {
       <Skeleton style={{ width: imageSize, height: imageSize }} />
       <View style={{ flexDirection: "row", gap: 6, justifyContent: "center" }}>
         {[0, 1, 2].map((i) => (
-          <Skeleton key={i} className="rounded-full" style={{ width: 6, height: 6 }} />
+          <Skeleton
+            key={i}
+            className="rounded-full"
+            style={{ width: 6, height: 6 }}
+          />
         ))}
       </View>
       <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>

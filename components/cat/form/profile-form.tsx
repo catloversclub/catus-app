@@ -3,7 +3,7 @@ import RegisterBirthDate from "@/components/cat/form/field/birthday";
 import RegisterBreed from "@/components/cat/form/field/breed";
 import RegisterGender from "@/components/cat/form/field/gender";
 import RegisterCatName from "@/components/cat/form/field/name";
-import ProfileImage from "@/components/common/profile-image";
+import CatProfileImage from "@/components/cat/profile-image";
 import BottomActionBar from "@/components/layout/bottom-action-bar";
 import ProgressBar from "@/components/onboarding/progress-bar";
 import { useKeyboardAvoidingView } from "@/hooks/use-keyboard-avoiding-view";
@@ -75,7 +75,7 @@ const CatProfileForm = ({
         </Text>
         <View className="h-6" />
         <View className="items-center">
-          <ProfileImage
+          <CatProfileImage
             imageUrl={imageUri}
             size="lg"
             isEditMode

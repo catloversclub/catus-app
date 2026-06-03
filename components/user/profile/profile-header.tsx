@@ -1,4 +1,4 @@
-import ProfileImage from "@/components/common/profile-image";
+import UserProfileImage from "@/components/user/profile-image";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link, type Href } from "expo-router";
 import { Pressable, Text, View } from "react-native";
@@ -26,7 +26,7 @@ const UserProfileHeader = ({
 }: UserProfileHeaderProps) => (
   <View className="pt-6">
     <View className="flex-col items-center">
-      <ProfileImage imageUrl={imageUrl ?? null} size="lg" />
+      <UserProfileImage imageUrl={imageUrl ?? null} size="lg" />
       <Text className="typo-title3 mb-1 text-semantic-text-primary mt-3">
         {name}
       </Text>

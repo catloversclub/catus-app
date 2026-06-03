@@ -4,7 +4,7 @@ import {
 } from "@/api/domains/comment/queries";
 import { Comment } from "@/api/domains/comment/types";
 import { ReplyTarget } from "@/components/feed/comment-input-bar";
-import ProfileImage from "@/components/common/profile-image";
+import UserProfileImage from "@/components/user/profile-image";
 import {
   Accordion,
   AccordionContent,
@@ -20,7 +20,7 @@ import { Pressable, View } from "react-native";
 const ReplyItem = ({ reply }: { reply: Comment }) => {
   return (
     <View className="flex-row items-start gap-3 p-3 pl-12">
-      <ProfileImage imageUrl={reply.author.profileImageUrl} size="sm" />
+      <UserProfileImage imageUrl={reply.author.profileImageUrl} size="sm" />
       <View className="flex-col">
         <Text className="typo-label1 text-semantic-text-secondary">
           {reply.author.nickname}
@@ -67,10 +67,9 @@ const CommentItem = ({ comment, postId, onReply }: CommentItemProps) => {
   return (
     <View className="flex-col">
       <View className="flex-row items-start gap-3 p-3">
-        <ProfileImage
+        <UserProfileImage
           imageUrl={author.profileImageUrl}
           userId={author.id}
-          isUserLink
           size="sm"
         />
         <View className="flex-1 flex-col">

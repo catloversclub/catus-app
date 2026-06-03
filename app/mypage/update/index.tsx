@@ -1,5 +1,5 @@
 import { useUserProfileQuery } from "@/api/domains/user/queries";
-import ProfileImage from "@/components/common/profile-image";
+import UserProfileImage from "@/components/user/profile-image";
 import Select from "@/components/common/select";
 import BottomActionBar from "@/components/layout/bottom-action-bar";
 import NameField from "@/components/settings/name-field";
@@ -79,7 +79,7 @@ const UpdateProfile = () => {
         className="py-6 px-3"
         contentContainerStyle={{ flexGrow: 1, alignItems: "center", gap: 40 }}
       >
-        <ProfileImage
+        <UserProfileImage
           imageUrl={userData.profileImageUrl}
           size="lg"
           isEditMode

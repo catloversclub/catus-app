@@ -1,5 +1,5 @@
 import DeleteIcon from "@/assets/icons/delete.svg";
-import ProfileImage from "@/components/common/profile-image";
+import UserProfileImage from "@/components/user/profile-image";
 import { useRef } from "react";
 import { Pressable, Text, TouchableOpacity, View } from "react-native";
 import ReanimatedSwipeable, {
@@ -68,7 +68,7 @@ const NotificationItem = ({
       overshootRight={false}
     >
       <View className="flex-row items-center h-[92px] px-6 gap-3 bg-semantic-bg-primary border-b border-semantic-border-primary">
-        <ProfileImage imageUrl={item.actor.imageUrl} size="sm" />
+        <UserProfileImage imageUrl={item.actor.imageUrl} size="sm" />
         <View className="flex-1 gap-1.5">
           <Text
             className="typo-body3 text-semantic-text-primary"

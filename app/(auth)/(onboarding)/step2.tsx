@@ -1,4 +1,4 @@
-import ProfileImage from "@/components/common/profile-image";
+import UserProfileImage from "@/components/user/profile-image";
 import BottomActionBar from "@/components/layout/bottom-action-bar";
 import ProgressBar from "@/components/onboarding/progress-bar";
 import { ROUTES } from "@/constants/route";
@@ -34,7 +34,7 @@ const Step2 = () => {
         </Text>
         <View className="h-6" />
         <View className="items-center">
-          <ProfileImage
+          <UserProfileImage
             imageUrl={imageUri}
             size="lg"
             isEditMode
