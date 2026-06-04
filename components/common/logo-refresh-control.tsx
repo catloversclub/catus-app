@@ -141,7 +141,7 @@ const RefreshableScrollView = ({
         onScrollEndDrag={handleScrollEndDrag}
         {...props}
         contentContainerStyle={[
-          { paddingTop: 10 },
+          { paddingTop: 10, flexGrow: 1 },
           props.contentContainerStyle,
         ]}
       >

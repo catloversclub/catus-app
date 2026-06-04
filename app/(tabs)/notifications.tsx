@@ -21,7 +21,7 @@ const NotificationsScreen = () => {
       <Stack.Screen
         options={{ ...defaultOptions, title: "알림", headerLeft: undefined }}
       />
-      <View className="flex-1 bg-semantic-bg-primary">
+      <View className="flex-1 bg-semantic-bg-primary px-3">
         <RefreshableScrollView
           onRefresh={refreshQueries}
           onScroll={handleScroll}
