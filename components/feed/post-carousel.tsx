@@ -1,7 +1,7 @@
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
   FlatList,
   Pressable,
@@ -16,6 +16,13 @@ import { CAROUSEL_CONFIG } from "@/constants/config";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CarouselCounter, CarouselDots } from "./carousel-indicator";
 
+interface Origin {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 interface PostCarouselProps {
   post: Post;
   overlay?: React.ReactNode;
@@ -28,7 +35,9 @@ interface CarouselItemProps {
   catName: string;
   carouselWidth: number;
   imageHeight: number;
-  onPress: () => void;
+  linkable: boolean;
+  postId: string;
+  onOpenViewer: (url: string, origin: Origin) => void;
 }
 
 const CarouselItem = ({
@@ -37,17 +46,35 @@ const CarouselItem = ({
   catName,
   carouselWidth,
   imageHeight,
-  onPress,
-}: CarouselItemProps) => (
-  <Pressable onPress={onPress}>
-    <Image
-      source={{ uri: item.url }}
-      alt={`${catName} photo ${index + 1}`}
-      style={{ width: carouselWidth, height: imageHeight }}
-      contentFit="cover"
-    />
-  </Pressable>
-);
+  linkable,
+  postId,
+  onOpenViewer,
+}: CarouselItemProps) => {
+  const viewRef = useRef<View>(null);
+
+  const handlePress = () => {
+    if (linkable) {
+      router.push(`/post/${postId}`);
+      return;
+    }
+    viewRef.current?.measureInWindow((x, y, width, height) => {
+      if (width > 0) onOpenViewer(item.url, { x, y, width, height });
+    });
+  };
+
+  return (
+    <Pressable onPress={handlePress}>
+      <View ref={viewRef}>
+        <Image
+          source={{ uri: item.url }}
+          alt={`${catName} photo ${index + 1}`}
+          style={{ width: carouselWidth, height: imageHeight }}
+          contentFit="cover"
+        />
+      </View>
+    </Pressable>
+  );
+};
 
 const PostCarousel = ({
   post,
@@ -56,7 +83,10 @@ const PostCarousel = ({
 }: PostCarouselProps) => {
   const [current, setCurrent] = useState(0);
   const [imageHeight, setImageHeight] = useState<number | null>(null);
-  const [viewerUrl, setViewerUrl] = useState<string | null>(null);
+  const [viewerState, setViewerState] = useState<{
+    url: string;
+    origin: Origin;
+  } | null>(null);
   const { width } = useWindowDimensions();
   const carouselWidth = width - 24;
 
@@ -109,11 +139,9 @@ const PostCarousel = ({
               catName={catName}
               carouselWidth={carouselWidth}
               imageHeight={imageHeight}
-              onPress={
-                linkable
-                  ? () => router.push(`/post/${post.id}`)
-                  : () => setViewerUrl(item.url)
-              }
+              linkable={linkable}
+              postId={post.id}
+              onOpenViewer={(url, origin) => setViewerState({ url, origin })}
             />
           )}
         />
@@ -143,9 +171,10 @@ const PostCarousel = ({
 
       {!linkable && (
         <ImageViewerModal
-          visible={viewerUrl !== null}
-          source={{ uri: viewerUrl ?? "" }}
-          onClose={() => setViewerUrl(null)}
+          visible={viewerState !== null}
+          source={{ uri: viewerState?.url ?? "" }}
+          origin={viewerState?.origin}
+          onClose={() => setViewerState(null)}
         />
       )}
     </>

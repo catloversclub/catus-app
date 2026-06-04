@@ -37,16 +37,28 @@ const ProfileImage = ({
 
   const [isLoading, setIsLoading] = useState(false);
   const [isImageLoading, setIsImageLoading] = useState(!!imageUrl);
-  const [isPreviewVisible, setIsPreviewVisible] = useState(false);
+  const [previewOrigin, setPreviewOrigin] = useState<{
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  } | null>(null);
 
   const SelectImageSheetModalRef = useRef<BottomSheetModal>(null);
+  const imageRef = useRef<View>(null);
 
   const handleSelectImagePress = () => {
     SelectImageSheetModalRef.current?.present();
   };
 
+  const handlePreviewPress = () => {
+    imageRef.current?.measureInWindow((x, y, w, h) => {
+      if (w > 0) setPreviewOrigin({ x, y, width: w, height: h });
+    });
+  };
+
   const imageVisual = (
-    <View style={{ width: sizeValue, height: sizeValue }}>
+    <View ref={imageRef} style={{ width: sizeValue, height: sizeValue }}>
       <Image
         source={imageSource}
         placeholder={defaultAvatar}
@@ -110,17 +122,15 @@ const ProfileImage = ({
   if (!isEditMode) {
     return (
       <>
-        <Pressable
-          onPress={() => setIsPreviewVisible(true)}
-          className="active:opacity-60"
-        >
+        <Pressable onPress={handlePreviewPress} className="active:opacity-60">
           {imageVisual}
         </Pressable>
         {selectImageSheet}
         <ProfilePreviewModal
-          visible={isPreviewVisible}
+          visible={previewOrigin !== null}
           imageUrl={imageUrl}
-          onClose={() => setIsPreviewVisible(false)}
+          origin={previewOrigin ?? undefined}
+          onClose={() => setPreviewOrigin(null)}
         />
       </>
     );

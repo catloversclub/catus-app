@@ -1,9 +1,16 @@
 import { Image, ImageSource } from "expo-image";
 import { useEffect } from "react";
-import { Modal, Pressable, useWindowDimensions } from "react-native";
+import {
+  Modal,
+  Pressable,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   Easing,
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -11,11 +18,19 @@ import Animated, {
 
 const CIRCULAR_SIZE = 200;
 
+interface Origin {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 interface ImageViewerModalProps {
   visible: boolean;
   source: ImageSource;
   onClose: () => void;
   circular?: boolean;
+  origin?: Origin;
 }
 
 const ImageViewerModal = ({
@@ -23,32 +38,80 @@ const ImageViewerModal = ({
   source,
   onClose,
   circular = false,
+  origin,
 }: ImageViewerModalProps) => {
   const { width, height } = useWindowDimensions();
-  const scale = useSharedValue(1);
-  const baseScale = useSharedValue(1);
+
+  const scaleAnim = useSharedValue(1);
+  const txAnim = useSharedValue(0);
+  const tyAnim = useSharedValue(0);
+  const bgOpacity = useSharedValue(0);
+  const pinchScale = useSharedValue(1);
+  const pinchBase = useSharedValue(1);
 
   useEffect(() => {
-    if (visible) {
-      scale.value = 1;
-      baseScale.value = 1;
+    if (!visible) return;
+
+    pinchScale.value = 1;
+    pinchBase.value = 1;
+
+    if (origin) {
+      const targetSize = circular ? CIRCULAR_SIZE : width;
+      scaleAnim.value = origin.width / targetSize;
+      txAnim.value = origin.x + origin.width / 2 - width / 2;
+      tyAnim.value = origin.y + origin.height / 2 - height / 2;
+      bgOpacity.value = 0;
+
+      const cfg = { duration: 300, easing: Easing.out(Easing.quad) };
+      scaleAnim.value = withTiming(1, cfg);
+      txAnim.value = withTiming(0, cfg);
+      tyAnim.value = withTiming(0, cfg);
+      bgOpacity.value = withTiming(1, cfg);
+    } else {
+      scaleAnim.value = 1;
+      txAnim.value = 0;
+      tyAnim.value = 0;
+      bgOpacity.value = 1;
     }
   }, [visible]);
 
+  const handleClose = () => {
+    const cfg = { duration: 220, easing: Easing.in(Easing.quad) };
+
+    if (origin) {
+      const targetSize = circular ? CIRCULAR_SIZE : width;
+      scaleAnim.value = withTiming(origin.width / targetSize, cfg);
+      txAnim.value = withTiming(origin.x + origin.width / 2 - width / 2, cfg);
+      tyAnim.value = withTiming(origin.y + origin.height / 2 - height / 2, cfg);
+    }
+
+    bgOpacity.value = withTiming(0, cfg, (finished) => {
+      if (finished) runOnJS(onClose)();
+    });
+  };
+
   const pinchGesture = Gesture.Pinch()
     .onUpdate((e) => {
-      scale.value = baseScale.value * e.scale;
+      pinchScale.value = pinchBase.value * e.scale;
     })
     .onEnd(() => {
-      baseScale.value = 1;
-      scale.value = withTiming(1, {
+      pinchBase.value = 1;
+      pinchScale.value = withTiming(1, {
         duration: 200,
         easing: Easing.out(Easing.quad),
       });
     });
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
+  const backdropStyle = useAnimatedStyle(() => ({
+    opacity: bgOpacity.value,
+  }));
+
+  const imageContainerStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: txAnim.value },
+      { translateY: tyAnim.value },
+      { scale: scaleAnim.value * pinchScale.value },
+    ],
   }));
 
   const imageStyle = circular
@@ -59,20 +122,19 @@ const ImageViewerModal = ({
     <Modal
       visible={visible}
       transparent
-      animationType="fade"
-      onRequestClose={onClose}
+      animationType="none"
+      onRequestClose={handleClose}
     >
+      <Animated.View
+        style={[StyleSheet.absoluteFill, styles.backdrop, backdropStyle]}
+        pointerEvents="none"
+      />
       <Pressable
-        style={{
-          flex: 1,
-          backgroundColor: "rgba(0,0,0,0.75)",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-        onPress={onClose}
+        style={[StyleSheet.absoluteFill, styles.center]}
+        onPress={handleClose}
       >
         <GestureDetector gesture={pinchGesture}>
-          <Animated.View style={animatedStyle}>
+          <Animated.View style={imageContainerStyle}>
             <Image
               source={source}
               style={imageStyle}
@@ -85,5 +147,15 @@ const ImageViewerModal = ({
     </Modal>
   );
 };
+
+const styles = StyleSheet.create({
+  backdrop: {
+    backgroundColor: "rgba(0,0,0,0.75)",
+  },
+  center: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
 
 export default ImageViewerModal;
