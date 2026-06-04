@@ -5,7 +5,7 @@ import MoreIcon from "@/assets/icons/more.svg";
 import CommentSheet from "@/components/bottom-sheet/comment-sheet";
 import MoreSheet from "@/components/bottom-sheet/more-sheet";
 import IconButton from "@/components/common/icon-button";
-import CatProfileImage from "@/components/cat/profile-image";
+import { CatPostProfileInfo } from "@/components/feed/post-profile-info";
 import PostCarousel from "@/components/feed/post-carousel";
 import PostOverlayActions from "@/components/feed/post-overlay-actions";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -20,25 +20,15 @@ interface ProfileInfoProps {
 
 const ProfileInfo = ({ post, onMorePress }: ProfileInfoProps) => {
   const { colors } = useColors();
-  const catName = post.cat.name;
 
   return (
     <View className="flex-row items-center justify-between">
-      <View className="flex-row items-center gap-3">
-        <CatProfileImage
-          imageUrl={post.cat.profileImageUrl}
-          size="sm"
-          catId={post.cat.id}
-        />
-        <View>
-          <Text className="typo-body3 text-semantic-text-primary">
-            {catName}
-          </Text>
-          <Text className="typo-label1 text-semantic-text-secondary">
-            {formatRelativeTime(post.createdAt)}
-          </Text>
-        </View>
-      </View>
+      <CatPostProfileInfo
+        imageUrl={post.cat.profileImageUrl}
+        catId={post.cat.id}
+        name={post.cat.name}
+        subtitle={formatRelativeTime(post.createdAt)}
+      />
       <IconButton onPress={onMorePress}>
         <MoreIcon color={colors.icon.primary} />
       </IconButton>

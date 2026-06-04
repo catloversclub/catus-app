@@ -4,7 +4,7 @@ import {
 } from "@/api/domains/comment/queries";
 import { Comment } from "@/api/domains/comment/types";
 import { ReplyTarget } from "@/components/feed/comment-input-bar";
-import UserProfileImage from "@/components/user/profile-image";
+import { UserPostProfileInfo } from "@/components/feed/post-profile-info";
 import {
   Accordion,
   AccordionContent,
@@ -13,28 +13,23 @@ import {
 } from "@/components/ui/accordion";
 import { Text } from "@/components/ui/text";
 import { cn, formatRelativeTime } from "@/lib/utils";
-import { Heart, MessageCircle } from "@/lib/icons";
+import { Heart } from "@/lib/icons";
 import { useState } from "react";
 import { Pressable, View } from "react-native";
 
-const ReplyItem = ({ reply }: { reply: Comment }) => {
-  return (
-    <View className="flex-row items-start gap-3 p-3 pl-12">
-      <UserProfileImage imageUrl={reply.author.profileImageUrl} size="sm" />
-      <View className="flex-col">
-        <Text className="typo-label1 text-semantic-text-secondary">
-          {reply.author.nickname}
-        </Text>
-        <Text className="typo-body4 mt-1 text-semantic-text-primary">
-          {reply.content}
-        </Text>
-        <Text className="typo-label1 mt-1.5 text-semantic-text-secondary">
-          {formatRelativeTime(reply.createdAt)}
-        </Text>
-      </View>
-    </View>
-  );
-};
+const ReplyItem = ({ reply }: { reply: Comment }) => (
+  <View className="px-3 pt-3 pb-2 pl-12">
+    <UserPostProfileInfo
+      imageUrl={reply.author.profileImageUrl}
+      userId={reply.author.id}
+      name={reply.author.nickname}
+      subtitle={formatRelativeTime(reply.createdAt)}
+    />
+    <Text className="typo-body4 text-semantic-text-primary mt-1 pl-12">
+      {reply.content}
+    </Text>
+  </View>
+);
 
 type CommentItemProps = {
   comment: Comment;
@@ -66,30 +61,13 @@ const CommentItem = ({ comment, postId, onReply }: CommentItemProps) => {
 
   return (
     <View className="flex-col">
-      <View className="flex-row items-start gap-3 p-3">
-        <UserProfileImage
+      <View className="flex-row items-start justify-between p-3 pb-1">
+        <UserPostProfileInfo
           imageUrl={author.profileImageUrl}
           userId={author.id}
-          size="sm"
+          name={author.nickname}
+          subtitle={formatRelativeTime(createdAt)}
         />
-        <View className="flex-1 flex-col">
-          <Text className="typo-label1 text-semantic-text-secondary">
-            {author.nickname}
-          </Text>
-          <Text className="typo-body4 mt-1 text-semantic-text-primary">
-            {content}
-          </Text>
-          <View className="mt-1.5 flex-row items-center gap-3">
-            <Text className="typo-label1 text-semantic-text-secondary">
-              {formatRelativeTime(createdAt)}
-            </Text>
-            <Pressable onPress={handleReply} className="active:opacity-60">
-              <Text className="typo-label1 text-semantic-text-tertiary">
-                답글
-              </Text>
-            </Pressable>
-          </View>
-        </View>
         <Pressable
           onPress={handleLike}
           className="items-center gap-0.5 active:opacity-60"
@@ -107,6 +85,13 @@ const CommentItem = ({ comment, postId, onReply }: CommentItemProps) => {
               {likeCount}
             </Text>
           )}
+        </Pressable>
+      </View>
+
+      <View className="px-3 pb-3 pl-[60px]">
+        <Text className="typo-body4 text-semantic-text-primary">{content}</Text>
+        <Pressable onPress={handleReply} className="mt-1.5 active:opacity-60">
+          <Text className="typo-label1 text-semantic-text-tertiary">답글</Text>
         </Pressable>
       </View>
 

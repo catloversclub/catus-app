@@ -52,6 +52,7 @@ export const useUserDetailQuery = (userId: string) => {
   });
 };
 
+
 export const useCheckNicknameQuery = (nickname: string, enabled: boolean) => {
   return useQuery({
     queryKey: userKeys.checkNickname(nickname),
