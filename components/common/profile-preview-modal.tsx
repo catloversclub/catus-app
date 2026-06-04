@@ -5,9 +5,10 @@ import { Image } from "expo-image";
 import { Modal, Pressable } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
+  Easing,
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
+  withTiming,
 } from "react-native-reanimated";
 
 const PREVIEW_SIZE = 200;
@@ -35,7 +36,7 @@ const ProfilePreviewModal = ({
     })
     .onEnd(() => {
       baseScale.value = 1;
-      scale.value = withSpring(1, { damping: 15, stiffness: 200 });
+      scale.value = withTiming(1, { duration: 200, easing: Easing.out(Easing.quad) });
     });
 
   const animatedStyle = useAnimatedStyle(() => ({
