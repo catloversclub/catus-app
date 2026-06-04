@@ -2,11 +2,9 @@ import {
   useDeleteNotificationMutation,
   useNotificationsQuery,
 } from "@/api/domains/notification/queries";
-import { type Notification } from "@/api/domains/notification/types";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatRelativeTime } from "@/lib/utils";
 import { ActivityIndicator, Text, View } from "react-native";
-import NotificationItem, { type NotificationData } from "./notification-item";
+import NotificationItem from "./notification-item";
 
 const SKELETON_ROWS = [
   { messageWidth: 210, hasButton: true },
@@ -49,40 +47,6 @@ const NotificationListSkeleton = () => (
   </View>
 );
 
-const buildMessage = (n: Notification): string => {
-  if (!n.data) return n.body ?? n.title ?? "";
-  switch (n.data.type) {
-    case "POST_LIKE":
-    case "COMMENT_LIKE":
-      return `${n.title} ${n.body}`;
-    case "COMMENT_CREATED":
-      return n.title ?? "";
-    case "USER_FOLLOWED":
-      return n.body ?? "";
-  }
-};
-
-const getActorId = (payload: Notification["data"]): string => {
-  if (!payload) return "";
-  if (payload.type === "USER_FOLLOWED") {
-    return payload.followerId;
-  }
-  return payload.actorId;
-};
-
-const toNotificationData = (n: Notification): NotificationData | null => {
-  if (!n.data) return null;
-  return {
-    id: n.id,
-    type: n.data.type,
-    actorId: getActorId(n.data),
-    actorImageUrl: null,
-    message: buildMessage(n),
-    isFollowing: false,
-    timestamp: formatRelativeTime(n.createdAt),
-  };
-};
-
 interface NotificationListProps {
   loadMoreRef: React.RefObject<(() => void) | null>;
 }
@@ -92,10 +56,7 @@ const NotificationList = ({ loadMoreRef }: NotificationListProps) => {
     useNotificationsQuery();
   const { mutate: deleteNotif } = useDeleteNotificationMutation();
 
-  const notifications = data.pages
-    .flat()
-    .map(toNotificationData)
-    .filter(Boolean) as NotificationData[];
+  const notifications = data.pages.flat();
 
   loadMoreRef.current = () => {
     if (hasNextPage && !isFetchingNextPage) fetchNextPage();
