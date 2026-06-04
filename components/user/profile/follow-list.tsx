@@ -64,11 +64,7 @@ const FollowItem = ({
 
   return (
     <View className="flex-row items-center gap-3 px-4 py-3">
-      <Link href={`/user/${id}`} asChild>
-        <Pressable className="active:opacity-70">
-          <UserProfileImage imageUrl={profileImageUrl ?? null} size="sm" />
-        </Pressable>
-      </Link>
+      <UserProfileImage imageUrl={profileImageUrl ?? null} userId={id} size="sm" />
       <Link href={`/user/${id}`} asChild>
         <Pressable className="flex-1 active:opacity-70">
           <Text
