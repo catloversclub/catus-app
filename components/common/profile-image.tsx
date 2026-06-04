@@ -3,6 +3,7 @@ import AvatarDark from "@/assets/images/avatar/user-dark.png";
 import AvatarLight from "@/assets/images/avatar/user-light.png";
 import SelectImageSheet from "@/components/bottom-sheet/select-image-sheet";
 import IconButton from "@/components/common/icon-button";
+import ProfilePreviewModal from "@/components/common/profile-preview-modal";
 import { PROFILE_SIZE } from "@/constants/user";
 import { useColors } from "@/hooks/use-colors";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
@@ -36,6 +37,7 @@ const ProfileImage = ({
 
   const [isLoading, setIsLoading] = useState(false);
   const [isImageLoading, setIsImageLoading] = useState(!!imageUrl);
+  const [isPreviewVisible, setIsPreviewVisible] = useState(false);
 
   const SelectImageSheetModalRef = useRef<BottomSheetModal>(null);
 
@@ -43,67 +45,93 @@ const ProfileImage = ({
     SelectImageSheetModalRef.current?.present();
   };
 
-  const image = (
-    <>
-      <View style={{ width: sizeValue, height: sizeValue }}>
-        <Image
-          source={imageSource}
-          placeholder={defaultAvatar}
-          transition={150}
+  const imageVisual = (
+    <View style={{ width: sizeValue, height: sizeValue }}>
+      <Image
+        source={imageSource}
+        placeholder={defaultAvatar}
+        transition={150}
+        style={{
+          width: sizeValue,
+          height: sizeValue,
+          borderRadius: sizeValue,
+        }}
+        contentFit="cover"
+        alt={alt ?? "profile"}
+        onLoad={() => setIsImageLoading(false)}
+      />
+      {isImageLoading && (
+        <View
           style={{
+            position: "absolute",
             width: sizeValue,
             height: sizeValue,
             borderRadius: sizeValue,
           }}
-          contentFit="cover"
-          alt={alt ?? "profile"}
-          onLoad={() => setIsImageLoading(false)}
-        />
-        {isImageLoading && (
-          <View
-            style={{
-              position: "absolute",
-              width: sizeValue,
-              height: sizeValue,
-              borderRadius: sizeValue,
-            }}
-            className="bg-accent animate-pulse"
-          />
-        )}
-        {isEditMode && (
-          <IconButton
-            onPress={handleSelectImagePress}
-            disabled={isLoading}
-            className="absolute bottom-0 -right-2 size-11 rounded-full items-center justify-center border border-semantic-border-primary"
-            style={{ backgroundColor: colors.bg.secondary }}
-          >
-            {isLoading ? (
-              <ActivityIndicator size="small" color={colors.icon.primary} />
-            ) : (
-              <CameraIcon width={20} height={20} color={colors.icon.primary} />
-            )}
-          </IconButton>
-        )}
-      </View>
-      {handleImageUriChange && (
-        <SelectImageSheet
-          SelectImageSheetModalRef={SelectImageSheetModalRef}
-          handleIsLoading={setIsLoading}
-          handleImageUriChange={handleImageUriChange}
+          className="bg-accent animate-pulse"
         />
       )}
-    </>
+      {isEditMode && (
+        <IconButton
+          onPress={handleSelectImagePress}
+          disabled={isLoading}
+          className="absolute bottom-0 -right-2 size-11 rounded-full items-center justify-center border border-semantic-border-primary"
+          style={{ backgroundColor: colors.bg.secondary }}
+        >
+          {isLoading ? (
+            <ActivityIndicator size="small" color={colors.icon.primary} />
+          ) : (
+            <CameraIcon width={20} height={20} color={colors.icon.primary} />
+          )}
+        </IconButton>
+      )}
+    </View>
+  );
+
+  const selectImageSheet = handleImageUriChange && (
+    <SelectImageSheet
+      SelectImageSheetModalRef={SelectImageSheetModalRef}
+      handleIsLoading={setIsLoading}
+      handleImageUriChange={handleImageUriChange}
+    />
   );
 
   if (href) {
     return (
       <Link href={href as never} asChild>
-        <Pressable className="active:opacity-60">{image}</Pressable>
+        <Pressable className="active:opacity-60">
+          {imageVisual}
+          {selectImageSheet}
+        </Pressable>
       </Link>
     );
   }
 
-  return image;
+  if (!isEditMode) {
+    return (
+      <>
+        <Pressable
+          onPress={() => setIsPreviewVisible(true)}
+          className="active:opacity-60"
+        >
+          {imageVisual}
+        </Pressable>
+        {selectImageSheet}
+        <ProfilePreviewModal
+          visible={isPreviewVisible}
+          imageUrl={imageUrl}
+          onClose={() => setIsPreviewVisible(false)}
+        />
+      </>
+    );
+  }
+
+  return (
+    <>
+      {imageVisual}
+      {selectImageSheet}
+    </>
+  );
 };
 
 export default ProfileImage;
