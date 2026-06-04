@@ -1,16 +1,10 @@
 import {
-  notificationKeys,
   useDeleteNotificationMutation,
   useNotificationsQuery,
 } from "@/api/domains/notification/queries";
 import { type Notification } from "@/api/domains/notification/types";
-import {
-  useFollowUserMutation,
-  useUnfollowUserMutation,
-} from "@/api/domains/user/queries";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatRelativeTime } from "@/lib/utils";
-import { useQueryClient } from "@tanstack/react-query";
 import { ActivityIndicator, Text, View } from "react-native";
 import NotificationItem, { type NotificationData } from "./notification-item";
 
@@ -57,18 +51,18 @@ const buildMessage = (n: Notification): string => {
   if (!n.data) return n.body ?? n.title ?? "";
   switch (n.data.type) {
     case "POST_LIKE":
+    case "COMMENT_LIKE":
       return `${n.title} ${n.body}`;
     case "COMMENT_CREATED":
       return n.title ?? "";
     case "USER_FOLLOWED":
-    case "CAT_FOLLOWED":
       return n.body ?? "";
   }
 };
 
 const getActorId = (payload: Notification["data"]): string => {
   if (!payload) return "";
-  if (payload.type === "USER_FOLLOWED" || payload.type === "CAT_FOLLOWED") {
+  if (payload.type === "USER_FOLLOWED") {
     return payload.followerId;
   }
   return payload.actorId;
@@ -94,32 +88,15 @@ interface NotificationListProps {
 const NotificationList = ({ loadMoreRef }: NotificationListProps) => {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useNotificationsQuery();
-  const queryClient = useQueryClient();
   const { mutate: deleteNotif } = useDeleteNotificationMutation();
-  const { mutate: follow } = useFollowUserMutation();
-  const { mutate: unfollow } = useUnfollowUserMutation();
 
-  const rawList = data.pages.flat();
-  const notifications = rawList
+  const notifications = data.pages
+    .flat()
     .map(toNotificationData)
     .filter(Boolean) as NotificationData[];
 
   loadMoreRef.current = () => {
     if (hasNextPage && !isFetchingNextPage) fetchNextPage();
-  };
-
-  const handleFollowToggle = (id: string) => {
-    const item = rawList.find((n) => n.id === id);
-    if (!item?.data) return;
-    const actorId = getActorId(item.data);
-    const mapped = notifications.find((n) => n.id === id);
-    const invalidate = () =>
-      queryClient.invalidateQueries({ queryKey: notificationKeys.list() });
-    if (mapped?.isFollowing) {
-      unfollow(actorId, { onSuccess: invalidate });
-    } else {
-      follow(actorId, { onSuccess: invalidate });
-    }
   };
 
   if (notifications.length === 0) {
@@ -138,12 +115,7 @@ const NotificationList = ({ loadMoreRef }: NotificationListProps) => {
   return (
     <View>
       {notifications.map((item) => (
-        <NotificationItem
-          key={item.id}
-          item={item}
-          onDelete={deleteNotif}
-          onFollowToggle={handleFollowToggle}
-        />
+        <NotificationItem key={item.id} item={item} onDelete={deleteNotif} />
       ))}
       {isFetchingNextPage && (
         <ActivityIndicator size="small" style={{ marginVertical: 12 }} />

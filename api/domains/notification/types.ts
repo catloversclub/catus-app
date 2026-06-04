@@ -1,12 +1,12 @@
 export type NotificationType =
   | "USER_FOLLOWED"
-  | "CAT_FOLLOWED"
+  | "COMMENT_LIKE"
   | "POST_LIKE"
   | "COMMENT_CREATED";
 
 export type NotificationPayload =
   | { type: "USER_FOLLOWED"; followerId: string }
-  | { type: "CAT_FOLLOWED"; followerId: string; catId: string }
+  | { type: "COMMENT_LIKE"; actorId: string; postId: string; commentId: string }
   | { type: "POST_LIKE"; actorId: string; postId: string }
   | { type: "COMMENT_CREATED"; actorId: string; postId: string; commentId: string };
 

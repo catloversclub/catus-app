@@ -1,16 +1,12 @@
 import DeleteIcon from "@/assets/icons/delete.svg";
+import { type NotificationType } from "@/api/domains/notification/types";
+import FollowButton from "@/components/user/follow-button";
 import UserProfileImage from "@/components/user/profile-image";
 import { useRef } from "react";
-import { Pressable, Text, TouchableOpacity, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import ReanimatedSwipeable, {
   type SwipeableMethods,
 } from "react-native-gesture-handler/ReanimatedSwipeable";
-
-export type NotificationType =
-  | "USER_FOLLOWED"
-  | "CAT_FOLLOWED"
-  | "POST_LIKE"
-  | "COMMENT_CREATED";
 
 export interface NotificationData {
   id: string;
@@ -25,17 +21,9 @@ export interface NotificationData {
 interface NotificationItemProps {
   item: NotificationData;
   onDelete: (id: string) => void;
-  onFollowToggle: (id: string) => void;
 }
 
-const isFollowType = (type: NotificationType) =>
-  type === "USER_FOLLOWED" || type === "CAT_FOLLOWED";
-
-const NotificationItem = ({
-  item,
-  onDelete,
-  onFollowToggle,
-}: NotificationItemProps) => {
+const NotificationItem = ({ item, onDelete }: NotificationItemProps) => {
   const swipeableRef = useRef<SwipeableMethods | null>(null);
 
   const handleDelete = () => {
@@ -58,8 +46,8 @@ const NotificationItem = ({
       renderRightActions={renderRightActions}
       rightThreshold={40}
       overshootRight={false}
-      friction={1} // 1 = 1:1 추적 (기본값 2는 느림)
-      overshootFriction={8} // rubber band 강도
+      friction={1}
+      overshootFriction={8}
       dragOffsetFromLeftEdge={0}
     >
       <View className="flex-row items-center h-[92px] px-3 gap-3 bg-semantic-bg-primary border-b border-semantic-border-primary">
@@ -75,16 +63,8 @@ const NotificationItem = ({
             {item.timestamp}
           </Text>
         </View>
-        {isFollowType(item.type) && (
-          <TouchableOpacity
-            onPress={() => onFollowToggle(item.id)}
-            className="border border-semantic-border-primary rounded px-4 py-1.5 items-center justify-center"
-            style={{ width: 68, height: 34 }}
-          >
-            <Text className="typo-body3 text-semantic-text-secondary">
-              {item.isFollowing ? "팔로잉" : "팔로우"}
-            </Text>
-          </TouchableOpacity>
+        {item.type === "USER_FOLLOWED" && (
+          <FollowButton userId={item.actorId} isFollowing={item.isFollowing} />
         )}
       </View>
     </ReanimatedSwipeable>
