@@ -1,17 +1,7 @@
 import AvatarDark from "@/assets/images/avatar/user-dark.png";
 import AvatarLight from "@/assets/images/avatar/user-light.png";
+import ImageViewerModal from "@/components/common/image-viewer-modal";
 import { useColors } from "@/hooks/use-colors";
-import { Image } from "expo-image";
-import { Modal, Pressable } from "react-native";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
-
-const PREVIEW_SIZE = 200;
 
 interface ProfilePreviewModalProps {
   visible: boolean;
@@ -27,56 +17,13 @@ const ProfilePreviewModal = ({
   const { scheme } = useColors();
   const defaultAvatar = scheme === "dark" ? AvatarDark : AvatarLight;
 
-  const scale = useSharedValue(1);
-  const baseScale = useSharedValue(1);
-
-  const pinchGesture = Gesture.Pinch()
-    .onUpdate((e) => {
-      scale.value = baseScale.value * e.scale;
-    })
-    .onEnd(() => {
-      baseScale.value = 1;
-      scale.value = withTiming(1, { duration: 200, easing: Easing.out(Easing.quad) });
-    });
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
   return (
-    <Modal
+    <ImageViewerModal
       visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
-      <Pressable
-        style={{
-          flex: 1,
-          backgroundColor: "rgba(0,0,0,0.75)",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-        onPress={onClose}
-      >
-        <GestureDetector gesture={pinchGesture}>
-          <Animated.View style={animatedStyle}>
-            <Image
-              source={imageUrl ? { uri: imageUrl } : defaultAvatar}
-              placeholder={defaultAvatar}
-              transition={150}
-              style={{
-                width: PREVIEW_SIZE,
-                height: PREVIEW_SIZE,
-                borderRadius: PREVIEW_SIZE,
-              }}
-              contentFit="cover"
-              alt="profile"
-            />
-          </Animated.View>
-        </GestureDetector>
-      </Pressable>
-    </Modal>
+      source={imageUrl ? { uri: imageUrl } : defaultAvatar}
+      onClose={onClose}
+      circular
+    />
   );
 };
 

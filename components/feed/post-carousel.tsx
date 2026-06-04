@@ -11,8 +11,10 @@ import {
 } from "react-native";
 
 import { Post, PostImage } from "@/api/domains/post/types";
+import ImageViewerModal from "@/components/common/image-viewer-modal";
 import { CAROUSEL_CONFIG } from "@/constants/config";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { CarouselCounter, CarouselDots } from "./carousel-indicator";
 
 interface PostCarouselProps {
@@ -21,6 +23,56 @@ interface PostCarouselProps {
   linkable?: boolean;
 }
 
+interface CarouselItemProps {
+  item: PostImage;
+  index: number;
+  catName: string;
+  carouselWidth: number;
+  imageHeight: number;
+  linkable: boolean;
+  postId: string;
+  onPinchStart: (url: string) => void;
+}
+
+const CarouselItem = ({
+  item,
+  index,
+  catName,
+  carouselWidth,
+  imageHeight,
+  linkable,
+  postId,
+  onPinchStart,
+}: CarouselItemProps) => {
+  const pinchGesture = Gesture.Pinch()
+    .runOnJS(true)
+    .onStart(() => {
+      onPinchStart(item.url);
+    });
+
+  const img = (
+    <Image
+      source={{ uri: item.url }}
+      alt={`${catName} photo ${index + 1}`}
+      style={{ width: carouselWidth, height: imageHeight }}
+    />
+  );
+
+  return (
+    <GestureDetector gesture={pinchGesture}>
+      <View>
+        {linkable ? (
+          <Pressable onPress={() => router.push(`/post/${postId}`)}>
+            {img}
+          </Pressable>
+        ) : (
+          img
+        )}
+      </View>
+    </GestureDetector>
+  );
+};
+
 const PostCarousel = ({
   post,
   overlay,
@@ -28,6 +80,7 @@ const PostCarousel = ({
 }: PostCarouselProps) => {
   const [current, setCurrent] = useState(0);
   const [imageHeight, setImageHeight] = useState<number | null>(null);
+  const [viewingUrl, setViewingUrl] = useState<string | null>(null);
   const { width } = useWindowDimensions();
   const carouselWidth = width - 24;
 
@@ -73,22 +126,18 @@ const PostCarousel = ({
           showsHorizontalScrollIndicator={false}
           onViewableItemsChanged={onViewableItemsChanged}
           viewabilityConfig={CAROUSEL_CONFIG}
-          renderItem={({ item, index }) => {
-            const img = (
-              <Image
-                source={{ uri: item.url }}
-                alt={`${catName} photo ${index + 1}`}
-                style={{ width: carouselWidth, height: imageHeight }}
-              />
-            );
-            return linkable ? (
-              <Pressable onPress={() => router.push(`/post/${post.id}`)}>
-                {img}
-              </Pressable>
-            ) : (
-              img
-            );
-          }}
+          renderItem={({ item, index }) => (
+            <CarouselItem
+              item={item}
+              index={index}
+              catName={catName}
+              carouselWidth={carouselWidth}
+              imageHeight={imageHeight}
+              linkable={linkable}
+              postId={post.id}
+              onPinchStart={setViewingUrl}
+            />
+          )}
         />
 
         <LinearGradient
@@ -113,6 +162,12 @@ const PostCarousel = ({
       {post.images.length > 1 && (
         <CarouselDots count={post.images.length} current={current} />
       )}
+
+      <ImageViewerModal
+        visible={viewingUrl !== null}
+        source={viewingUrl ? { uri: viewingUrl } : { uri: "" }}
+        onClose={() => setViewingUrl(null)}
+      />
     </>
   );
 };
