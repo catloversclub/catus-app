@@ -17,13 +17,15 @@ const SKELETON_ROWS = [
   { messageWidth: 170, hasButton: false },
 ] as const;
 
+interface NotificationItemSkeletonProps {
+  messageWidth: number;
+  hasButton: boolean;
+}
+
 const NotificationItemSkeleton = ({
   messageWidth,
   hasButton,
-}: {
-  messageWidth: number;
-  hasButton: boolean;
-}) => (
+}: NotificationItemSkeletonProps) => (
   <View className="flex-row items-center h-[92px] px-3 gap-3 border-b border-semantic-border-primary">
     <Skeleton className="rounded-full" style={{ width: 36, height: 36 }} />
     <View className="flex-1 gap-1.5">
