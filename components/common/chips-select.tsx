@@ -1,4 +1,5 @@
-import { Pressable, Text, View } from "react-native";
+import { Chip } from "@/components/common/chip";
+import { View } from "react-native";
 
 interface ChipsSelectProps {
   options: { label: string; id: number }[];
@@ -13,30 +14,14 @@ const ChipsSelect = ({
 }: ChipsSelectProps) => {
   return (
     <View className="flex-row flex-wrap gap-3">
-      {options.map((option) => {
-        const isChipSelected = selected.has(option.id);
-        return (
-          <Pressable
-            key={option.id}
-            onPress={() => onChangeSelected(option.id)}
-            className={`items-center rounded py-1 px-2.5 ${
-              isChipSelected
-                ? "bg-semantic-chips-primary-selectedBg"
-                : "bg-semantic-chips-primary-bg"
-            }`}
-          >
-            <Text
-              className={`typo-body4 ${
-                isChipSelected
-                  ? "text-semantic-chips-primary-selectedText"
-                  : "text-semantic-chips-primary-text"
-              }`}
-            >
-              {option.label}
-            </Text>
-          </Pressable>
-        );
-      })}
+      {options.map((option) => (
+        <Chip
+          key={option.id}
+          label={option.label}
+          selected={selected.has(option.id)}
+          onPress={() => onChangeSelected(option.id)}
+        />
+      ))}
     </View>
   );
 };

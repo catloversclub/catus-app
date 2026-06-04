@@ -1,6 +1,7 @@
 import { Gender } from "@/api/domains/cat/types";
-import CatProfileImage from "@/components/cat/profile-image";
 import GenderIcon from "@/components/cat/gender";
+import CatProfileImage from "@/components/cat/profile-image";
+import { Chip } from "@/components/common/chip";
 import { ProfileIdentity } from "@/components/common/profile-identity";
 import { Text, View } from "react-native";
 
@@ -41,16 +42,9 @@ const CatProfileHeader = ({
           </View>
         )}
         {hasTags ? (
-          <View className="flex-row flex-wrap justify-center gap-1.5 px-5 mb-6">
+          <View className="flex-row flex-wrap justify-center gap-3 px-5 mb-6">
             {tags!.map((tag) => (
-              <View
-                key={tag}
-                className="px-3 py-1 rounded-full bg-semantic-bg-secondary"
-              >
-                <Text className="typo-body4 text-semantic-text-secondary">
-                  {tag}
-                </Text>
-              </View>
+              <Chip key={tag} label={tag} />
             ))}
           </View>
         ) : (
