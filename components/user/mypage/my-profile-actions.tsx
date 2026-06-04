@@ -2,6 +2,7 @@ import { useUserProfileQuery } from "@/api/domains/user/queries";
 import { ButtonType } from "@/components/common/button";
 import ProfileActionButtons from "@/components/user/profile/profile-action-buttons";
 
+import { WEBVIEW_URL } from "@/constants/api";
 import { router } from "expo-router";
 import { Share } from "react-native";
 
@@ -10,8 +11,8 @@ const ProfileActions = () => {
 
   const handleShare = async () => {
     await Share.share({
-      message: "내 프로필을 확인해보세요!",
-      url: `catus://user/${userData.id}`,
+      url: `${WEBVIEW_URL}/share/user/${userData.id}`,
+      message: `@${userData.nickname}님의 프로필을 확인해보세요!`,
     });
   };
 

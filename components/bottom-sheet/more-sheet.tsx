@@ -5,6 +5,7 @@ import BaseBottomSheet from "@/components/bottom-sheet/base-bottom-sheet";
 import { useBlockUserMutation } from "@/api/domains/user/queries";
 import { useReportPostMutation } from "@/api/domains/post/queries";
 import { Post } from "@/api/domains/post/types";
+import { WEBVIEW_URL } from "@/constants/api";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
 import React from "react";
@@ -72,7 +73,10 @@ const MoreSheet = ({ MoreSheetModalRef, post }: MoreSheetProps) => {
   };
 
   const handleShare = async () => {
-    await Share.share({ url: `catus://post/${post.id}` });
+    await Share.share({
+      url: `${WEBVIEW_URL}/share/post/${post.id}`,
+      message: `@${post.author.nickname}님의 게시물을 확인해보세요!`,
+    });
     dismiss();
   };
 
