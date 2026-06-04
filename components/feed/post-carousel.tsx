@@ -11,7 +11,7 @@ import {
 } from "react-native";
 
 import { Post, PostImage } from "@/api/domains/post/types";
-import ZoomableImage from "@/components/common/zoomable-image";
+import ImageViewerModal from "@/components/common/image-viewer-modal";
 import { CAROUSEL_CONFIG } from "@/constants/config";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CarouselCounter, CarouselDots } from "./carousel-indicator";
@@ -28,8 +28,7 @@ interface CarouselItemProps {
   catName: string;
   carouselWidth: number;
   imageHeight: number;
-  linkable: boolean;
-  postId: string;
+  onPress: () => void;
 }
 
 const CarouselItem = ({
@@ -38,25 +37,17 @@ const CarouselItem = ({
   catName,
   carouselWidth,
   imageHeight,
-  linkable,
-  postId,
-}: CarouselItemProps) => {
-  const img = (
-    <ZoomableImage
+  onPress,
+}: CarouselItemProps) => (
+  <Pressable onPress={onPress}>
+    <Image
       source={{ uri: item.url }}
       alt={`${catName} photo ${index + 1}`}
       style={{ width: carouselWidth, height: imageHeight }}
+      contentFit="cover"
     />
-  );
-
-  return linkable ? (
-    <Pressable onPress={() => router.push(`/post/${postId}`)}>
-      {img}
-    </Pressable>
-  ) : (
-    img
-  );
-};
+  </Pressable>
+);
 
 const PostCarousel = ({
   post,
@@ -65,6 +56,7 @@ const PostCarousel = ({
 }: PostCarouselProps) => {
   const [current, setCurrent] = useState(0);
   const [imageHeight, setImageHeight] = useState<number | null>(null);
+  const [viewerUrl, setViewerUrl] = useState<string | null>(null);
   const { width } = useWindowDimensions();
   const carouselWidth = width - 24;
 
@@ -117,8 +109,11 @@ const PostCarousel = ({
               catName={catName}
               carouselWidth={carouselWidth}
               imageHeight={imageHeight}
-              linkable={linkable}
-              postId={post.id}
+              onPress={
+                linkable
+                  ? () => router.push(`/post/${post.id}`)
+                  : () => setViewerUrl(item.url)
+              }
             />
           )}
         />
@@ -144,6 +139,14 @@ const PostCarousel = ({
 
       {post.images.length > 1 && (
         <CarouselDots count={post.images.length} current={current} />
+      )}
+
+      {!linkable && (
+        <ImageViewerModal
+          visible={viewerUrl !== null}
+          source={{ uri: viewerUrl ?? "" }}
+          onClose={() => setViewerUrl(null)}
+        />
       )}
     </>
   );
