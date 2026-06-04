@@ -24,8 +24,9 @@ const NotificationItemSkeleton = ({
   messageWidth,
   hasButton,
 }: NotificationItemSkeletonProps) => (
-  <View className="flex-row items-center h-[92px] px-3 gap-3 border-b border-semantic-border-primary">
+  <View className="flex-row items-start p-3 bg-semantic-bg-primary">
     <Skeleton className="rounded-full" style={{ width: 36, height: 36 }} />
+    <View style={{ width: 12 }} />
     <View className="flex-1 gap-1.5">
       <Skeleton
         className="rounded"
@@ -34,7 +35,10 @@ const NotificationItemSkeleton = ({
       <Skeleton className="rounded" style={{ width: 60, height: 11 }} />
     </View>
     {hasButton && (
-      <Skeleton className="rounded" style={{ width: 68, height: 34 }} />
+      <>
+        <View style={{ width: 8 }} />
+        <Skeleton className="rounded" style={{ width: 68, height: 34 }} />
+      </>
     )}
   </View>
 );
