@@ -1,6 +1,6 @@
 import {
-  FollowingFeedList,
   FeedListSkeleton,
+  FollowingFeedList,
   RecommendedFeedList,
 } from "@/components/feed/feed-list";
 import TabPager from "@/components/layout/tab-pager";

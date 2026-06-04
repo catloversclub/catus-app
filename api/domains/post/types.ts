@@ -7,9 +7,9 @@ export interface Post {
   createdAt: string;
   updatedAt: string;
   authorId: string;
-  catId: string | null;
+  catId: string;
   author: Author;
-  cat: Cat | null;
+  cat: Cat;
   images: PostImage[];
   isLikedByMe: boolean;
   isBookmarkedByMe: boolean;

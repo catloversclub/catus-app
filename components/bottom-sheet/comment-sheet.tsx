@@ -13,10 +13,8 @@ import {
 } from "@gorhom/bottom-sheet";
 import { useQuery } from "@tanstack/react-query";
 import React, { Suspense, useState } from "react";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-const SNAP_POINTS = ["60%"];
 
 interface CommentSheetProps {
   postId: string;
@@ -25,6 +23,7 @@ interface CommentSheetProps {
 
 const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
   const insets = useSafeAreaInsets();
+  const { height: screenHeight } = useWindowDimensions();
   const [replyTarget, setReplyTarget] = useState<ReplyTarget | null>(null);
 
   const { data: commentCount } = useQuery({
@@ -36,38 +35,39 @@ const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
   return (
     <BaseBottomSheet
       BaseBottomSheetModalRef={CommentSheetModalRef}
-      snapPoints={SNAP_POINTS}
       keyboardBehavior="interactive"
       keyboardBlurBehavior="restore"
     >
-      <View className="items-center border-b border-semantic-border-primary bg-semantic-bg-secondary py-3">
-        <Text className="typo-body1 text-semantic-text-primary">
-          댓글{commentCount != null ? ` ${commentCount}` : ""}
-        </Text>
-      </View>
+      <View style={{ height: screenHeight * 0.6 }}>
+        <View className="items-center border-b border-semantic-border-primary bg-semantic-bg-secondary py-3">
+          <Text className="typo-body1 text-semantic-text-primary">
+            댓글{commentCount != null ? ` ${commentCount}` : ""}
+          </Text>
+        </View>
 
-      <BottomSheetScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 8 }}
-      >
-        <Suspense
-          fallback={
-            <View className="items-center justify-center py-12">
-              <ActivityIndicator />
-            </View>
-          }
+        <BottomSheetScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={{ paddingBottom: 8 }}
         >
-          <CommentList postId={postId} onReply={setReplyTarget} />
-        </Suspense>
-      </BottomSheetScrollView>
+          <Suspense
+            fallback={
+              <View className="items-center justify-center py-12">
+                <ActivityIndicator />
+              </View>
+            }
+          >
+            <CommentList postId={postId} onReply={setReplyTarget} />
+          </Suspense>
+        </BottomSheetScrollView>
 
-      <CommentInputBar
-        postId={postId}
-        replyTarget={replyTarget}
-        onClearReply={() => setReplyTarget(null)}
-        paddingBottom={insets.bottom + 8}
-        InputComponent={BottomSheetTextInput}
-      />
+        <CommentInputBar
+          postId={postId}
+          replyTarget={replyTarget}
+          onClearReply={() => setReplyTarget(null)}
+          paddingBottom={insets.bottom + 8}
+          InputComponent={BottomSheetTextInput}
+        />
+      </View>
     </BaseBottomSheet>
   );
 };

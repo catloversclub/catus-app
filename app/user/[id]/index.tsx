@@ -3,15 +3,18 @@ import { userKeys, useUserDetailQuery } from "@/api/domains/user/queries";
 import MoreIcon from "@/assets/icons/more.svg";
 import IconButton from "@/components/common/icon-button";
 import { RefreshableScrollView } from "@/components/common/logo-refresh-control";
-import { UserProfileHeader, ProfileHeaderSkeleton } from "@/components/user/profile/profile-header";
+import OtherProfileActions from "@/components/user/profile/other-profile-actions";
+import {
+  ProfileHeaderSkeleton,
+  UserProfileHeader,
+} from "@/components/user/profile/profile-header";
 import ProfilePostGrid, {
   PostGridSkeleton,
 } from "@/components/user/profile/profile-post-grid";
-import OtherProfileActions from "@/components/user/profile/other-profile-actions";
 import { useColors } from "@/hooks/use-colors";
 import { useLoadMoreScroll } from "@/hooks/use-load-more-scroll";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { type Href, Stack, useLocalSearchParams } from "expo-router";
 import { Suspense } from "react";
 import { View } from "react-native";
 
@@ -39,9 +42,20 @@ const UserDetailProfileHeader = ({ userId }: { userId: string }) => {
         imageUrl={profile.profileImageUrl}
         name={profile.nickname}
         stats={[
-          { label: "게시글", value: posts.length },
-          { label: "팔로워", value: profile.followerCount },
-          { label: "팔로잉", value: profile.followingCount },
+          {
+            label: "게시글",
+            value: posts.length,
+          },
+          {
+            label: "팔로워",
+            value: profile.followerCount,
+            href: `/user/${userId}/follower` as Href,
+          },
+          {
+            label: "팔로잉",
+            value: profile.followingCount,
+            href: `/user/${userId}/following` as Href,
+          },
         ]}
         actions={<OtherProfileActions userId={userId} />}
       />
@@ -58,8 +72,12 @@ const UserDetailPostGrid = ({
   userId: string;
   loadMoreRef: React.RefObject<(() => void) | null>;
 }) => {
-  const { data: postsData, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useUserPostsQuery(userId);
+  const {
+    data: postsData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useUserPostsQuery(userId);
   const posts = postsData.pages.flat();
 
   return (

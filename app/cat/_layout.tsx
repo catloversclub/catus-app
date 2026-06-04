@@ -1,32 +1,16 @@
-import ArrowLeftIcon from "@/assets/icons/arrow-left.svg";
-import IconButton from "@/components/common/icon-button";
-import { useColors } from "@/hooks/use-colors";
-import { Stack, router } from "expo-router";
+import { useDefaultStackScreenOptions } from "@/hooks/use-default-screen-options";
+import { Stack } from "expo-router";
 
 const CatLayout = () => {
-  const { colors } = useColors();
+  const screenOptions = useDefaultStackScreenOptions();
   return (
-    <Stack
-      screenOptions={{
-        headerShown: true,
-        headerShadowVisible: false,
-        headerTintColor: colors.text.primary,
-        headerStyle: {
-          backgroundColor: colors.bg.primary,
-        },
-        headerLeft: () => (
-          <IconButton onPress={() => router.back()} className="p-2">
-            <ArrowLeftIcon width={24} height={24} color={colors.icon.primary} />
-          </IconButton>
-        ),
-      }}
-    >
+    <Stack screenOptions={screenOptions}>
       <Stack.Screen name="[id]" />
       <Stack.Screen name="list" options={{ title: "함께 사는 고양이" }} />
       <Stack.Screen name="register" options={{ title: "고양이 프로필 입력" }} />
       <Stack.Screen name="update" options={{ title: "고양이 프로필 수정" }} />
     </Stack>
   );
-}
+};
 
 export default CatLayout;
