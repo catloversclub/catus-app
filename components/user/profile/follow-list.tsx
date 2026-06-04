@@ -45,17 +45,19 @@ const FollowListSkeleton = () => (
 
 // ─── Follow item ─────────────────────────────────────────────
 
+interface FollowItemProps {
+  id: string;
+  nickname: string;
+  profileImageUrl?: string | null;
+  isFollowedByMe: boolean;
+}
+
 const FollowItem = ({
   id,
   nickname,
   profileImageUrl,
   isFollowedByMe,
-}: {
-  id: string;
-  nickname: string;
-  profileImageUrl?: string | null;
-  isFollowedByMe: boolean;
-}) => {
+}: FollowItemProps) => {
   const { colors } = useColors();
   const { mutate: follow } = useFollowUserMutation();
   const { mutate: unfollow } = useUnfollowUserMutation();

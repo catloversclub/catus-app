@@ -66,13 +66,15 @@ const CatDetailProfileHeader = ({ catId }: { catId: string }) => {
 
 // ─── Post grid ────────────────────────────────────────────────
 
+interface CatDetailPostGridProps {
+  catId: string;
+  loadMoreRef: React.RefObject<(() => void) | null>;
+}
+
 const CatDetailPostGrid = ({
   catId,
   loadMoreRef,
-}: {
-  catId: string;
-  loadMoreRef: React.RefObject<(() => void) | null>;
-}) => {
+}: CatDetailPostGridProps) => {
   const {
     data: postsData,
     fetchNextPage,

@@ -65,13 +65,15 @@ const UserDetailProfileHeader = ({ userId }: { userId: string }) => {
 
 // ─── Post grid ────────────────────────────────────────────────
 
+interface UserDetailPostGridProps {
+  userId: string;
+  loadMoreRef: React.RefObject<(() => void) | null>;
+}
+
 const UserDetailPostGrid = ({
   userId,
   loadMoreRef,
-}: {
-  userId: string;
-  loadMoreRef: React.RefObject<(() => void) | null>;
-}) => {
+}: UserDetailPostGridProps) => {
   const {
     data: postsData,
     fetchNextPage,

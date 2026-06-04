@@ -28,7 +28,12 @@ type GalleryItem =
   | { type: "camera" }
   | { type: "photo"; asset: MediaLibrary.Asset };
 
-const CameraCell = ({ size, onPress }: { size: number; onPress: () => void }) => {
+interface CameraCellProps {
+  size: number;
+  onPress: () => void;
+}
+
+const CameraCell = ({ size, onPress }: CameraCellProps) => {
   const { colors } = useColors();
   return (
     <TouchableOpacity
@@ -47,17 +52,19 @@ const CameraCell = ({ size, onPress }: { size: number; onPress: () => void }) =>
   );
 }
 
+interface PhotoCellProps {
+  asset: MediaLibrary.Asset;
+  size: number;
+  selectionIndex: number;
+  onPress: () => void;
+}
+
 const PhotoCell = ({
   asset,
   size,
   selectionIndex,
   onPress,
-}: {
-  asset: MediaLibrary.Asset;
-  size: number;
-  selectionIndex: number;
-  onPress: () => void;
-}) => {
+}: PhotoCellProps) => {
   const isSelected = selectionIndex >= 0;
   return (
     <TouchableOpacity

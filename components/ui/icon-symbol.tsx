@@ -28,18 +28,20 @@ const MAPPING = {
  * This ensures a consistent look across platforms, and optimal resource usage.
  * Icon `name`s are based on SF Symbols and require manual mapping to Material Icons.
  */
-export function IconSymbol({
-  name,
-  size = 24,
-  color,
-  style,
-}: {
+interface IconSymbolProps {
   name: IconSymbolName;
   size?: number;
   color: string | OpaqueColorValue;
   style?: StyleProp<TextStyle>;
   weight?: SymbolWeight;
-}) {
+}
+
+export function IconSymbol({
+  name,
+  size = 24,
+  color,
+  style,
+}: IconSymbolProps) {
   return (
     <MaterialIcons
       color={color}

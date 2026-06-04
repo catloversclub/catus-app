@@ -15,7 +15,12 @@ import { Bookmark, Heart } from "@/lib/icons";
 import { formatRelativeTime } from "@/lib/utils";
 import { Stack } from "expo-router";
 
-const ProfileInfo = ({ post, onMorePress }: { post: Post; onMorePress: () => void }) => {
+interface ProfileInfoProps {
+  post: Post;
+  onMorePress: () => void;
+}
+
+const ProfileInfo = ({ post, onMorePress }: ProfileInfoProps) => {
   const { colors } = useColors();
   const catName = post.cat?.name ?? post.author.nickname;
 
