@@ -3,28 +3,22 @@ import {
   usePersonalityQuery,
 } from "@/api/domains/attribute/queries";
 import { catKeys, useCatByIdQuery } from "@/api/domains/cat/queries";
-import { Gender } from "@/api/domains/cat/types";
 import { postKeys, useCatPostsQuery } from "@/api/domains/post/queries";
 import MoreIcon from "@/assets/icons/more.svg";
-import IconButton from "@/components/common/icon-button";
 import { CatProfileHeader } from "@/components/cat/profile-header";
+import IconButton from "@/components/common/icon-button";
 import { RefreshableScrollView } from "@/components/common/logo-refresh-control";
+import { ProfileHeaderSkeleton } from "@/components/user/profile/profile-header";
 import ProfilePostGrid, {
   PostGridSkeleton,
 } from "@/components/user/profile/profile-post-grid";
-import { ProfileHeaderSkeleton } from "@/components/user/profile/profile-header";
 import { useColors } from "@/hooks/use-colors";
 import { useLoadMoreScroll } from "@/hooks/use-load-more-scroll";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
+import { formatDate } from "@/lib/utils";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { Suspense } from "react";
 import { View } from "react-native";
-
-const GENDER_LABEL: Record<Gender, string | null> = {
-  FEMALE: "암컷",
-  MALE: "수컷",
-  UNKNOWN: null,
-};
 
 // ─── Profile header ───────────────────────────────────────────
 
@@ -43,11 +37,9 @@ const CatDetailProfileHeader = ({ catId }: { catId: string }) => {
       .map((a) => a.label),
   ];
 
-  const infoParts = [
-    cat.birthDate,
-    cat.gender ? GENDER_LABEL[cat.gender] : null,
-    cat.breed,
-  ].filter(Boolean) as string[];
+  const infoParts = [formatDate(cat.birthDate), cat.breed].filter(
+    Boolean,
+  ) as string[];
 
   return (
     <>
@@ -65,6 +57,7 @@ const CatDetailProfileHeader = ({ catId }: { catId: string }) => {
         imageUrl={cat.profileImageUrl}
         name={cat.name}
         subtitle={infoParts.length > 0 ? infoParts.join(" · ") : null}
+        gender={cat.gender}
         tags={tags}
       />
     </>
