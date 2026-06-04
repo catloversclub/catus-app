@@ -22,7 +22,6 @@ const ProgressBar = ({ progress }: { progress: number }) => {
       </View>
       <Gradient
         direction="vertical"
-        width="100%"
         height={20}
         style={{ position: "absolute", bottom: -20, left: 0, zIndex: 10 }}
       />

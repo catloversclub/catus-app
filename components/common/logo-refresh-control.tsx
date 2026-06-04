@@ -133,14 +133,17 @@ const RefreshableScrollView = ({
       {logoOverlay}
       <Gradient
         direction="vertical"
-        width="100%"
-        height={20}
+        height={10}
         style={{ position: "absolute", top: 0, left: 0, zIndex: 1 }}
       />
       <ScrollView
         showsVerticalScrollIndicator={false}
         onScrollEndDrag={handleScrollEndDrag}
         {...props}
+        contentContainerStyle={[
+          { paddingTop: 10 },
+          props.contentContainerStyle,
+        ]}
       >
         {children}
       </ScrollView>
