@@ -6,6 +6,7 @@ const BASE_URL = "/notification";
 
 const NOTI_ENDPOINTS = {
   BASE: BASE_URL,
+  DETAIL: (id: string) => `${BASE_URL}/${id}`,
   PUSH_TOKEN: `${BASE_URL}/push-token`,
   PUSH_TOKEN_DETAIL: (token: string) => `${BASE_URL}/push-token/${token}`,
   TEST: `${BASE_URL}/test`,
@@ -46,6 +47,10 @@ export const getNotifications = async (
     params,
   });
   return data;
+};
+
+export const deleteNotification = async (id: string): Promise<void> => {
+  await apiClient.delete(NOTI_ENDPOINTS.DETAIL(id));
 };
 
 export const testNotification = async (): Promise<void> => {

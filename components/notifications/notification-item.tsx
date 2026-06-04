@@ -6,13 +6,18 @@ import ReanimatedSwipeable, {
   type SwipeableMethods,
 } from "react-native-gesture-handler/ReanimatedSwipeable";
 
-export type NotificationType = "follow_me" | "follow_cat" | "like" | "comment";
+export type NotificationType =
+  | "USER_FOLLOWED"
+  | "CAT_FOLLOWED"
+  | "POST_LIKE"
+  | "COMMENT_CREATED";
 
 export interface NotificationData {
   id: string;
   type: NotificationType;
-  actor: { id: string; name: string; imageUrl: string | null };
-  catName?: string;
+  actorId: string;
+  actorImageUrl: string | null;
+  message: string;
   isFollowing: boolean;
   timestamp: string;
 }
@@ -23,21 +28,8 @@ interface NotificationItemProps {
   onFollowToggle: (id: string) => void;
 }
 
-const getMessage = (item: NotificationData): string => {
-  switch (item.type) {
-    case "follow_me":
-      return `${item.actor.name} 님이 나를 팔로우했어요.`;
-    case "follow_cat":
-      return `${item.actor.name} 님이 ${item.catName}를 팔로우했어요.`;
-    case "like":
-      return `${item.actor.name} 님이 내 게시물에 좋아요를 눌렀어요.`;
-    case "comment":
-      return `${item.actor.name} 님이 내 게시물에 댓글을 달았어요.`;
-  }
-}
-
 const isFollowType = (type: NotificationType) =>
-  type === "follow_me" || type === "follow_cat";
+  type === "USER_FOLLOWED" || type === "CAT_FOLLOWED";
 
 const NotificationItem = ({
   item,
@@ -66,15 +58,18 @@ const NotificationItem = ({
       renderRightActions={renderRightActions}
       rightThreshold={40}
       overshootRight={false}
+      friction={1} // 1 = 1:1 추적 (기본값 2는 느림)
+      overshootFriction={8} // rubber band 강도
+      dragOffsetFromLeftEdge={0}
     >
-      <View className="flex-row items-center h-[92px] px-6 gap-3 bg-semantic-bg-primary border-b border-semantic-border-primary">
-        <UserProfileImage imageUrl={item.actor.imageUrl} size="sm" />
+      <View className="flex-row items-center h-[92px] px-3 gap-3 bg-semantic-bg-primary border-b border-semantic-border-primary">
+        <UserProfileImage imageUrl={item.actorImageUrl} size="sm" />
         <View className="flex-1 gap-1.5">
           <Text
             className="typo-body3 text-semantic-text-primary"
             numberOfLines={2}
           >
-            {getMessage(item)}
+            {item.message}
           </Text>
           <Text className="typo-label1 text-semantic-text-tertiary">
             {item.timestamp}

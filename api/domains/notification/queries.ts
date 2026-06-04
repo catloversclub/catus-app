@@ -1,9 +1,11 @@
 import {
   useMutation,
   useQuery,
+  useQueryClient,
   useSuspenseInfiniteQuery,
 } from "@tanstack/react-query";
 import {
+  deleteNotification,
   getNotifications,
   getPushToken,
   registerPushToken,
@@ -40,6 +42,16 @@ export const useGetPushTokenQuery = (token: string, enabled: boolean) => {
     queryKey: notificationKeys.pushToken(token),
     queryFn: () => getPushToken(token),
     enabled: enabled && token.length > 0,
+  });
+};
+
+export const useDeleteNotificationMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => deleteNotification(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: notificationKeys.list() });
+    },
   });
 };
 
