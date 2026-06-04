@@ -1,3 +1,4 @@
+import Gradient from "@/components/common/gradient";
 import { useColors } from "@/hooks/use-colors";
 import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
@@ -130,6 +131,12 @@ const RefreshableScrollView = ({
   return (
     <>
       {logoOverlay}
+      <Gradient
+        direction="vertical"
+        width="100%"
+        height={20}
+        style={{ position: "absolute", top: 0, left: 0, zIndex: 1 }}
+      />
       <ScrollView
         showsVerticalScrollIndicator={false}
         onScrollEndDrag={handleScrollEndDrag}
