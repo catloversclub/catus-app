@@ -19,33 +19,31 @@ import {
 
 // ─── Skeleton ────────────────────────────────────────────────
 
-const FollowListSkeleton = () => {
-  return (
-    <>
-      {[0, 1, 2, 3, 4].map((i) => (
-        <View
-          key={i}
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 12,
-            paddingHorizontal: 16,
-            paddingVertical: 12,
-          }}
-        >
-          <Skeleton className="rounded-full" style={{ width: 48, height: 48 }} />
-          <Skeleton className="rounded" style={{ width: 120, height: 16 }} />
-          <View style={{ flex: 1 }} />
-          <Skeleton style={{ width: 72, height: 32 }} />
-        </View>
-      ))}
-    </>
-  );
-}
+const FollowListSkeleton = () => (
+  <>
+    {[0, 1, 2, 3, 4].map((i) => (
+      <View
+        key={i}
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 12,
+          paddingHorizontal: 16,
+          paddingVertical: 12,
+        }}
+      >
+        <Skeleton className="rounded-full" style={{ width: 48, height: 48 }} />
+        <Skeleton className="rounded" style={{ width: 120, height: 16 }} />
+        <View style={{ flex: 1 }} />
+        <Skeleton style={{ width: 72, height: 32 }} />
+      </View>
+    ))}
+  </>
+);
 
-// ─── Content ─────────────────────────────────────────────────
+// ─── List ────────────────────────────────────────────────────
 
-const FollowerListContent = () => {
+const FollowerList = () => {
   const { data: me } = useUserProfileQuery();
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useUserFollowersQuery(me.id);
@@ -58,7 +56,7 @@ const FollowerListContent = () => {
 
   if (followers.length === 0) {
     return (
-      <View className="flex-1 items-center justify-center">
+      <View className="flex-1 bg-semantic-bg-primary items-center justify-center">
         <Text className="typo-body1 text-semantic-text-tertiary">
           아직 팔로워가 없어요
         </Text>
@@ -68,7 +66,7 @@ const FollowerListContent = () => {
 
   return (
     <FlatList
-      style={{ flex: 1 }}
+      style={{ flex: 1, backgroundColor: colors.bg.primary }}
       data={followers}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
@@ -126,18 +124,14 @@ const FollowerListContent = () => {
       }
     />
   );
-}
+};
 
 // ─── Page ────────────────────────────────────────────────────
 
-const Follower = () => {
-  return (
-    <View className="flex-1 bg-semantic-bg-primary">
-      <Suspense fallback={<FollowListSkeleton />}>
-        <FollowerListContent />
-      </Suspense>
-    </View>
-  );
-}
+const Follower = () => (
+  <Suspense fallback={<FollowListSkeleton />}>
+    <FollowerList />
+  </Suspense>
+);
 
 export default Follower;

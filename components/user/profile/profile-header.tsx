@@ -1,19 +1,14 @@
 import UserProfileImage from "@/components/user/profile-image";
+import { ProfileIdentity } from "@/components/common/profile-identity";
+import { ProfileStat, type ProfileStatItem } from "@/components/common/profile-stat";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link, type Href } from "expo-router";
-import { Pressable, Text, View } from "react-native";
-
-type StatItem = {
-  label: string;
-  value: number;
-  href?: Href;
-};
+import { Text, View } from "react-native";
 
 interface UserProfileHeaderProps {
   imageUrl?: string | null;
   name: string;
   subtitle?: string | null;
-  stats: StatItem[];
+  stats: ProfileStatItem[];
   actions?: React.ReactNode;
 }
 
@@ -27,40 +22,11 @@ const UserProfileHeader = ({
   <View className="pt-6">
     <View className="flex-col items-center">
       <UserProfileImage imageUrl={imageUrl ?? null} size="lg" />
-      <Text className="typo-title3 mb-1 text-semantic-text-primary mt-3">
-        {name}
-      </Text>
-      {subtitle != null && (
-        <Text className="typo-body4 mb-3 text-semantic-text-tertiary">
-          {subtitle}
-        </Text>
-      )}
+      <ProfileIdentity name={name} subtitle={subtitle} />
       <View className="flex-row mb-6">
-        {stats.map((stat) =>
-          stat.href ? (
-            <Link key={stat.label} href={stat.href} asChild>
-              <Pressable>
-                <View className="flex-row gap-1 px-3 py-1.5">
-                  <Text className="typo-body4 text-semantic-text-tertiary">
-                    {stat.label}
-                  </Text>
-                  <Text className="typo-body3 text-semantic-text-secondary">
-                    {stat.value}
-                  </Text>
-                </View>
-              </Pressable>
-            </Link>
-          ) : (
-            <View key={stat.label} className="flex-row gap-1 px-3 py-1.5">
-              <Text className="typo-body4 text-semantic-text-tertiary">
-                {stat.label}
-              </Text>
-              <Text className="typo-body3 text-semantic-text-secondary">
-                {stat.value}
-              </Text>
-            </View>
-          ),
-        )}
+        {stats.map((stat) => (
+          <ProfileStat key={stat.label} {...stat} />
+        ))}
       </View>
     </View>
     {actions}

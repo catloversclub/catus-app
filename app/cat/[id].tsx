@@ -12,6 +12,7 @@ import { RefreshableScrollView } from "@/components/common/logo-refresh-control"
 import ProfilePostGrid, {
   PostGridSkeleton,
 } from "@/components/user/profile/profile-post-grid";
+import { ProfileHeaderSkeleton } from "@/components/user/profile/profile-header";
 import { useColors } from "@/hooks/use-colors";
 import { useLoadMoreScroll } from "@/hooks/use-load-more-scroll";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
@@ -31,6 +32,7 @@ const CatDetailProfileHeader = ({ catId }: { catId: string }) => {
   const { data: cat } = useCatByIdQuery(catId);
   const { data: appearances } = useAppearanceQuery();
   const { data: personalities } = usePersonalityQuery();
+  const { colors } = useColors();
 
   const tags = [
     ...personalities
@@ -48,34 +50,6 @@ const CatDetailProfileHeader = ({ catId }: { catId: string }) => {
   ].filter(Boolean) as string[];
 
   return (
-    <CatProfileHeader
-      imageUrl={cat.profileImageUrl}
-      name={cat.name}
-      subtitle={infoParts.length > 0 ? infoParts.join(" · ") : null}
-      tags={tags}
-    />
-  );
-};
-
-// ─── Page content ─────────────────────────────────────────────
-
-const CatDetailContent = ({ catId }: { catId: string }) => {
-  const { data: cat } = useCatByIdQuery(catId);
-  const { colors } = useColors();
-  const {
-    data: postsData,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useCatPostsQuery(catId);
-  const posts = postsData.pages.flat();
-  const { handleScroll, loadMoreRef } = useLoadMoreScroll();
-  const refreshQueries = useRefreshQueries([
-    catKeys.detail(catId),
-    postKeys.catPosts(catId),
-  ]);
-
-  return (
     <>
       <Stack.Screen
         options={{
@@ -87,22 +61,42 @@ const CatDetailContent = ({ catId }: { catId: string }) => {
           ),
         }}
       />
-      <RefreshableScrollView
-        onRefresh={refreshQueries}
-        onScroll={handleScroll}
-        scrollEventThrottle={100}
-      >
-        <CatDetailProfileHeader catId={catId} />
-        <ProfilePostGrid
-          posts={posts}
-          isFetchingNextPage={isFetchingNextPage}
-          hasNextPage={hasNextPage}
-          fetchNextPage={fetchNextPage}
-          emptyMessage="아직 작성한 게시글이 없어요"
-          loadMoreRef={loadMoreRef}
-        />
-      </RefreshableScrollView>
+      <CatProfileHeader
+        imageUrl={cat.profileImageUrl}
+        name={cat.name}
+        subtitle={infoParts.length > 0 ? infoParts.join(" · ") : null}
+        tags={tags}
+      />
     </>
+  );
+};
+
+// ─── Post grid ────────────────────────────────────────────────
+
+const CatDetailPostGrid = ({
+  catId,
+  loadMoreRef,
+}: {
+  catId: string;
+  loadMoreRef: React.RefObject<(() => void) | null>;
+}) => {
+  const {
+    data: postsData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useCatPostsQuery(catId);
+  const posts = postsData.pages.flat();
+
+  return (
+    <ProfilePostGrid
+      posts={posts}
+      isFetchingNextPage={isFetchingNextPage}
+      hasNextPage={hasNextPage}
+      fetchNextPage={fetchNextPage}
+      emptyMessage="아직 작성한 게시글이 없어요"
+      loadMoreRef={loadMoreRef}
+    />
   );
 };
 
@@ -110,12 +104,26 @@ const CatDetailContent = ({ catId }: { catId: string }) => {
 
 const CatDetailPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const { handleScroll, loadMoreRef } = useLoadMoreScroll();
+  const refreshQueries = useRefreshQueries([
+    catKeys.detail(id),
+    postKeys.catPosts(id),
+  ]);
 
   return (
     <View className="flex-1 bg-semantic-bg-primary">
-      <Suspense fallback={<PostGridSkeleton />}>
-        <CatDetailContent catId={id} />
-      </Suspense>
+      <RefreshableScrollView
+        onRefresh={refreshQueries}
+        onScroll={handleScroll}
+        scrollEventThrottle={100}
+      >
+        <Suspense fallback={<ProfileHeaderSkeleton />}>
+          <CatDetailProfileHeader catId={id} />
+        </Suspense>
+        <Suspense fallback={<PostGridSkeleton />}>
+          <CatDetailPostGrid catId={id} loadMoreRef={loadMoreRef} />
+        </Suspense>
+      </RefreshableScrollView>
     </View>
   );
 };

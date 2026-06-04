@@ -1,4 +1,5 @@
 import CatProfileImage from "@/components/cat/profile-image";
+import { ProfileIdentity } from "@/components/common/profile-identity";
 import { Text, View } from "react-native";
 
 interface CatProfileHeaderProps {
@@ -20,14 +21,7 @@ const CatProfileHeader = ({
     <View className="pt-6">
       <View className="flex-col items-center">
         <CatProfileImage imageUrl={imageUrl ?? null} size="lg" />
-        <Text className="typo-title3 mb-1 text-semantic-text-primary mt-3">
-          {name}
-        </Text>
-        {subtitle != null && (
-          <Text className="typo-body4 mb-3 text-semantic-text-tertiary">
-            {subtitle}
-          </Text>
-        )}
+        <ProfileIdentity name={name} subtitle={subtitle} />
         {hasTags ? (
           <View className="flex-row flex-wrap justify-center gap-1.5 px-5 mb-6">
             {tags!.map((tag) => (
