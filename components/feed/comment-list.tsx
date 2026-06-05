@@ -16,9 +16,9 @@ const CommentList = ({ postId, onReply }: CommentListProps) => {
 
   if (comments.length === 0) {
     return (
-      <View className="items-center justify-center py-12">
-        <Text className="typo-body4 text-semantic-text-tertiary">
-          아직 댓글이 없습니다. 첫 댓글을 남겨보세요!
+      <View className="items-center justify-center py-20">
+        <Text className="typo-body2 text-semantic-text-secondary text-center">
+          {"아직 댓글이 없어요!\n첫 댓글을 남겨볼까요?"}
         </Text>
       </View>
     );

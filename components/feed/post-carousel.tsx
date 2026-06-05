@@ -16,6 +16,9 @@ import { CAROUSEL_CONFIG } from "@/constants/config";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CarouselCounter, CarouselDots } from "./carousel-indicator";
 
+// Cache image aspect ratios so imageHeight doesn't reset to null on remount
+const aspectRatioCache = new Map<string, number>();
+
 interface Origin {
   x: number;
   y: number;
@@ -27,6 +30,7 @@ interface PostCarouselProps {
   post: Post;
   overlay?: React.ReactNode;
   linkable?: boolean;
+  onFirstImageReady?: () => void;
 }
 
 interface CarouselItemProps {
@@ -38,6 +42,7 @@ interface CarouselItemProps {
   linkable: boolean;
   postId: string;
   onOpenViewer: (url: string, origin: Origin) => void;
+  onFirstImageLoad?: () => void;
 }
 
 const CarouselItem = ({
@@ -49,6 +54,7 @@ const CarouselItem = ({
   linkable,
   postId,
   onOpenViewer,
+  onFirstImageLoad,
 }: CarouselItemProps) => {
   const viewRef = useRef<View>(null);
 
@@ -70,6 +76,7 @@ const CarouselItem = ({
           alt={`${catName} photo ${index + 1}`}
           style={{ width: carouselWidth, height: imageHeight }}
           contentFit="cover"
+          onLoad={onFirstImageLoad}
         />
       </View>
     </Pressable>
@@ -80,15 +87,22 @@ const PostCarousel = ({
   post,
   overlay,
   linkable = true,
+  onFirstImageReady,
 }: PostCarouselProps) => {
   const [current, setCurrent] = useState(0);
-  const [imageHeight, setImageHeight] = useState<number | null>(null);
+  const [showGradient, setShowGradient] = useState(false);
   const [viewerState, setViewerState] = useState<{
     url: string;
     origin: Origin;
   } | null>(null);
   const { width } = useWindowDimensions();
   const carouselWidth = width - 24;
+
+  const firstUrl = post.images[0]?.url;
+  const cached = firstUrl ? aspectRatioCache.get(firstUrl) : null;
+  const [imageHeight, setImageHeight] = useState<number | null>(
+    cached != null ? carouselWidth * cached : null,
+  );
 
   const onViewableItemsChanged = useCallback(
     ({ viewableItems }: { viewableItems: ViewToken<PostImage>[] }) => {
@@ -111,7 +125,10 @@ const PostCarousel = ({
               style={{ width: carouselWidth, height: carouselWidth }}
               onLoad={(e) => {
                 const { width: w, height: h } = e.source;
-                if (w > 0) setImageHeight(carouselWidth * (h / w));
+                if (w > 0) {
+                  if (firstUrl) aspectRatioCache.set(firstUrl, h / w);
+                  setImageHeight(carouselWidth * (h / w));
+                }
               }}
             />
           </View>
@@ -142,21 +159,27 @@ const PostCarousel = ({
               linkable={linkable}
               postId={post.id}
               onOpenViewer={(url, origin) => setViewerState({ url, origin })}
+              onFirstImageLoad={index === 0 ? () => {
+                setShowGradient(true);
+                onFirstImageReady?.();
+              } : undefined}
             />
           )}
         />
 
-        <LinearGradient
-          colors={["transparent", "rgba(0,0,0,0.6)"]}
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: 80,
-          }}
-          pointerEvents="none"
-        />
+        {showGradient && (
+          <LinearGradient
+            colors={["transparent", "rgba(0,0,0,0.6)"]}
+            style={{
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: 80,
+            }}
+            pointerEvents="none"
+          />
+        )}
 
         {post.images.length > 1 && (
           <CarouselCounter current={current} total={post.images.length} />

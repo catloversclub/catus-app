@@ -30,7 +30,7 @@ interface RightActionsProps {
 }
 
 const DELETE_ACTION_WIDTH = 68;
-const FULL_SWIPE_THRESHOLD = 1.5;
+const FULL_SWIPE_THRESHOLD = 3;
 
 const getActorId = (n: Notification): string => {
   if (!n.data) return "";

@@ -1,4 +1,7 @@
-import { Text, useWindowDimensions, View } from "react-native";
+import { useEffect, useState } from "react";
+import { useWindowDimensions, View } from "react-native";
+
+import { Image } from "expo-image";
 
 import { Post } from "@/api/domains/post/types";
 import MoreIcon from "@/assets/icons/more.svg";
@@ -37,6 +40,7 @@ const ProfileInfo = ({ post, onMorePress }: ProfileInfoProps) => {
 };
 
 const FeedCard = ({ post }: { post: Post }) => {
+  const [isReady, setIsReady] = useState(false);
   const {
     commentSheetRef,
     moreSheetRef,
@@ -45,6 +49,17 @@ const FeedCard = ({ post }: { post: Post }) => {
     handleCommentPress,
     handleMorePress,
   } = usePostActions(post);
+
+  useEffect(() => {
+    const url = post.images[0]?.url;
+    if (!url) {
+      setIsReady(true);
+      return;
+    }
+    Image.prefetch(url).finally(() => setIsReady(true));
+  }, []);
+
+  if (!isReady) return <FeedCardSkeleton />;
 
   const overlay = (
     <PostOverlayActions

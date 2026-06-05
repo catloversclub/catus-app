@@ -1,6 +1,7 @@
 import { useColors } from "@/hooks/use-colors";
 import {
   BottomSheetBackdrop,
+  BottomSheetFooterProps,
   BottomSheetModal,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
@@ -16,6 +17,8 @@ interface BaseBottomSheetProps {
   onDismiss?: () => void;
   keyboardBehavior?: "extend" | "fillParent" | "interactive";
   keyboardBlurBehavior?: "none" | "restore";
+  snapPoints?: (string | number)[];
+  footerComponent?: React.FC<BottomSheetFooterProps>;
 }
 
 const BaseBottomSheet = ({
@@ -24,6 +27,8 @@ const BaseBottomSheet = ({
   onDismiss,
   keyboardBehavior,
   keyboardBlurBehavior,
+  snapPoints,
+  footerComponent,
 }: BaseBottomSheetProps) => {
   const { colors } = useColors();
 
@@ -47,6 +52,9 @@ const BaseBottomSheet = ({
       onDismiss={onDismiss}
       keyboardBehavior={keyboardBehavior}
       keyboardBlurBehavior={keyboardBlurBehavior}
+      snapPoints={snapPoints}
+      enableDynamicSizing={!snapPoints}
+      footerComponent={footerComponent}
     >
       <BottomSheetView style={styles.contentContainer}>
         {children}

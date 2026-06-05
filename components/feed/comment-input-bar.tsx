@@ -64,12 +64,12 @@ const CommentInputBar = ({
         </View>
       )}
       <View className="flex-row items-end gap-2 px-4 pb-2.5 pt-2.5">
-        <View className="min-h-10 flex-1 justify-center rounded-full bg-semantic-bg-secondary px-3.5 py-2.5">
+        <View className="min-h-10 flex-1 justify-center rounded bg-semantic-bg-secondary px-3 py-2.5">
           <InputComponent
             value={text}
             onChangeText={setText}
             placeholder={
-              replyTarget ? `@${replyTarget.nickname}에게 답글...` : "댓글 남기기..."
+              replyTarget ? `@${replyTarget.nickname}에게 답글...` : "댓글을 작성하세요..."
             }
             placeholderTextColor={colors.text.tertiary}
             multiline
