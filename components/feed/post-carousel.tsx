@@ -76,6 +76,7 @@ const CarouselItem = ({
           alt={`${catName} photo ${index + 1}`}
           style={{ width: carouselWidth, height: imageHeight }}
           contentFit="cover"
+          transition={200}
           onLoad={onFirstImageLoad}
         />
       </View>
