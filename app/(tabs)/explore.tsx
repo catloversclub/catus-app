@@ -11,9 +11,18 @@ import { useColors } from "@/hooks/use-colors";
 import { useDefaultStackScreenOptions } from "@/hooks/use-default-screen-options";
 import { Stack } from "expo-router";
 import { useState } from "react";
-import { Keyboard, Text, View } from "react-native";
+import { Keyboard, StyleSheet, Text, View } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated, { FadeIn, FadeOut, runOnJS } from "react-native-reanimated";
 
 type ExploreMode = "default" | "idle" | "typing" | "results";
+
+const CONTENT_ENTERING = FadeIn.duration(220)
+  .withInitialValues({ opacity: 0, transform: [{ translateY: 8 }] })
+  .springify()
+  .damping(20)
+  .stiffness(180);
+const CONTENT_EXITING = FadeOut.duration(120);
 
 const ExploreScreen = () => {
   const { colors } = useColors();
@@ -63,6 +72,30 @@ const ExploreScreen = () => {
     Keyboard.dismiss();
   };
 
+  const edgeCancelGesture = Gesture.Pan()
+    .activeOffsetX(12)
+    .failOffsetY([-16, 16])
+    .onEnd((event) => {
+      if (event.translationX > 56 || event.velocityX > 600) {
+        runOnJS(handleCancel)();
+      }
+    });
+
+  const renderContent = () => {
+    switch (mode) {
+      case "default":
+        return <ExploreDefaultView />;
+      case "idle":
+        return <ExploreIdleView onSearchPress={handleSuggestionPress} />;
+      case "typing":
+        return (
+          <ExploreTypingView query={query} onPress={handleSuggestionPress} />
+        );
+      case "results":
+        return <ExploreResultsView query={submittedQuery} />;
+    }
+  };
+
   return (
     <>
       <Stack.Screen
@@ -94,17 +127,16 @@ const ExploreScreen = () => {
           />
         </View>
 
-        {mode === "default" && <ExploreDefaultView />}
-
-        {mode === "idle" && (
-          <ExploreIdleView onSearchPress={handleSuggestionPress} />
-        )}
-
-        {mode === "typing" && (
-          <ExploreTypingView query={query} onPress={handleSuggestionPress} />
-        )}
-
-        {mode === "results" && <ExploreResultsView query={submittedQuery} />}
+        <View className="flex-1">
+          <Animated.View
+            key={mode}
+            entering={CONTENT_ENTERING}
+            exiting={CONTENT_EXITING}
+            style={StyleSheet.absoluteFill}
+          >
+            {renderContent()}
+          </Animated.View>
+        </View>
 
         {showEmptyToast && (
           <View className="absolute bottom-4 left-3 right-3 flex-row items-center gap-1.5 px-2.5 py-3 rounded bg-semantic-bg-secondary border border-semantic-border-primary">
@@ -116,6 +148,12 @@ const ExploreScreen = () => {
               검색어를 입력해주세요
             </Text>
           </View>
+        )}
+
+        {isSearchMode && (
+          <GestureDetector gesture={edgeCancelGesture}>
+            <View className="absolute left-0 top-0 bottom-0 w-7" />
+          </GestureDetector>
         )}
       </View>
     </>
