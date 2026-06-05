@@ -225,7 +225,15 @@ export const useDeletePostMutation = () => {
 
 export const useReportPostMutation = () => {
   return useMutation({
-    mutationFn: (postId: string) => reportPost(postId),
+    mutationFn: ({
+      postId,
+      reason,
+      description,
+    }: {
+      postId: string;
+      reason: string;
+      description?: string;
+    }) => reportPost(postId, { reason, description }),
   });
 };
 

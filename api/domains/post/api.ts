@@ -156,8 +156,11 @@ export const unbookmarkPost = async (postId: string): Promise<void> => {
   await apiClient.delete(POST_ENDPOINTS.BOOKMARK(postId));
 };
 
-export const reportPost = async (postId: string): Promise<void> => {
-  await apiClient.post(POST_ENDPOINTS.REPORT(postId));
+export const reportPost = async (
+  postId: string,
+  payload: { reason: string; description?: string },
+): Promise<void> => {
+  await apiClient.post(POST_ENDPOINTS.REPORT(postId), payload);
 };
 
 export const getPostImageUploadUrl = async (
