@@ -15,6 +15,7 @@ import { router, Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useMemo, useRef } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useThemeStore } from "@/store/theme-store";
 import "../styles/global.css";
 
 SplashScreen.preventAutoHideAsync();
@@ -53,9 +54,15 @@ const AppContent = () => {
   // 토큰 존재 확인 + 서버 검증 → store에 상태 기록
   useAuthBootstrap();
   const authStatus = useAuthStore((s) => s.status);
+  const isThemeLoaded = useThemeStore((s) => s.isLoaded);
+  const loadThemeMode = useThemeStore((s) => s.loadMode);
+
+  useEffect(() => {
+    loadThemeMode();
+  }, [loadThemeMode]);
 
   // 폰트와 auth 둘 다 결정될 때까지 splash 유지
-  const isReady = fontsLoaded && authStatus !== "unknown";
+  const isReady = fontsLoaded && authStatus !== "unknown" && isThemeLoaded;
 
   const hasNavigated = useRef(false);
 

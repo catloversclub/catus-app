@@ -6,17 +6,21 @@ import {
 } from "@tanstack/react-query";
 import {
   deleteNotification,
+  getNotificationSettings,
   getNotifications,
   getPushToken,
   registerPushToken,
+  updateNotificationSettings,
   updatePushToken,
 } from "./api";
+import { NotificationSettings } from "./types";
 
 const DEFAULT_TAKE = 20;
 
 export const notificationKeys = {
   all: ["notification"] as const,
   list: () => [...notificationKeys.all, "list"] as const,
+  settings: () => [...notificationKeys.all, "settings"] as const,
   pushToken: (token: string) =>
     [...notificationKeys.all, "pushToken", token] as const,
 };
@@ -45,6 +49,13 @@ export const useGetPushTokenQuery = (token: string, enabled: boolean) => {
   });
 };
 
+export const useNotificationSettingsQuery = () => {
+  return useQuery({
+    queryKey: notificationKeys.settings(),
+    queryFn: getNotificationSettings,
+  });
+};
+
 export const useDeleteNotificationMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -58,6 +69,17 @@ export const useDeleteNotificationMutation = () => {
 export const useRegisterPushTokenMutation = () => {
   return useMutation({
     mutationFn: (token: string) => registerPushToken(token),
+  });
+};
+
+export const useUpdateNotificationSettingsMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (settings: NotificationSettings) =>
+      updateNotificationSettings(settings),
+    onSuccess: (settings) => {
+      queryClient.setQueryData(notificationKeys.settings(), settings);
+    },
   });
 };
 

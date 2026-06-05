@@ -71,3 +71,12 @@ export interface TestNotificationResponse {
   validTokenCount: number;
   tickets: unknown[];
 }
+
+export interface NotificationSettings {
+  all: boolean;
+  likes: boolean;
+  comments: boolean;
+  replies: boolean;
+  newFollowers: boolean;
+  marketing: boolean;
+}

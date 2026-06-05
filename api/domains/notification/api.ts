@@ -4,6 +4,7 @@ import {
   DeleteNotificationResponse,
   GetNotificationsParams,
   Notification,
+  NotificationSettings,
   PushToken,
   TestNotificationResponse,
 } from "./types";
@@ -69,4 +70,32 @@ export const testNotification = async (): Promise<TestNotificationResponse> => {
     NOTI_ENDPOINTS.TEST,
   );
   return data;
+};
+
+let mockNotificationSettings: NotificationSettings = {
+  all: true,
+  likes: true,
+  comments: true,
+  replies: true,
+  newFollowers: true,
+  marketing: true,
+};
+
+const waitMockResponse = () =>
+  new Promise((resolve) => {
+    setTimeout(resolve, 150);
+  });
+
+export const getNotificationSettings =
+  async (): Promise<NotificationSettings> => {
+    await waitMockResponse();
+    return { ...mockNotificationSettings };
+  };
+
+export const updateNotificationSettings = async (
+  settings: NotificationSettings,
+): Promise<NotificationSettings> => {
+  await waitMockResponse();
+  mockNotificationSettings = { ...settings };
+  return { ...mockNotificationSettings };
 };

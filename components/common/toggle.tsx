@@ -1,5 +1,5 @@
 import { useColors } from "@/hooks/use-colors";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Animated, Pressable } from "react-native";
 
 interface ToggleProps {
@@ -12,11 +12,14 @@ const Toggle = ({ value, onValueChange }: ToggleProps) => {
 
   const anim = useRef(new Animated.Value(value ? 1 : 0)).current;
 
-  const toggle = () => {
+  useEffect(() => {
     Animated.spring(anim, {
-      toValue: value ? 0 : 1,
+      toValue: value ? 1 : 0,
       useNativeDriver: false,
     }).start();
+  }, [anim, value]);
+
+  const toggle = () => {
     onValueChange(!value);
   };
 

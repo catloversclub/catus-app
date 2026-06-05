@@ -10,9 +10,17 @@ import * as SecureStore from "expo-secure-store";
 import { useCallback, useRef, useState } from "react";
 import { Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import { ThemeMode, useThemeStore } from "@/store/theme-store";
+
+const DISPLAY_MODE_LABELS: Record<ThemeMode, string> = {
+  system: "시스템 (자동)",
+  light: "라이트 모드",
+  dark: "다크 모드",
+};
 
 const Follower = () => {
   const [isLogoutModalVisible, setIsLogoutModalVisible] = useState(false);
+  const displayMode = useThemeStore((s) => s.mode);
   const DisplayModeSheetModalRef = useRef<BottomSheetModal>(null);
   const handleDisplayModePress = useCallback(() => {
     DisplayModeSheetModalRef.current?.present();
@@ -26,11 +34,11 @@ const Follower = () => {
         <SettingsSection title="일반">
           <SettingsLinkItem
             label="알림"
-            onPress={() => router.push("/settings/terms-of-service")}
+            onPress={() => router.push("/settings/notifications")}
           />
           <SettingsLinkItem
             label="디스플레이"
-            value="라이트 모드"
+            value={DISPLAY_MODE_LABELS[displayMode]}
             onPress={handleDisplayModePress}
           />
         </SettingsSection>
