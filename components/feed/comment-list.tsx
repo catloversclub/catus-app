@@ -1,5 +1,4 @@
 import { usePostCommentsQuery } from "@/api/domains/comment/queries";
-import { Comment } from "@/api/domains/comment/types";
 import { ReplyTarget } from "@/components/feed/comment-input-bar";
 import CommentItem from "@/components/feed/comment-item";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -26,7 +25,7 @@ const CommentList = ({ postId, onReply }: CommentListProps) => {
 
   return (
     <View>
-      {comments.map((comment: Comment) => (
+      {comments.map((comment) => (
         <CommentItem
           key={comment.id}
           comment={comment}

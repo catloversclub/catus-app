@@ -5,7 +5,7 @@ import {
   BottomSheetModal,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
-import React from "react";
+import React, { useCallback } from "react";
 import { StyleSheet } from "react-native";
 
 const INDICATOR_WIDTH = 120;
@@ -15,6 +15,7 @@ interface BaseBottomSheetProps {
   BaseBottomSheetModalRef: React.RefObject<BottomSheetModal | null>;
   children: React.ReactNode;
   onDismiss?: () => void;
+  onChange?: (index: number) => void;
   keyboardBehavior?: "extend" | "fillParent" | "interactive";
   keyboardBlurBehavior?: "none" | "restore";
   snapPoints?: (string | number)[];
@@ -25,6 +26,7 @@ const BaseBottomSheet = ({
   BaseBottomSheetModalRef,
   children,
   onDismiss,
+  onChange,
   keyboardBehavior,
   keyboardBlurBehavior,
   snapPoints,
@@ -32,16 +34,21 @@ const BaseBottomSheet = ({
 }: BaseBottomSheetProps) => {
   const { colors } = useColors();
 
+  const renderBackdrop = useCallback(
+    (props: React.ComponentProps<typeof BottomSheetBackdrop>) => (
+      <BottomSheetBackdrop
+        {...props}
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+        style={{ backgroundColor: colors.dimmed.primary }}
+      />
+    ),
+    [colors.dimmed.primary],
+  );
+
   return (
     <BottomSheetModal
-      backdropComponent={(props) => (
-        <BottomSheetBackdrop
-          {...props}
-          appearsOnIndex={0}
-          disappearsOnIndex={-1}
-          style={{ backgroundColor: colors.dimmed.primary }}
-        />
-      )}
+      backdropComponent={renderBackdrop}
       backgroundStyle={{ backgroundColor: colors.bg.secondary }}
       handleIndicatorStyle={{
         width: INDICATOR_WIDTH,
@@ -50,15 +57,20 @@ const BaseBottomSheet = ({
       }}
       ref={BaseBottomSheetModalRef}
       onDismiss={onDismiss}
+      onChange={onChange}
       keyboardBehavior={keyboardBehavior}
       keyboardBlurBehavior={keyboardBlurBehavior}
       snapPoints={snapPoints}
       enableDynamicSizing={!snapPoints}
       footerComponent={footerComponent}
     >
-      <BottomSheetView style={styles.contentContainer}>
-        {children}
-      </BottomSheetView>
+      {snapPoints ? (
+        children
+      ) : (
+        <BottomSheetView style={styles.contentContainer}>
+          {children}
+        </BottomSheetView>
+      )}
     </BottomSheetModal>
   );
 };

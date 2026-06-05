@@ -12,10 +12,50 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Text } from "@/components/ui/text";
+import { Heart, MessageCircle } from "@/lib/icons";
 import { cn, formatRelativeTime } from "@/lib/utils";
-import { Heart } from "@/lib/icons";
 import { useState } from "react";
 import { Pressable, View } from "react-native";
+
+interface CommentActionsProps {
+  isLikedByMe: boolean;
+  likeCount: number;
+  onLike: () => void;
+  onReply: () => void;
+}
+
+const CommentActions = ({
+  isLikedByMe,
+  likeCount,
+  onLike,
+  onReply,
+}: CommentActionsProps) => {
+  return (
+    <View className="flex-row items-center">
+      <Pressable
+        onPress={onLike}
+        className="items-center gap-0.5 px-2 py-1 active:opacity-60"
+      >
+        <Heart
+          size={14}
+          className={
+            isLikedByMe
+              ? "fill-semantic-icon-error text-semantic-icon-error"
+              : "text-semantic-text-tertiary"
+          }
+        />
+        {likeCount > 0 && (
+          <Text className="typo-label1 text-semantic-text-tertiary">
+            {likeCount}
+          </Text>
+        )}
+      </Pressable>
+      <Pressable onPress={onReply} className="px-2 py-1 active:opacity-60">
+        <MessageCircle size={14} className="text-semantic-text-tertiary" />
+      </Pressable>
+    </View>
+  );
+};
 
 const ReplyItem = ({ reply }: { reply: Comment }) => (
   <View className="px-3 pt-3 pb-2 pl-12">
@@ -60,7 +100,7 @@ const CommentItem = ({ comment, postId, onReply }: CommentItemProps) => {
   };
 
   return (
-    <View className="flex-col">
+    <View className="flex-col ">
       <View className="flex-row items-start justify-between p-3 pb-1">
         <UserPostProfileInfo
           imageUrl={author.profileImageUrl}
@@ -68,31 +108,16 @@ const CommentItem = ({ comment, postId, onReply }: CommentItemProps) => {
           name={author.nickname}
           subtitle={formatRelativeTime(createdAt)}
         />
-        <Pressable
-          onPress={handleLike}
-          className="items-center gap-0.5 active:opacity-60"
-        >
-          <Heart
-            size={14}
-            className={
-              isLikedByMe
-                ? "fill-semantic-icon-error text-semantic-icon-error"
-                : "text-semantic-text-tertiary"
-            }
-          />
-          {likeCount > 0 && (
-            <Text className="typo-label1 text-semantic-text-tertiary">
-              {likeCount}
-            </Text>
-          )}
-        </Pressable>
+        <CommentActions
+          isLikedByMe={isLikedByMe}
+          likeCount={likeCount}
+          onLike={handleLike}
+          onReply={handleReply}
+        />
       </View>
 
       <View className="px-3 pb-3 pl-[60px]">
         <Text className="typo-body4 text-semantic-text-primary">{content}</Text>
-        <Pressable onPress={handleReply} className="mt-1.5 active:opacity-60">
-          <Text className="typo-label1 text-semantic-text-tertiary">답글</Text>
-        </Pressable>
       </View>
 
       {replies && replies.length > 0 ? (

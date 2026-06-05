@@ -12,6 +12,7 @@ export const usePostCommentsQuery = (postId: string) => {
   return useSuspenseQuery({
     queryKey: commentKeys.byPost(postId),
     queryFn: () => getPostComments(postId),
+    staleTime: Infinity,
   })
 }
 

@@ -1,10 +1,9 @@
 import { useCreateCommentMutation } from "@/api/domains/comment/queries";
 import ArrowUpIcon from "@/assets/icons/arrow-up.svg";
-import { Text } from "@/components/ui/text";
 import { useColors } from "@/hooks/use-colors";
 import { X } from "@/lib/icons";
 import React, { useState } from "react";
-import { Pressable, TextInput, TextInputProps, View } from "react-native";
+import { Pressable, Text, TextInput, TextInputProps, View } from "react-native";
 
 export interface ReplyTarget {
   id: string;
@@ -15,7 +14,6 @@ interface CommentInputBarProps {
   postId: string;
   replyTarget?: ReplyTarget | null;
   onClearReply?: () => void;
-  paddingBottom?: number;
   InputComponent?: React.ComponentType<TextInputProps>;
 }
 
@@ -23,7 +21,6 @@ const CommentInputBar = ({
   postId,
   replyTarget,
   onClearReply,
-  paddingBottom = 0,
   InputComponent = TextInput,
 }: CommentInputBarProps) => {
   const { colors } = useColors();
@@ -49,27 +46,16 @@ const CommentInputBar = ({
   const canSubmit = text.trim().length > 0 && !isPending;
 
   return (
-    <View
-      className="border-t border-semantic-border-primary bg-semantic-bg-primary"
-      style={{ paddingBottom }}
-    >
-      {replyTarget && (
-        <View className="flex-row items-center justify-between px-4 py-1.5">
-          <Text className="typo-label1 text-semantic-text-secondary">
-            @{replyTarget.nickname}에게 답글 남기기
-          </Text>
-          <Pressable onPress={onClearReply} className="p-1 active:opacity-60">
-            <X size={14} className="text-semantic-text-tertiary" />
-          </Pressable>
-        </View>
-      )}
+    <View className="border-t pb-6 border-semantic-border-primary bg-semantic-bg-primary">
       <View className="flex-row items-end gap-2 px-4 pb-2.5 pt-2.5">
         <View className="min-h-10 flex-1 justify-center rounded bg-semantic-bg-secondary px-3 py-2.5">
           <InputComponent
             value={text}
             onChangeText={setText}
             placeholder={
-              replyTarget ? `@${replyTarget.nickname}에게 답글...` : "댓글을 작성하세요..."
+              replyTarget
+                ? `@${replyTarget.nickname}에게 답글...`
+                : "댓글을 작성하세요..."
             }
             placeholderTextColor={colors.text.tertiary}
             multiline
@@ -92,6 +78,16 @@ const CommentInputBar = ({
           <ArrowUpIcon width={20} height={20} color={colors.text.primary} />
         </Pressable>
       </View>
+      {replyTarget && (
+        <View className="flex-row items-center justify-between px-4 py-1.5">
+          <Text className="typo-label1 text-semantic-text-secondary">
+            @{replyTarget.nickname}에게 답글 남기기
+          </Text>
+          <Pressable onPress={onClearReply} className="p-1 active:opacity-60">
+            <X size={14} className="text-semantic-text-tertiary" />
+          </Pressable>
+        </View>
+      )}
     </View>
   );
 };

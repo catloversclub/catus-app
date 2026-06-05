@@ -16,7 +16,6 @@ import {
 } from "@gorhom/bottom-sheet";
 import React, { Suspense, useCallback, useState } from "react";
 import { View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface CommentSheetProps {
   postId: string;
@@ -33,22 +32,20 @@ const CommentCount = ({ postId }: { postId: string }) => {
 };
 
 const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
-  const insets = useSafeAreaInsets();
   const [replyTarget, setReplyTarget] = useState<ReplyTarget | null>(null);
 
   const footerComponent = useCallback(
     (props: BottomSheetFooterProps) => (
-      <BottomSheetFooter {...props} bottomInset={insets.bottom}>
+      <BottomSheetFooter {...props}>
         <CommentInputBar
           postId={postId}
           replyTarget={replyTarget}
           onClearReply={() => setReplyTarget(null)}
-          paddingBottom={8}
           InputComponent={BottomSheetTextInput}
         />
       </BottomSheetFooter>
     ),
-    [postId, replyTarget, insets.bottom],
+    [postId, replyTarget],
   );
 
   return (
@@ -66,9 +63,7 @@ const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
         </Suspense>
       </View>
 
-      <BottomSheetScrollView
-        contentContainerStyle={{ paddingBottom: 80 }}
-      >
+      <BottomSheetScrollView contentContainerStyle={{ paddingBottom: 80 }}>
         <Suspense fallback={<CommentListSkeleton />}>
           <CommentList postId={postId} onReply={setReplyTarget} />
         </Suspense>

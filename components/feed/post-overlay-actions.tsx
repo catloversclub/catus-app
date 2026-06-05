@@ -1,5 +1,5 @@
 import { Bookmark, Heart, MessageCircle } from "@/lib/icons";
-import { Pressable } from "react-native";
+import { Pressable, View } from "react-native";
 
 interface PostOverlayActionsProps {
   isLikedByMe: boolean;
@@ -17,10 +17,7 @@ const PostOverlayActions = ({
   onBookmark,
 }: PostOverlayActionsProps) => {
   return (
-    <Pressable
-      className="absolute bottom-1.5 right-1.5 z-10 flex-row items-center"
-      onPress={() => {}}
-    >
+    <View className="absolute bottom-1.5 right-1.5 z-10 flex-row items-center">
       <Pressable onPress={onLike} className="px-2 py-3 active:opacity-60">
         <Heart
           size={20}
@@ -47,7 +44,7 @@ const PostOverlayActions = ({
           }
         />
       </Pressable>
-    </Pressable>
+    </View>
   );
 };
 
