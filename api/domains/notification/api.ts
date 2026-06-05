@@ -1,6 +1,12 @@
 import { apiClient } from "@/api/client";
 import { Platform } from "react-native";
-import { GetNotificationsParams, Notification, PushToken } from "./types";
+import {
+  DeleteNotificationResponse,
+  GetNotificationsParams,
+  Notification,
+  PushToken,
+  TestNotificationResponse,
+} from "./types";
 
 const BASE_URL = "/notification";
 
@@ -49,10 +55,18 @@ export const getNotifications = async (
   return data;
 };
 
-export const deleteNotification = async (id: string): Promise<void> => {
-  await apiClient.delete(NOTI_ENDPOINTS.DETAIL(id));
+export const deleteNotification = async (
+  id: string,
+): Promise<DeleteNotificationResponse> => {
+  const { data } = await apiClient.delete<DeleteNotificationResponse>(
+    NOTI_ENDPOINTS.DETAIL(id),
+  );
+  return data;
 };
 
-export const testNotification = async (): Promise<void> => {
-  await apiClient.post(NOTI_ENDPOINTS.TEST);
+export const testNotification = async (): Promise<TestNotificationResponse> => {
+  const { data } = await apiClient.post<TestNotificationResponse>(
+    NOTI_ENDPOINTS.TEST,
+  );
+  return data;
 };

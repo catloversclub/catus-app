@@ -72,7 +72,7 @@ const UpdateTag = () => {
 
 const UpdateProfile = () => {
   const { data: userData } = useUserProfileQuery();
-  const [canSubmit, setCanSubmit] = useState(false);
+  const canSubmit = false;
   return (
     <View className="flex-1 bg-semantic-bg-primary">
       <ScrollView

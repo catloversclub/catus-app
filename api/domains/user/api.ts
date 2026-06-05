@@ -2,6 +2,10 @@ import { apiClient } from "@/api/client";
 import { ImageUploadUrl } from "@/api/domains/common/type";
 import {
   CreateUserRequest,
+  CreateUserResponse,
+  DeleteUserResponse,
+  FollowUserRequest,
+  FollowUserResponse,
   GetBlocksResponse,
   GetFollowersResponse,
   GetFollowingsResponse,
@@ -9,6 +13,7 @@ import {
   GetUserByIdResponse,
   GetUserProfileResponse,
   UpdateUserRequest,
+  UpdateUserResponse,
 } from "./types";
 
 const BASE_URL = "/user";
@@ -33,8 +38,13 @@ export const getUserProfile = async (): Promise<GetUserProfileResponse> => {
   return data;
 };
 
-export const createUser = async (payload: CreateUserRequest) => {
-  const { data } = await apiClient.post(USER_ENDPOINTS.BASE, payload);
+export const createUser = async (
+  payload: CreateUserRequest,
+): Promise<CreateUserResponse> => {
+  const { data } = await apiClient.post<CreateUserResponse>(
+    USER_ENDPOINTS.BASE,
+    payload,
+  );
   return data;
 };
 
@@ -47,13 +57,20 @@ export const getUserById = async (
   return data;
 };
 
-export const updateUser = async (payload: UpdateUserRequest) => {
-  const { data } = await apiClient.patch(USER_ENDPOINTS.ME, payload);
+export const updateUser = async (
+  payload: UpdateUserRequest,
+): Promise<UpdateUserResponse> => {
+  const { data } = await apiClient.patch<UpdateUserResponse>(
+    USER_ENDPOINTS.ME,
+    payload,
+  );
   return data;
 };
 
-export const deleteUser = async () => {
-  const { data } = await apiClient.delete(USER_ENDPOINTS.ME);
+export const deleteUser = async (): Promise<DeleteUserResponse> => {
+  const { data } = await apiClient.delete<DeleteUserResponse>(
+    USER_ENDPOINTS.ME,
+  );
   return data;
 };
 
@@ -66,13 +83,25 @@ export const checkNickname = async (
   return data;
 };
 
-export const followUser = async (userId: string) => {
-  const { data } = await apiClient.post(USER_ENDPOINTS.FOLLOW(userId));
+export const followUser = async ({
+  userId,
+  catIds,
+}: FollowUserRequest): Promise<FollowUserResponse> => {
+  const { data } = await apiClient.post<FollowUserResponse>(
+    USER_ENDPOINTS.FOLLOW(userId),
+    { catIds },
+  );
   return data;
 };
 
-export const unfollowUser = async (userId: string) => {
-  const { data } = await apiClient.delete(USER_ENDPOINTS.FOLLOW(userId));
+export const unfollowUser = async ({
+  userId,
+  catIds,
+}: FollowUserRequest): Promise<FollowUserResponse> => {
+  const { data } = await apiClient.delete<FollowUserResponse>(
+    USER_ENDPOINTS.FOLLOW(userId),
+    { data: { catIds } },
+  );
   return data;
 };
 

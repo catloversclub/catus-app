@@ -68,8 +68,8 @@ const pretty = (value: unknown) => JSON.stringify(value, null, 2);
 apiClient.interceptors.request.use(async (config) => {
   console.log(
     `🟡 [REQ] ${config.method?.toUpperCase()} ${config.url}\n` +
-    (config.params ? `params: ${pretty(config.params)}\n` : "") +
-    (config.data ? `body: ${pretty(config.data)}` : ""),
+      (config.params ? `params: ${pretty(config.params)}\n` : "") +
+      (config.data ? `body: ${pretty(config.data)}` : ""),
   );
   const token = await tokenStorage.getAccess();
   if (token) config.headers.Authorization = `Bearer ${token}`;
@@ -80,14 +80,14 @@ apiClient.interceptors.response.use(
   (response) => {
     console.log(
       `🟢 [RES] ${response.status} ${response.config.url}\n` +
-      pretty(response.data),
+        pretty(response.data),
     );
     return response;
   },
   async (error) => {
     console.error(
       `🔴 [ERR] ${error.config?.method?.toUpperCase()} ${error.config?.url} → ${error.response?.status}\n` +
-      pretty(error.response?.data),
+        pretty(error.response?.data),
     );
     if (error.response?.status !== 401) throw error;
 
@@ -100,7 +100,7 @@ apiClient.interceptors.response.use(
 storageClient.interceptors.response.use(undefined, async (error) => {
   console.error(
     `🔴 [ERR:Storage] ${error.config?.method?.toUpperCase()} ${error.config?.url} → ${error.response?.status}\n` +
-    pretty(error.response?.data),
+      pretty(error.response?.data),
   );
   throw error;
 });
@@ -108,6 +108,7 @@ storageClient.interceptors.response.use(undefined, async (error) => {
 publicClient.interceptors.response.use(undefined, async (error) => {
   console.error(
     `🔴 [ERR:Public] ${error.config?.method?.toUpperCase()} ${error.config?.url} → ${error.response?.status}\n` +
-    pretty(error.response?.data),
+      pretty(error.response?.data),
   );
+  throw error;
 });

@@ -18,17 +18,14 @@ import {
 import ArrowUpIcon from "@/assets/icons/arrow-up.svg";
 import CommentItem from "./comment-item";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Comment } from "@catus/constants";
+import { Comment } from "@/api/domains/comment/types";
 
 interface CommentSheetProps {
   commentSheetRef: React.RefObject<BottomSheetModal | null>;
   comments: Comment[];
 }
 
-const CommentSheet = ({
-  commentSheetRef,
-  comments,
-}: CommentSheetProps) => {
+const CommentSheet = ({ commentSheetRef, comments }: CommentSheetProps) => {
   const [commentText, setCommentText] = useState("");
   const [replyingTo, setReplyingTo] = useState<{
     id: string;
@@ -43,7 +40,7 @@ const CommentSheet = ({
           item={item}
           onReply={(id, author) => setReplyingTo({ id, author })}
         />
-        {item.replies?.map((reply) => (
+        {item.replies?.map((reply: Comment) => (
           <CommentItem key={reply.id} item={reply} isReply />
         ))}
       </View>
@@ -117,7 +114,7 @@ const CommentSheet = ({
       </BottomSheetView>
     </BottomSheetModal>
   );
-}
+};
 const styles = StyleSheet.create({
   container: {
     flex: 1,

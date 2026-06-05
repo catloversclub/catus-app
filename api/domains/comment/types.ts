@@ -1,28 +1,34 @@
-import { Author } from "@/api/domains/post/types"
+import { Author } from "@/api/domains/post/types";
 
 export interface CommentLike {
-  userId: string
+  userId: string;
 }
 
 export interface Comment {
-  id: string
-  postId: string
-  authorId: string
-  parentId: string | null
-  content: string
-  likeCount: number
-  isLikedByMe: boolean
-  createdAt: string
-  author: Author
-  commentLikes: CommentLike[]
-  replies?: Comment[]
+  id: string;
+  postId: string;
+  authorId: string;
+  parentId: string | null;
+  content: string;
+  likeCount: number;
+  isLikedByMe: boolean;
+  createdAt: string;
+  author: Author;
+  commentLikes: CommentLike[];
+  replies?: Comment[];
 }
 
-export type GetPostCommentsResponse = Comment[]
+export type GetPostCommentsResponse = Comment[];
 
 export interface CreateCommentRequest {
   content: string;
   parentId?: string | null;
 }
 
-export type CreateCommentResponse = Comment
+export type CreateCommentResponse = Comment;
+
+export type DeleteCommentResponse = void;
+
+export interface CommentLikeResponse {
+  likeCount: number;
+}

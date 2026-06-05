@@ -7,12 +7,13 @@ export interface Post {
   createdAt: string;
   updatedAt: string;
   authorId: string;
-  catId: string;
+  catId: string | null;
   author: Author;
-  cat: Cat;
+  cat: Cat | null;
   images: PostImage[];
   isLikedByMe: boolean;
   isBookmarkedByMe: boolean;
+  dailyLikeCount?: number;
 }
 
 export interface Author {
@@ -56,11 +57,33 @@ export interface CreatePostRequest {
 export type CreatePostResponse = Post;
 
 export interface UpdatePostRequest {
-  content?: string;
-  imageUrls?: string[];
+  content?: string | null;
+  catId?: string | null;
+  imageUrls?: string[] | null;
 }
 
 export type UpdatePostResponse = Post;
+
+export type DeletePostResponse = Pick<
+  Post,
+  | "id"
+  | "likeCount"
+  | "content"
+  | "createdAt"
+  | "updatedAt"
+  | "authorId"
+  | "catId"
+>;
+
+export interface PostLikeResponse {
+  likeCount: number;
+}
+
+export interface PostBookmarkResponse {
+  isBookmarkedByMe: boolean;
+}
+
+export type ReportPostResponse = void;
 
 export interface PresignedUploadItem extends ImageUploadUrl {
   key: string;

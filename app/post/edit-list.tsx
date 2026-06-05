@@ -1,4 +1,3 @@
-import AlertIcon from "@/assets/icons/alert.svg";
 import { useDraftStore } from "@/store/post/draft-store";
 import ArrowLeftIcon from "@/assets/icons/arrow-left.svg";
 import CheckboxFilledIcon from "@/assets/icons/checkbox-filled.svg";
@@ -111,9 +110,7 @@ const EditListScreen = () => {
 
   return (
     <>
-      <Stack.Screen
-        options={{ headerShown: false, gestureEnabled: false }}
-      />
+      <Stack.Screen options={{ headerShown: false, gestureEnabled: false }} />
       <View
         style={{
           flex: 1,
@@ -151,7 +148,12 @@ const EditListScreen = () => {
         {/* Scrollable form */}
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={{ paddingHorizontal: 12, paddingBottom: 32, paddingTop: 24, gap: 30 }}
+          contentContainerStyle={{
+            paddingHorizontal: 12,
+            paddingBottom: 32,
+            paddingTop: 24,
+            gap: 30,
+          }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
@@ -518,7 +520,11 @@ const EditListScreen = () => {
         snapPoints={["50%"]}
         backdropComponent={renderBackdrop}
         backgroundStyle={{ backgroundColor: colors.bg.secondary }}
-        handleIndicatorStyle={{ backgroundColor: colors.icon.secondary, width: 120, height: 6 }}
+        handleIndicatorStyle={{
+          backgroundColor: colors.icon.secondary,
+          width: 120,
+          height: 6,
+        }}
       >
         <BottomSheetView
           style={{
@@ -645,6 +651,6 @@ const EditListScreen = () => {
       </BottomSheetModal>
     </>
   );
-}
+};
 
 export default EditListScreen;

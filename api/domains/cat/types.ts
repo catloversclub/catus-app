@@ -9,18 +9,35 @@ interface Cat {
   breed: string | null;
   personalities: number[];
   appearances: number[];
-  type: string | null;
+  type: number | null;
   createdAt: string;
   butlerId: string;
 }
 
-type CreateCatRequest = Partial<Omit<Cat, "id">>;
-type UpdateCatRequest = Partial<Omit<Cat, "id">>;
-type CreateCatResponse = Omit<Cat, "personalities" | "appearances">;
+type CreateCatRequest = Pick<Cat, "name"> &
+  Partial<
+    Pick<
+      Cat,
+      | "gender"
+      | "profileImageUrl"
+      | "birthDate"
+      | "breed"
+      | "personalities"
+      | "appearances"
+    >
+  >;
+type UpdateCatRequest = Partial<CreateCatRequest>;
+type CreateCatResponse = Cat;
+type DeleteCatResponse = Omit<Cat, "appearances" | "personalities">;
+
+type UserCat = Cat & {
+  isFollowedByMe: boolean;
+};
 
 type CatProfile = Omit<Cat, "id" | "createdAt" | "butlerId" | "type">;
 
 export type GetMyCatsResponse = Cat[];
+export type GetUserCatsResponse = UserCat[];
 
 export type GetCatByIdResponse = Cat;
 
@@ -31,5 +48,7 @@ export {
   CatProfile,
   CreateCatRequest,
   CreateCatResponse,
+  DeleteCatResponse,
   UpdateCatRequest,
+  UserCat,
 };

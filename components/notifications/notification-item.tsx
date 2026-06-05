@@ -34,8 +34,14 @@ const FULL_SWIPE_THRESHOLD = 3;
 
 const getActorId = (n: Notification): string => {
   if (!n.data) return "";
-  if (n.data.type === "USER_FOLLOWED") return n.data.followerId;
-  return n.data.actorId;
+  if ("actorId" in n.data) return n.data.actorId;
+  if ("followerId" in n.data) return n.data.followerId;
+  return "";
+};
+
+const getTargetPostId = (n: Notification): string | null => {
+  if (!n.data || !("postId" in n.data)) return null;
+  return n.data.postId;
 };
 
 const renderMessage = (
@@ -71,6 +77,18 @@ const renderMessage = (
         </>
       );
     }
+    case "REPLY_CREATED": {
+      const raw = n.title ?? "";
+      const idx = raw.indexOf("님이");
+      const name = idx > 0 ? raw.slice(0, idx) : raw;
+      const rest = idx > 0 ? raw.slice(idx) : "";
+      return (
+        <>
+          <ActorName name={name} />
+          {rest}
+        </>
+      );
+    }
     case "USER_FOLLOWED": {
       const raw = n.body ?? "";
       const idx = raw.indexOf("님이");
@@ -83,6 +101,8 @@ const renderMessage = (
         </>
       );
     }
+    default:
+      return n.body ?? n.title ?? "";
   }
 };
 
@@ -128,10 +148,14 @@ const NotificationItem = ({ item, onDelete }: NotificationItemProps) => {
 
   const handleContentPress = () => {
     if (!item.data) return;
-    if (item.data.type === "USER_FOLLOWED") {
+    if ("followerId" in item.data && !("postId" in item.data)) {
       router.push(ROUTES.USER.DETAIL(item.data.followerId));
-    } else {
-      router.push(ROUTES.POST.DETAIL(item.data.postId));
+      return;
+    }
+
+    const postId = getTargetPostId(item);
+    if (postId) {
+      router.push(ROUTES.POST.DETAIL(postId));
     }
   };
 

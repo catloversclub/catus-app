@@ -30,7 +30,7 @@ const WheelPicker = ({
   useEffect(() => {
     const index = items.indexOf(selected);
     flatListRef.current?.scrollToIndex({ index, animated: false });
-  }, []);
+  }, [items, selected]);
 
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const index = Math.round(e.nativeEvent.contentOffset.y / ITEM_HEIGHT);

@@ -12,10 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import {
-  Gesture,
-  GestureDetector,
-} from "react-native-gesture-handler";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -27,6 +24,12 @@ const CANVAS_SIZE = SCREEN_WIDTH - 24; // 12px padding each side
 
 const RATIOS = ["자유", "1:1", "3:2", "4:3", "16:9"] as const;
 type Ratio = (typeof RATIOS)[number];
+const RATIO_MAP: Record<string, number> = {
+  "1:1": 1,
+  "3:2": 3 / 2,
+  "4:3": 4 / 3,
+  "16:9": 16 / 9,
+};
 
 interface CropToolProps {
   uri: string;
@@ -43,13 +46,6 @@ const CropTool = ({ uri, onSave, onCancel }: CropToolProps) => {
   const boxWidth = useSharedValue(CANVAS_SIZE);
   const boxHeight = useSharedValue(CANVAS_SIZE);
 
-  const RATIO_MAP: Record<string, number> = {
-    "1:1": 1,
-    "3:2": 3 / 2,
-    "4:3": 4 / 3,
-    "16:9": 16 / 9,
-  };
-
   useEffect(() => {
     const ratio = RATIO_MAP[aspectRatio];
     if (!ratio) {
@@ -61,7 +57,7 @@ const CropTool = ({ uri, onSave, onCancel }: CropToolProps) => {
     boxHeight.value = Math.min(h, CANVAS_SIZE);
     boxX.value = 0;
     boxY.value = (CANVAS_SIZE - boxHeight.value) / 2;
-  }, [aspectRatio]);
+  }, [aspectRatio, boxHeight, boxWidth, boxX, boxY]);
 
   const moveGesture = Gesture.Pan().onChange((e) => {
     const newX = boxX.value + e.changeX;
@@ -74,7 +70,10 @@ const CropTool = ({ uri, onSave, onCancel }: CropToolProps) => {
     const ratio = RATIO_MAP[aspectRatio];
     if (ratio) {
       const avg = (e.changeX + e.changeY) / 2;
-      const newW = Math.max(50, Math.min(CANVAS_SIZE - boxX.value, boxWidth.value + avg));
+      const newW = Math.max(
+        50,
+        Math.min(CANVAS_SIZE - boxX.value, boxWidth.value + avg),
+      );
       boxWidth.value = newW;
       boxHeight.value = newW / ratio;
     } else {
@@ -96,21 +95,27 @@ const CropTool = ({ uri, onSave, onCancel }: CropToolProps) => {
 
   const handleCrop = async () => {
     try {
-      const { width, height } = await new Promise<{ width: number; height: number }>(
+      const { width } = await new Promise<{ width: number; height: number }>(
         (resolve, reject) =>
-          RNImage.getSize(uri, (w, h) => resolve({ width: w, height: h }), reject),
+          RNImage.getSize(
+            uri,
+            (w, h) => resolve({ width: w, height: h }),
+            reject,
+          ),
       );
       const scale = width / CANVAS_SIZE;
       const result = await ImageManipulator.manipulateAsync(
         uri,
-        [{
-          crop: {
-            originX: Math.round(boxX.value * scale),
-            originY: Math.round(boxY.value * scale),
-            width: Math.round(boxWidth.value * scale),
-            height: Math.round(boxHeight.value * scale),
+        [
+          {
+            crop: {
+              originX: Math.round(boxX.value * scale),
+              originY: Math.round(boxY.value * scale),
+              width: Math.round(boxWidth.value * scale),
+              height: Math.round(boxHeight.value * scale),
+            },
           },
-        }],
+        ],
         { compress: 1, format: ImageManipulator.SaveFormat.JPEG },
       );
       onSave(result.uri);
@@ -129,42 +134,113 @@ const CropTool = ({ uri, onSave, onCancel }: CropToolProps) => {
   return (
     <View style={{ flex: 1, backgroundColor: DARK.bg, paddingTop: top }}>
       {/* Header */}
-      <View style={{ flexDirection: "row", alignItems: "center", height: 52, paddingHorizontal: 12 }}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          height: 52,
+          paddingHorizontal: 12,
+        }}
+      >
         <IconButton onPress={onCancel} className="p-3">
           <ArrowLeftIcon width={20} height={20} color={DARK.text} />
         </IconButton>
-        <Text style={{ flex: 1, textAlign: "center", color: DARK.text, fontSize: 16, fontWeight: "600", letterSpacing: -0.32, marginRight: 44 }}>
+        <Text
+          style={{
+            flex: 1,
+            textAlign: "center",
+            color: DARK.text,
+            fontSize: 16,
+            fontWeight: "600",
+            letterSpacing: -0.32,
+            marginRight: 44,
+          }}
+        >
           자르기
         </Text>
       </View>
 
       {/* Image + crop overlay */}
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <View style={{ width: CANVAS_SIZE, height: CANVAS_SIZE, position: "relative" }}>
-          <Image source={{ uri }} style={StyleSheet.absoluteFill} contentFit="contain" />
-          <View style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(0,0,0,0.55)" }]} />
+        <View
+          style={{
+            width: CANVAS_SIZE,
+            height: CANVAS_SIZE,
+            position: "relative",
+          }}
+        >
+          <Image
+            source={{ uri }}
+            style={StyleSheet.absoluteFill}
+            contentFit="contain"
+          />
+          <View
+            style={[
+              StyleSheet.absoluteFill,
+              { backgroundColor: "rgba(0,0,0,0.55)" },
+            ]}
+          />
           <GestureDetector gesture={moveGesture}>
             <Animated.View style={[styles.cropBox, boxStyle]}>
               {/* Grid lines */}
               <View style={StyleSheet.absoluteFill}>
                 <View style={{ flex: 1, flexDirection: "row" }}>
-                  <View style={{ flex: 1, borderRightWidth: StyleSheet.hairlineWidth, borderRightColor: "rgba(255,255,255,0.4)" }} />
-                  <View style={{ flex: 1, borderRightWidth: StyleSheet.hairlineWidth, borderRightColor: "rgba(255,255,255,0.4)" }} />
+                  <View
+                    style={{
+                      flex: 1,
+                      borderRightWidth: StyleSheet.hairlineWidth,
+                      borderRightColor: "rgba(255,255,255,0.4)",
+                    }}
+                  />
+                  <View
+                    style={{
+                      flex: 1,
+                      borderRightWidth: StyleSheet.hairlineWidth,
+                      borderRightColor: "rgba(255,255,255,0.4)",
+                    }}
+                  />
                   <View style={{ flex: 1 }} />
                 </View>
               </View>
               <View style={StyleSheet.absoluteFill}>
-                <View style={{ flex: 1, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: "rgba(255,255,255,0.4)" }} />
-                <View style={{ flex: 1, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: "rgba(255,255,255,0.4)" }} />
+                <View
+                  style={{
+                    flex: 1,
+                    borderBottomWidth: StyleSheet.hairlineWidth,
+                    borderBottomColor: "rgba(255,255,255,0.4)",
+                  }}
+                />
+                <View
+                  style={{
+                    flex: 1,
+                    borderBottomWidth: StyleSheet.hairlineWidth,
+                    borderBottomColor: "rgba(255,255,255,0.4)",
+                  }}
+                />
                 <View style={{ flex: 1 }} />
               </View>
               {/* Corner handles */}
               <View style={[styles.corner, { top: -1, left: -1 }]} />
-              <View style={[styles.corner, { top: -1, right: -1, transform: [{ scaleX: -1 }] }]} />
-              <View style={[styles.corner, { bottom: -1, left: -1, transform: [{ scaleY: -1 }] }]} />
+              <View
+                style={[
+                  styles.corner,
+                  { top: -1, right: -1, transform: [{ scaleX: -1 }] },
+                ]}
+              />
+              <View
+                style={[
+                  styles.corner,
+                  { bottom: -1, left: -1, transform: [{ scaleY: -1 }] },
+                ]}
+              />
               {/* Resize handle */}
               <GestureDetector gesture={resizeGesture}>
-                <View style={[styles.corner, { bottom: -1, right: -1, transform: [{ scale: -1 }] }]} />
+                <View
+                  style={[
+                    styles.corner,
+                    { bottom: -1, right: -1, transform: [{ scale: -1 }] },
+                  ]}
+                />
               </GestureDetector>
             </Animated.View>
           </GestureDetector>
@@ -172,11 +248,28 @@ const CropTool = ({ uri, onSave, onCancel }: CropToolProps) => {
       </View>
 
       {/* Bottom panel */}
-      <View style={{ paddingHorizontal: 12, paddingTop: 12, paddingBottom: Math.max(bottom, 12) + 12, gap: 16, alignItems: "center" }}>
+      <View
+        style={{
+          paddingHorizontal: 12,
+          paddingTop: 12,
+          paddingBottom: Math.max(bottom, 12) + 12,
+          gap: 16,
+          alignItems: "center",
+        }}
+      >
         {/* Rotate button */}
         <TouchableOpacity
           onPress={handleRotate}
-          style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: "#fdfdfd", borderWidth: 1, borderColor: "#e7e7e7", alignItems: "center", justifyContent: "center" }}
+          style={{
+            width: 44,
+            height: 44,
+            borderRadius: 22,
+            backgroundColor: "#fdfdfd",
+            borderWidth: 1,
+            borderColor: "#e7e7e7",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
           <Text style={{ fontSize: 18, color: "#1b1b1b" }}>↻</Text>
         </TouchableOpacity>
@@ -191,12 +284,20 @@ const CropTool = ({ uri, onSave, onCancel }: CropToolProps) => {
                 width: 48,
                 height: 26,
                 borderRadius: 4,
-                backgroundColor: aspectRatio === ratio ? DARK.yellow : DARK.bgSecondary,
+                backgroundColor:
+                  aspectRatio === ratio ? DARK.yellow : DARK.bgSecondary,
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <Text style={{ fontSize: 12, fontWeight: "600", color: aspectRatio === ratio ? DARK.yellowText : DARK.textMuted }}>
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontWeight: "600",
+                  color:
+                    aspectRatio === ratio ? DARK.yellowText : DARK.textMuted,
+                }}
+              >
                 {ratio}
               </Text>
             </TouchableOpacity>
@@ -206,16 +307,30 @@ const CropTool = ({ uri, onSave, onCancel }: CropToolProps) => {
         {/* 완료 */}
         <TouchableOpacity
           onPress={handleCrop}
-          style={{ backgroundColor: DARK.yellow, borderRadius: 4, height: 50, alignItems: "center", justifyContent: "center", width: "100%" }}
+          style={{
+            backgroundColor: DARK.yellow,
+            borderRadius: 4,
+            height: 50,
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%",
+          }}
         >
-          <Text style={{ color: DARK.yellowText, fontSize: 16, fontWeight: "600", letterSpacing: -0.32 }}>
+          <Text
+            style={{
+              color: DARK.yellowText,
+              fontSize: 16,
+              fontWeight: "600",
+              letterSpacing: -0.32,
+            }}
+          >
             완료
           </Text>
         </TouchableOpacity>
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   cropBox: {

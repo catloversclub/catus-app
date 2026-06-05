@@ -41,7 +41,7 @@ const AppContent = () => {
           },
         },
       }),
-    [],
+    [showError],
   );
 
   useReactQueryDevTools(queryClient);
@@ -77,9 +77,7 @@ const AppContent = () => {
       <QueryClientProvider client={queryClient}>
         <GestureHandlerRootView style={{ flex: 1 }}>
           <BottomSheetModalProvider>
-            <Stack
-              screenOptions={{ headerShown: false }}
-            >
+            <Stack screenOptions={{ headerShown: false }}>
               <Stack.Screen name="(auth)" />
               <Stack.Screen name="(tabs)" />
               <Stack.Screen name="post" />
@@ -92,10 +90,10 @@ const AppContent = () => {
       <ToastProvider />
     </>
   );
-}
+};
 
 const RootLayout = () => {
   return <AppContent />;
-}
+};
 
 export default RootLayout;

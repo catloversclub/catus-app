@@ -1,4 +1,5 @@
 import { uploadImage } from "@/api/domains/common/api";
+import { getUserCats } from "@/api/domains/cat/api";
 import {
   useMutation,
   useQuery,
@@ -6,6 +7,7 @@ import {
   useSuspenseInfiniteQuery,
   useSuspenseQuery,
 } from "@tanstack/react-query";
+import { FollowUserRequest } from "./types";
 import {
   blockUser,
   checkNickname,
@@ -24,6 +26,22 @@ import {
 } from "./api";
 
 const DEFAULT_TAKE = 20;
+
+type FollowMutationInput = string | FollowUserRequest;
+
+const resolveFollowRequest = async (
+  input: FollowMutationInput,
+): Promise<FollowUserRequest> => {
+  if (typeof input !== "string") {
+    return input;
+  }
+
+  const cats = await getUserCats(input);
+  return {
+    userId: input,
+    catIds: cats.map((cat) => cat.id),
+  };
+};
 
 export const userKeys = {
   all: ["user"] as const,
@@ -51,7 +69,6 @@ export const useUserDetailQuery = (userId: string) => {
     queryFn: () => getUserById(userId),
   });
 };
-
 
 export const useCheckNicknameQuery = (nickname: string, enabled: boolean) => {
   return useQuery({
@@ -138,8 +155,10 @@ export const useDeleteUserMutation = () => {
 export const useFollowUserMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (userId: string) => followUser(userId),
-    onSuccess: (_, userId) => {
+    mutationFn: async (input: FollowMutationInput) =>
+      followUser(await resolveFollowRequest(input)),
+    onSuccess: (_, input) => {
+      const userId = typeof input === "string" ? input : input.userId;
       queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
       queryClient.invalidateQueries({ queryKey: userKeys.followings(userId) });
     },
@@ -149,8 +168,10 @@ export const useFollowUserMutation = () => {
 export const useUnfollowUserMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (userId: string) => unfollowUser(userId),
-    onSuccess: (_, userId) => {
+    mutationFn: async (input: FollowMutationInput) =>
+      unfollowUser(await resolveFollowRequest(input)),
+    onSuccess: (_, input) => {
+      const userId = typeof input === "string" ? input : input.userId;
       queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
       queryClient.invalidateQueries({ queryKey: userKeys.followings(userId) });
     },

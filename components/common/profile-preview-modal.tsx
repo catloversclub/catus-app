@@ -2,6 +2,7 @@ import AvatarDark from "@/assets/images/avatar/user-dark.png";
 import AvatarLight from "@/assets/images/avatar/user-light.png";
 import ImageViewerModal from "@/components/common/image-viewer-modal";
 import { useColors } from "@/hooks/use-colors";
+import { ImageSource } from "expo-image";
 
 interface Origin {
   x: number;
@@ -29,7 +30,7 @@ const ProfilePreviewModal = ({
   return (
     <ImageViewerModal
       visible={visible}
-      source={imageUrl ? { uri: imageUrl } : defaultAvatar}
+      source={(imageUrl ? { uri: imageUrl } : defaultAvatar) as ImageSource}
       onClose={onClose}
       circular
       origin={origin}

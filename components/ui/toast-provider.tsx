@@ -1,6 +1,5 @@
 import AlertIcon from "@/assets/icons/alert.svg";
 import CheckboxFilledIcon from "@/assets/icons/checkbox-filled.svg";
-import XCircleIcon from "@/assets/icons/x-circle.svg";
 import { useColors } from "@/hooks/use-colors";
 import { Text, View } from "react-native";
 import Toast, { ToastConfig } from "react-native-toast-message";
@@ -24,7 +23,11 @@ export function ToastProvider() {
         }}
         className="py-3 px-[10px] flex-row gap-1.5 items-center"
       >
-        <CheckboxFilledIcon width={16} height={16} color={colors.icon.success} />
+        <CheckboxFilledIcon
+          width={16}
+          height={16}
+          color={colors.icon.success}
+        />
         <Text
           className="typo-body4 text-semantic-text-primary flex-1"
           numberOfLines={1}

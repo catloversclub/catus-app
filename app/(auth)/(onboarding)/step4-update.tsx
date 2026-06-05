@@ -33,7 +33,7 @@ const Step4 = () => {
 
   useEffect(() => {
     setImageUri(cat.profileImageUrl);
-  }, []);
+  }, [cat.profileImageUrl, setImageUri]);
 
   return (
     <CatProfileForm

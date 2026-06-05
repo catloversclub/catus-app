@@ -1,6 +1,10 @@
+import { Comment } from "@/api/domains/comment/types";
 import { Image } from "expo-image";
 import React, { memo } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
+import HeartFilledIcon from "@/assets/icons/heart-filled.svg";
+import HeartOutlineIcon from "@/assets/icons/heart-outline.svg";
+import { formatRelativeTime } from "@/lib/utils";
 
 interface CommentItemProps {
   item: Comment;
@@ -11,9 +15,12 @@ interface CommentItemProps {
 const CommentItem = ({ item, onReply, isReply = false }: CommentItemProps) => {
   return (
     <View className={`flex-row py-2.5 ${isReply ? "ml-11 mt-[-4px]" : ""}`}>
-      {/* 아바타 */}
       <Image
-        source={{ uri: item?.authorImage }}
+        source={
+          item.author.profileImageUrl
+            ? { uri: item.author.profileImageUrl }
+            : require("@/assets/images/default-avatar.png")
+        }
         placeholder={require("@/assets/images/default-avatar.png")}
         style={{
           width: 24,
@@ -22,27 +29,26 @@ const CommentItem = ({ item, onReply, isReply = false }: CommentItemProps) => {
         }}
         className="bg-gray-200"
         contentFit="cover"
-        cachePolicy="memory-disk" // 캐시 정책 추가
+        cachePolicy="memory-disk"
       />
 
       <View className="ml-3 flex-1">
-        {/* 헤더 */}
         <View className="mb-0.5 flex-row items-center">
           <Text className="mr-2 text-[13px] font-bold text-gray-800">
-            {item?.author}
+            {item.author.nickname}
           </Text>
-          <Text className="text-[12px] text-gray-400">{item?.timeAgo}</Text>
+          <Text className="text-[12px] text-gray-400">
+            {formatRelativeTime(item.createdAt)}
+          </Text>
         </View>
 
-        {/* 내용 */}
         <Text className="text-[14px] leading-5 text-gray-900">
-          {item?.content}
+          {item.content}
         </Text>
 
-        {/* 푸터 */}
         <View className="mt-2 flex-row items-center">
           <TouchableOpacity
-            onPress={() => onReply?.(item?.id, item?.author)}
+            onPress={() => onReply?.(item.id, item.author.nickname)}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
             <Text className="text-[12px] font-semibold text-gray-500">
@@ -51,15 +57,11 @@ const CommentItem = ({ item, onReply, isReply = false }: CommentItemProps) => {
           </TouchableOpacity>
 
           <TouchableOpacity className="ml-4">
-            <Image
-              source={
-                item?.liked
-                  ? require("@/assets/icons/heart-filled.svg")
-                  : require("@/assets/icons/heart-outline.svg")
-              }
-              className="h-3.5 w-3.5"
-              tintColor={item?.liked ? "#FF3B30" : "#999"}
-            />
+            {item.isLikedByMe ? (
+              <HeartFilledIcon width={14} height={14} color="#FF3B30" />
+            ) : (
+              <HeartOutlineIcon width={14} height={14} color="#999" />
+            )}
           </TouchableOpacity>
         </View>
       </View>

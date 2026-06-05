@@ -1,6 +1,6 @@
 import { View, TextInput, TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
-import { useLocalSearchParams, router } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useMemo, useRef, useState } from "react";
 import PagerView from "react-native-pager-view";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -25,11 +25,6 @@ const CreatePostScreen = () => {
   const pages = images.map((_, index) => index); // 실제 이미지 개수에 맞춤
   const [content, setContent] = useState("");
 
-  const handleSubmit = () => {
-    // TODO: API 호출하여 게시글 업로드
-    console.log("게시글 작성:", { imageUris, content });
-    router.back();
-  };
   return (
     <KeyboardAwareScrollView>
       <View className="flex-1 bg-white">
@@ -86,6 +81,6 @@ const CreatePostScreen = () => {
       </View>
     </KeyboardAwareScrollView>
   );
-}
+};
 
 export default CreatePostScreen;

@@ -5,7 +5,6 @@ import {
   Pressable,
   StyleSheet,
   useWindowDimensions,
-  View,
 } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
@@ -73,7 +72,19 @@ const ImageViewerModal = ({
       tyAnim.value = 0;
       bgOpacity.value = 1;
     }
-  }, [visible]);
+  }, [
+    bgOpacity,
+    circular,
+    height,
+    origin,
+    pinchBase,
+    pinchScale,
+    scaleAnim,
+    txAnim,
+    tyAnim,
+    visible,
+    width,
+  ]);
 
   const handleClose = () => {
     const cfg = { duration: 220, easing: Easing.in(Easing.quad) };
@@ -115,7 +126,11 @@ const ImageViewerModal = ({
   }));
 
   const imageStyle = circular
-    ? { width: CIRCULAR_SIZE, height: CIRCULAR_SIZE, borderRadius: CIRCULAR_SIZE }
+    ? {
+        width: CIRCULAR_SIZE,
+        height: CIRCULAR_SIZE,
+        borderRadius: CIRCULAR_SIZE,
+      }
     : { width, height };
 
   return (

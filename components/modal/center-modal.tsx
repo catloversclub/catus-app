@@ -31,7 +31,7 @@ const CenterModal = ({ visible, onClose, children }: CenterModalProps) => {
         useNativeDriver: true,
       }).start();
     }
-  }, [visible]);
+  }, [fadeAnim, scaleAnim, visible]);
 
   return (
     <Modal visible={visible} transparent animationType="none">

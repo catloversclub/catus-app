@@ -16,7 +16,12 @@ const Step4 = () => {
   const isPending = isCreating || isUploadingImage;
 
   const handleOnSubmit = async (data: CatProfileFormData) => {
-    const { id: catId } = await createCat(data);
+    if (!data.name) return;
+
+    const { id: catId } = await createCat({
+      ...data,
+      name: data.name,
+    });
 
     if (imageUri) {
       await submitProfileImage({ catId, imageUri });

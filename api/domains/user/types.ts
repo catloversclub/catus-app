@@ -3,8 +3,6 @@ import { Appearance, Personality } from "@/api/domains/attribute/types";
 interface User {
   id: string;
   kakaoId: string | null;
-  googleId: string | null;
-  appleId: string | null;
   isLivingWithCat: boolean;
   hasAgreedToTerms: boolean;
   createdAt: string;
@@ -18,13 +16,34 @@ interface User {
   favoritePersonalities: Personality[];
 }
 
-type CreateUserRequest = Pick<User, "nickname" | "hasAgreedToTerms"> & {
-  favoriteAppearances?: number[];
-  favoritePersonalities?: number[];
-};
+type UserRecord = Omit<
+  User,
+  "isFollowing" | "favoriteAppearances" | "favoritePersonalities"
+>;
+
+type CreateUserRequest = Pick<User, "nickname"> &
+  Partial<
+    Pick<
+      User,
+      "isLivingWithCat" | "hasAgreedToTerms" | "phone" | "profileImageUrl"
+    >
+  > & {
+    favoriteAppearances?: number[];
+    favoritePersonalities?: number[];
+  };
 
 type UpdateUserRequest = Partial<
-  Omit<User, "favoriteAppearances" | "favoritePersonalities">
+  Omit<
+    User,
+    | "id"
+    | "kakaoId"
+    | "createdAt"
+    | "followerCount"
+    | "followingCount"
+    | "isFollowing"
+    | "favoriteAppearances"
+    | "favoritePersonalities"
+  >
 > & {
   favoriteAppearances?: number[];
   favoritePersonalities?: number[];
@@ -41,10 +60,23 @@ type GetUserByIdResponse = Pick<
   | "isFollowing"
 >;
 
-type UserProfile = Omit<
-  User,
-  "id" | "kakaoId" | "googleId" | "appleId" | "createdAt" | "isFollowing"
->;
+type FollowUserRequest = {
+  userId: string;
+  catIds: string[];
+};
+
+type FollowUserResponse = {
+  follower: Pick<User, "id" | "followingCount">;
+  target: Pick<User, "id" | "followerCount">;
+  isFollowing: boolean;
+  followedCatIds: string[];
+};
+
+type CreateUserResponse = UserRecord;
+type UpdateUserResponse = UserRecord;
+type DeleteUserResponse = UserRecord;
+
+type UserProfile = Omit<User, "id" | "kakaoId" | "createdAt" | "isFollowing">;
 
 interface FollowUser {
   id: string;
@@ -73,6 +105,10 @@ type GetBlocksResponse = BlockedUser[];
 export {
   BlockedUser,
   CreateUserRequest,
+  CreateUserResponse,
+  DeleteUserResponse,
+  FollowUserRequest,
+  FollowUserResponse,
   FollowUser,
   GetBlocksResponse,
   GetFollowersResponse,
@@ -81,6 +117,8 @@ export {
   GetUserByIdResponse,
   GetUserProfileResponse,
   UpdateUserRequest,
+  UpdateUserResponse,
   User,
+  UserRecord,
   UserProfile,
 };

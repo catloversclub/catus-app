@@ -5,9 +5,12 @@ import MoreIcon from "@/assets/icons/more.svg";
 import CommentSheet from "@/components/bottom-sheet/comment-sheet";
 import MoreSheet from "@/components/bottom-sheet/more-sheet";
 import IconButton from "@/components/common/icon-button";
-import { CatPostProfileInfo } from "@/components/feed/post-profile-info";
 import PostCarousel from "@/components/feed/post-carousel";
 import PostOverlayActions from "@/components/feed/post-overlay-actions";
+import {
+  CatPostProfileInfo,
+  UserPostProfileInfo,
+} from "@/components/feed/post-profile-info";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useColors } from "@/hooks/use-colors";
 import usePostActions from "@/hooks/use-post-actions";
@@ -23,12 +26,21 @@ const ProfileInfo = ({ post, onMorePress }: ProfileInfoProps) => {
 
   return (
     <View className="flex-row items-center justify-between">
-      <CatPostProfileInfo
-        imageUrl={post.cat.profileImageUrl}
-        catId={post.cat.id}
-        name={post.cat.name}
-        subtitle={formatRelativeTime(post.createdAt)}
-      />
+      {post.cat ? (
+        <CatPostProfileInfo
+          imageUrl={post.cat.profileImageUrl}
+          catId={post.cat.id}
+          name={post.cat.name}
+          subtitle={formatRelativeTime(post.createdAt)}
+        />
+      ) : (
+        <UserPostProfileInfo
+          imageUrl={post.author.profileImageUrl}
+          userId={post.author.id}
+          name={post.author.nickname}
+          subtitle={formatRelativeTime(post.createdAt)}
+        />
+      )}
       <IconButton onPress={onMorePress}>
         <MoreIcon color={colors.icon.primary} />
       </IconButton>

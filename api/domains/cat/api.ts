@@ -4,8 +4,10 @@ import { ImageUploadUrl } from "@/api/domains/common/type";
 import {
   CreateCatRequest,
   CreateCatResponse,
+  DeleteCatResponse,
   GetCatByIdResponse,
   GetMyCatsResponse,
+  GetUserCatsResponse,
   UpdateCatRequest,
   UpdateCatResponse,
 } from "./types";
@@ -16,6 +18,7 @@ const CAT_ENDPOINTS = {
   BASE: `${BASE_URL}`,
   MY_CATS: `${BASE_URL}/my`,
   DETAIL: (catId: string) => `${BASE_URL}/${catId}`,
+  USER_CATS: (userId: string) => `/user/${userId}/cats`,
   IMAGE_UPLOAD_URL: (catId: string) => `${BASE_URL}/${catId}/image/upload-url`,
 } as const;
 
@@ -31,6 +34,15 @@ export const getCatById = async (
 ): Promise<GetCatByIdResponse> => {
   const { data } = await apiClient.get<GetCatByIdResponse>(
     CAT_ENDPOINTS.DETAIL(catId),
+  );
+  return data;
+};
+
+export const getUserCats = async (
+  userId: string,
+): Promise<GetUserCatsResponse> => {
+  const { data } = await apiClient.get<GetUserCatsResponse>(
+    CAT_ENDPOINTS.USER_CATS(userId),
   );
   return data;
 };
@@ -56,8 +68,11 @@ export const updateCat = async (
   return data;
 };
 
-export const deleteCat = async (catId: string): Promise<void> => {
-  await apiClient.delete(CAT_ENDPOINTS.DETAIL(catId));
+export const deleteCat = async (catId: string): Promise<DeleteCatResponse> => {
+  const { data } = await apiClient.delete<DeleteCatResponse>(
+    CAT_ENDPOINTS.DETAIL(catId),
+  );
+  return data;
 };
 
 export const getCatImageUploadUrl = async ({

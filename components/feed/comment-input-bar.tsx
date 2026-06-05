@@ -15,6 +15,7 @@ interface CommentInputBarProps {
   replyTarget?: ReplyTarget | null;
   onClearReply?: () => void;
   InputComponent?: React.ComponentType<TextInputProps>;
+  paddingBottom?: number;
 }
 
 const CommentInputBar = ({
@@ -22,6 +23,7 @@ const CommentInputBar = ({
   replyTarget,
   onClearReply,
   InputComponent = TextInput,
+  paddingBottom,
 }: CommentInputBarProps) => {
   const { colors } = useColors();
   const [text, setText] = useState("");
@@ -46,7 +48,10 @@ const CommentInputBar = ({
   const canSubmit = text.trim().length > 0 && !isPending;
 
   return (
-    <View className="border-t pb-6 border-semantic-border-primary bg-semantic-bg-primary">
+    <View
+      className="border-t border-semantic-border-primary bg-semantic-bg-primary"
+      style={{ paddingBottom: paddingBottom ?? 24 }}
+    >
       <View className="flex-row items-end gap-2 px-4 pb-2.5 pt-2.5">
         <View className="min-h-10 flex-1 justify-center rounded bg-semantic-bg-secondary px-3 py-2.5">
           <InputComponent

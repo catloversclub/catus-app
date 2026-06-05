@@ -1,5 +1,4 @@
-import { catKeys } from "@/api/domains/cat/queries";
-import { useMyCatsQuery } from "@/api/domains/cat/queries";
+import { catKeys, useMyCatsQuery } from "@/api/domains/cat/queries";
 import PlusIcon from "@/assets/icons/plus.svg";
 import CatCard from "@/components/cat/cat-card";
 import { RefreshableScrollView } from "@/components/common/logo-refresh-control";

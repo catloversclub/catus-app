@@ -227,13 +227,11 @@ export const useReportPostMutation = () => {
   return useMutation({
     mutationFn: ({
       postId,
-      reason,
-      description,
     }: {
       postId: string;
-      reason: string;
+      reason?: string;
       description?: string;
-    }) => reportPost(postId, { reason, description }),
+    }) => reportPost(postId),
   });
 };
 
@@ -285,9 +283,7 @@ export const useLikePostMutation = () => {
         updateFeed,
       );
       queryClient.setQueryData<Post>(postKeys.detail(postId), (old) =>
-        old
-          ? { ...old, isLikedByMe: true, likeCount: old.likeCount + 1 }
-          : old,
+        old ? { ...old, isLikedByMe: true, likeCount: old.likeCount + 1 } : old,
       );
 
       return { prevFollowing, prevRecommended, prevDetail };
@@ -442,9 +438,7 @@ export const useBookmarkMutation = () => {
           ...oldData,
           pages: oldData.pages.map((page) =>
             page.map((post) =>
-              post.id === postId
-                ? { ...post, isBookmarkedByMe: true }
-                : post,
+              post.id === postId ? { ...post, isBookmarkedByMe: true } : post,
             ),
           ),
         };
@@ -523,9 +517,7 @@ export const useUnbookmarkMutation = () => {
           ...oldData,
           pages: oldData.pages.map((page) =>
             page.map((post) =>
-              post.id === postId
-                ? { ...post, isBookmarkedByMe: false }
-                : post,
+              post.id === postId ? { ...post, isBookmarkedByMe: false } : post,
             ),
           ),
         };

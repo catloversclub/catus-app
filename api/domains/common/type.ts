@@ -1,5 +1,6 @@
 type ImageUploadUrl = {
   url: string;
+  key?: string;
   fields: {
     "Content-Type": string;
     bucket: string;

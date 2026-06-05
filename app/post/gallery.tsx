@@ -50,7 +50,7 @@ const CameraCell = ({ size, onPress }: CameraCellProps) => {
       <CameraIcon width={24} height={24} color={colors.icon.secondary} />
     </TouchableOpacity>
   );
-}
+};
 
 interface PhotoCellProps {
   asset: MediaLibrary.Asset;
@@ -101,16 +101,14 @@ const PhotoCell = ({
         }}
       >
         {isSelected && (
-          <Text
-            style={{ fontSize: 11, fontWeight: "600", color: "#1b1b1b" }}
-          >
+          <Text style={{ fontSize: 11, fontWeight: "600", color: "#1b1b1b" }}>
             {selectionIndex + 1}
           </Text>
         )}
       </View>
     </TouchableOpacity>
   );
-}
+};
 
 const GalleryScreen = () => {
   const { colors } = useColors();
@@ -148,11 +146,11 @@ const GalleryScreen = () => {
     if (permission?.status === "granted") {
       loadPhotos();
     }
-  }, [permission?.status]);
+  }, [loadPhotos, permission?.status]);
 
   useEffect(() => {
     if (draft) setShowDraftModal(true);
-  }, []);
+  }, [draft]);
 
   const handleLoadDraft = () => {
     if (!draft) return;
@@ -411,6 +409,6 @@ const GalleryScreen = () => {
       </CenterModal>
     </>
   );
-}
+};
 
 export default GalleryScreen;

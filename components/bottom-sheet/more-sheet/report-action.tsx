@@ -2,7 +2,6 @@ import { useReportPostMutation } from "@/api/domains/post/queries";
 import { Post } from "@/api/domains/post/types";
 import BanIcon from "@/assets/icons/ban.svg";
 import Button from "@/components/common/button";
-import { useColors } from "@/hooks/use-colors";
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
@@ -31,7 +30,6 @@ const ReportAction = ({
   onExpand,
 }: ReportActionProps) => {
   const { mutate: reportPost } = useReportPostMutation();
-  const { colors } = useColors();
   const [step, setStep] = useState<"reasons" | "detail">("reasons");
   const [selectedReason, setSelectedReason] = useState("");
   const [description, setDescription] = useState("");

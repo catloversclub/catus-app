@@ -4,10 +4,14 @@ import { POST_PAGINATION } from "@/constants/posts";
 import {
   CreatePostRequest,
   CreatePostResponse,
+  DeletePostResponse,
   FeedResponse,
   GetFeedParams,
   GetPostImageUploadUrlResponse,
   Post,
+  PostBookmarkResponse,
+  PostLikeResponse,
+  ReportPostResponse,
   UpdatePostRequest,
   UpdatePostResponse,
 } from "./types";
@@ -51,8 +55,13 @@ export const updatePost = async (
   return data;
 };
 
-export const deletePost = async (postId: string): Promise<void> => {
-  await apiClient.delete(POST_ENDPOINTS.DETAIL(postId));
+export const deletePost = async (
+  postId: string,
+): Promise<DeletePostResponse> => {
+  const { data } = await apiClient.delete<DeletePostResponse>(
+    POST_ENDPOINTS.DETAIL(postId),
+  );
+  return data;
 };
 
 export const getPostById = async (postId: string): Promise<Post> => {
@@ -140,27 +149,45 @@ export const getDailyPopularPosts = async (
   return data;
 };
 
-export const likePost = async (postId: string): Promise<void> => {
-  await apiClient.post(POST_ENDPOINTS.LIKE(postId));
+export const likePost = async (postId: string): Promise<PostLikeResponse> => {
+  const { data } = await apiClient.post<PostLikeResponse>(
+    POST_ENDPOINTS.LIKE(postId),
+  );
+  return data;
 };
 
-export const unlikePost = async (postId: string): Promise<void> => {
-  await apiClient.delete(POST_ENDPOINTS.LIKE(postId));
+export const unlikePost = async (postId: string): Promise<PostLikeResponse> => {
+  const { data } = await apiClient.delete<PostLikeResponse>(
+    POST_ENDPOINTS.LIKE(postId),
+  );
+  return data;
 };
 
-export const bookmarkPost = async (postId: string): Promise<void> => {
-  await apiClient.post(POST_ENDPOINTS.BOOKMARK(postId));
+export const bookmarkPost = async (
+  postId: string,
+): Promise<PostBookmarkResponse> => {
+  const { data } = await apiClient.post<PostBookmarkResponse>(
+    POST_ENDPOINTS.BOOKMARK(postId),
+  );
+  return data;
 };
 
-export const unbookmarkPost = async (postId: string): Promise<void> => {
-  await apiClient.delete(POST_ENDPOINTS.BOOKMARK(postId));
+export const unbookmarkPost = async (
+  postId: string,
+): Promise<PostBookmarkResponse> => {
+  const { data } = await apiClient.delete<PostBookmarkResponse>(
+    POST_ENDPOINTS.BOOKMARK(postId),
+  );
+  return data;
 };
 
 export const reportPost = async (
   postId: string,
-  payload: { reason: string; description?: string },
-): Promise<void> => {
-  await apiClient.post(POST_ENDPOINTS.REPORT(postId), payload);
+): Promise<ReportPostResponse> => {
+  const { data } = await apiClient.post<ReportPostResponse>(
+    POST_ENDPOINTS.REPORT(postId),
+  );
+  return data;
 };
 
 export const getPostImageUploadUrl = async (

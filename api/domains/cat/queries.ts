@@ -11,6 +11,7 @@ import {
   getCatById,
   getCatImageUploadUrl,
   getMyCats,
+  getUserCats,
   updateCat,
 } from "./api";
 import { CreateCatRequest, UpdateCatRequest } from "./types";
@@ -18,6 +19,7 @@ import { CreateCatRequest, UpdateCatRequest } from "./types";
 export const catKeys = {
   all: ["cat"] as const,
   list: () => [...catKeys.all, "list"] as const,
+  userList: (userId: string) => [...catKeys.all, "user", userId] as const,
   detail: (catId: string) => [...catKeys.all, "detail", catId] as const,
 };
 
@@ -32,6 +34,13 @@ export const useCatByIdQuery = (catId: string) => {
   return useSuspenseQuery({
     queryKey: catKeys.detail(catId),
     queryFn: () => getCatById(catId),
+  });
+};
+
+export const useUserCatsQuery = (userId: string) => {
+  return useSuspenseQuery({
+    queryKey: catKeys.userList(userId),
+    queryFn: () => getUserCats(userId),
   });
 };
 
