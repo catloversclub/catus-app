@@ -42,6 +42,7 @@ const FeedCard = ({ post }: { post: Post }) => {
     moreSheetRef,
     handleLike,
     handleBookmark,
+    handleCommentPressIn,
     handleCommentPress,
     handleMorePress,
   } = usePostActions(post);
@@ -51,6 +52,7 @@ const FeedCard = ({ post }: { post: Post }) => {
       isLikedByMe={post.isLikedByMe}
       isBookmarkedByMe={post.isBookmarkedByMe}
       onLike={handleLike}
+      onCommentPressIn={handleCommentPressIn}
       onCommentPress={handleCommentPress}
       onBookmark={handleBookmark}
     />

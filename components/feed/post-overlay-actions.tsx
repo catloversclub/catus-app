@@ -5,6 +5,7 @@ interface PostOverlayActionsProps {
   isLikedByMe: boolean;
   isBookmarkedByMe: boolean;
   onLike: () => void;
+  onCommentPressIn?: () => void;
   onCommentPress: () => void;
   onBookmark: () => void;
 }
@@ -13,6 +14,7 @@ const PostOverlayActions = ({
   isLikedByMe,
   isBookmarkedByMe,
   onLike,
+  onCommentPressIn,
   onCommentPress,
   onBookmark,
 }: PostOverlayActionsProps) => {
@@ -29,6 +31,7 @@ const PostOverlayActions = ({
         />
       </Pressable>
       <Pressable
+        onPressIn={onCommentPressIn}
         onPress={onCommentPress}
         className="px-2 py-3 active:opacity-60"
       >

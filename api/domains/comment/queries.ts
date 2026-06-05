@@ -8,11 +8,22 @@ export const commentKeys = {
   byPost: (postId: string) => [...commentKeys.all, "post", postId] as const,
 }
 
+export const postCommentsQueryOptions = (postId: string) => ({
+  queryKey: commentKeys.byPost(postId),
+  queryFn: () => getPostComments(postId),
+  staleTime: Infinity,
+})
+
 export const usePostCommentsQuery = (postId: string) => {
   return useSuspenseQuery({
-    queryKey: commentKeys.byPost(postId),
-    queryFn: () => getPostComments(postId),
-    staleTime: Infinity,
+    ...postCommentsQueryOptions(postId),
+  })
+}
+
+export const usePostCommentsNonSuspenseQuery = (postId: string, enabled = true) => {
+  return useQuery({
+    ...postCommentsQueryOptions(postId),
+    enabled,
   })
 }
 

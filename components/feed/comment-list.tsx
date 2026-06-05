@@ -1,8 +1,14 @@
-import { usePostCommentsQuery } from "@/api/domains/comment/queries";
+import {
+  useLikeCommentMutation,
+  usePostCommentsQuery,
+  useUnlikeCommentMutation,
+} from "@/api/domains/comment/queries";
+import { Comment } from "@/api/domains/comment/types";
 import { ReplyTarget } from "@/components/feed/comment-input-bar";
 import CommentItem from "@/components/feed/comment-item";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
+import { useCallback } from "react";
 import { View } from "react-native";
 
 interface CommentListProps {
@@ -12,6 +18,19 @@ interface CommentListProps {
 
 const CommentList = ({ postId, onReply }: CommentListProps) => {
   const { data: comments } = usePostCommentsQuery(postId);
+  const { mutate: likeComment } = useLikeCommentMutation();
+  const { mutate: unlikeComment } = useUnlikeCommentMutation();
+
+  const handleToggleLike = useCallback(
+    (comment: Comment) => {
+      if (comment.isLikedByMe) {
+        unlikeComment({ postId, commentId: comment.id });
+      } else {
+        likeComment({ postId, commentId: comment.id });
+      }
+    },
+    [likeComment, postId, unlikeComment],
+  );
 
   if (comments.length === 0) {
     return (
@@ -29,8 +48,8 @@ const CommentList = ({ postId, onReply }: CommentListProps) => {
         <CommentItem
           key={comment.id}
           comment={comment}
-          postId={postId}
           onReply={onReply}
+          onToggleLike={handleToggleLike}
         />
       ))}
     </View>

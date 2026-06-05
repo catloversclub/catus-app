@@ -1,5 +1,7 @@
 import { useCallback, useRef } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { useQueryClient } from "@tanstack/react-query";
+import { postCommentsQueryOptions } from "@/api/domains/comment/queries";
 import {
   useBookmarkMutation,
   useLikePostMutation,
@@ -9,6 +11,7 @@ import {
 import { Post } from "@/api/domains/post/types";
 
 const usePostActions = (post: Post) => {
+  const queryClient = useQueryClient();
   const { mutate: likePost } = useLikePostMutation();
   const { mutate: unlikePost } = useUnlikePostMutation();
   const { mutate: bookmarkPost } = useBookmarkMutation();
@@ -33,6 +36,10 @@ const usePostActions = (post: Post) => {
     }
   };
 
+  const handleCommentPressIn = useCallback(() => {
+    queryClient.prefetchQuery(postCommentsQueryOptions(post.id));
+  }, [post.id, queryClient]);
+
   const handleCommentPress = useCallback(() => {
     commentSheetRef.current?.present();
   }, []);
@@ -46,6 +53,7 @@ const usePostActions = (post: Post) => {
     moreSheetRef,
     handleLike,
     handleBookmark,
+    handleCommentPressIn,
     handleCommentPress,
     handleMorePress,
   };

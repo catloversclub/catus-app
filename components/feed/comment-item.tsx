@@ -1,20 +1,10 @@
-import {
-  useLikeCommentMutation,
-  useUnlikeCommentMutation,
-} from "@/api/domains/comment/queries";
 import { Comment } from "@/api/domains/comment/types";
 import { ReplyTarget } from "@/components/feed/comment-input-bar";
 import { UserPostProfileInfo } from "@/components/feed/post-profile-info";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { Text } from "@/components/ui/text";
 import { Heart, MessageCircle } from "@/lib/icons";
-import { cn, formatRelativeTime } from "@/lib/utils";
-import { useState } from "react";
+import { formatRelativeTime } from "@/lib/utils";
+import { memo, useState } from "react";
 import { Pressable, View } from "react-native";
 
 interface CommentActionsProps {
@@ -73,26 +63,22 @@ const ReplyItem = ({ reply }: { reply: Comment }) => (
 
 type CommentItemProps = {
   comment: Comment;
-  postId: string;
   onReply?: (target: ReplyTarget) => void;
+  onToggleLike: (comment: Comment) => void;
 };
 
-const CommentItem = ({ comment, postId, onReply }: CommentItemProps) => {
-  const [expandedValue, setExpandedValue] = useState<string>("");
-  const isExpanded = expandedValue === "replies";
+const CommentItem = ({
+  comment,
+  onReply,
+  onToggleLike,
+}: CommentItemProps) => {
+  const [isRepliesExpanded, setIsRepliesExpanded] = useState(false);
 
   const { id, author, content, isLikedByMe, likeCount, createdAt, replies } =
     comment;
 
-  const { mutate: likeComment } = useLikeCommentMutation();
-  const { mutate: unlikeComment } = useUnlikeCommentMutation();
-
   const handleLike = () => {
-    if (isLikedByMe) {
-      unlikeComment({ postId, commentId: id });
-    } else {
-      likeComment({ postId, commentId: id });
-    }
+    onToggleLike(comment);
   };
 
   const handleReply = () => {
@@ -121,46 +107,37 @@ const CommentItem = ({ comment, postId, onReply }: CommentItemProps) => {
       </View>
 
       {replies && replies.length > 0 ? (
-        <Accordion
-          type="single"
-          collapsible
-          value={expandedValue}
-          onValueChange={(value: string | undefined) =>
-            setExpandedValue(value ?? "")
-          }
-        >
-          <AccordionItem value="replies">
-            <AccordionTrigger
-              className={cn(
-                "flex-row items-center justify-start gap-1.5 py-2 pl-12",
-                isExpanded && "hidden",
-              )}
+        <>
+          {!isRepliesExpanded && (
+            <Pressable
+              className="flex-row items-center justify-start gap-1.5 py-2 pl-12 active:opacity-60"
+              onPress={() => setIsRepliesExpanded(true)}
             >
               <View className="h-[1px] w-4 bg-semantic-border-primary" />
               <Text className="typo-label1 text-semantic-text-tertiary">
                 답글 {replies.length}개 더 보기...
               </Text>
-            </AccordionTrigger>
+            </Pressable>
+          )}
 
-            <AccordionContent>
-              <View className="bg-semantic-bg-secondary pb-2">
-                {replies.map((reply) => (
-                  <ReplyItem key={reply.id} reply={reply} />
-                ))}
+          {isRepliesExpanded && (
+            <View className="bg-semantic-bg-secondary pb-2">
+              {replies.map((reply) => (
+                <ReplyItem key={reply.id} reply={reply} />
+              ))}
 
-                <Pressable
-                  className="flex-row items-center gap-1.5 pb-4 pl-12 pt-2 active:opacity-60"
-                  onPress={() => setExpandedValue("")}
-                >
-                  <View className="h-[1px] w-4 bg-semantic-border-primary" />
-                  <Text className="typo-label1 text-semantic-text-tertiary">
-                    답글 닫기
-                  </Text>
-                </Pressable>
-              </View>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+              <Pressable
+                className="flex-row items-center gap-1.5 pb-4 pl-12 pt-2 active:opacity-60"
+                onPress={() => setIsRepliesExpanded(false)}
+              >
+                <View className="h-[1px] w-4 bg-semantic-border-primary" />
+                <Text className="typo-label1 text-semantic-text-tertiary">
+                  답글 닫기
+                </Text>
+              </Pressable>
+            </View>
+          )}
+        </>
       ) : (
         <View className="h-5" />
       )}
@@ -168,4 +145,4 @@ const CommentItem = ({ comment, postId, onReply }: CommentItemProps) => {
   );
 };
 
-export default CommentItem;
+export default memo(CommentItem);

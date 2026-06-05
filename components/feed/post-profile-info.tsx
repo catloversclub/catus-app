@@ -1,8 +1,35 @@
-import CatProfileImage from "@/components/cat/profile-image";
-import UserProfileImage from "@/components/user/profile-image";
+import AvatarDark from "@/assets/images/avatar/user-dark.png";
+import AvatarLight from "@/assets/images/avatar/user-light.png";
+import { PROFILE_SIZE } from "@/constants/user";
+import { useColors } from "@/hooks/use-colors";
+import { Image } from "expo-image";
 import { Link } from "expo-router";
-import { ReactNode } from "react";
+import { memo, ReactNode } from "react";
 import { Pressable, Text, View } from "react-native";
+
+interface FeedProfileImageProps {
+  imageUrl: string | null;
+  alt: string;
+}
+
+const FeedProfileImage = memo(({ imageUrl, alt }: FeedProfileImageProps) => {
+  const { scheme } = useColors();
+  const defaultAvatar = scheme === "dark" ? AvatarDark : AvatarLight;
+  const size = PROFILE_SIZE.sm;
+
+  return (
+    <Image
+      source={imageUrl ? { uri: imageUrl } : defaultAvatar}
+      placeholder={defaultAvatar}
+      style={{ width: size, height: size, borderRadius: size }}
+      contentFit="cover"
+      cachePolicy="memory-disk"
+      alt={alt}
+    />
+  );
+});
+
+FeedProfileImage.displayName = "FeedProfileImage";
 
 interface PostProfileInfoBaseProps {
   image: ReactNode;
@@ -54,7 +81,7 @@ const CatPostProfileInfo = ({
   subtitle,
 }: CatPostProfileInfoProps) => (
   <PostProfileInfoBase
-    image={<CatProfileImage imageUrl={imageUrl} catId={catId ?? undefined} size="sm" />}
+    image={<FeedProfileImage imageUrl={imageUrl} alt={`${catId ?? "Cat"} profile`} />}
     name={name}
     href={catId ? `/cat/${catId}` : null}
     subtitle={subtitle}
@@ -77,7 +104,7 @@ const UserPostProfileInfo = ({
   subtitle,
 }: UserPostProfileInfoProps) => (
   <PostProfileInfoBase
-    image={<UserProfileImage imageUrl={imageUrl} userId={userId ?? undefined} size="sm" />}
+    image={<FeedProfileImage imageUrl={imageUrl} alt={`${userId ?? "User"} profile`} />}
     name={name}
     href={userId ? `/user/${userId}` : null}
     subtitle={subtitle}
