@@ -6,10 +6,11 @@ import {
 import { Comment } from "@/api/domains/comment/types";
 import BaseBottomSheet from "@/components/bottom-sheet/base-bottom-sheet";
 import CommentInputBar, {
+  CommentInputRef,
   ReplyTarget,
-} from "@/components/feed/comment-input-bar";
-import CommentItem from "@/components/feed/comment-item";
-import { CommentListSkeleton } from "@/components/feed/comment-list";
+} from "@/components/comment/input-bar";
+import CommentItem from "@/components/comment/item";
+import { CommentListSkeleton } from "@/components/comment/list";
 import { Text } from "@/components/ui/text";
 import {
   BottomSheetFlatList,
@@ -18,7 +19,7 @@ import {
   BottomSheetModal,
   BottomSheetTextInput,
 } from "@gorhom/bottom-sheet";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { View } from "react-native";
 
 interface CommentSheetProps {
@@ -29,6 +30,7 @@ interface CommentSheetProps {
 const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
   const [replyTarget, setReplyTarget] = useState<ReplyTarget | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const inputRef = useRef<CommentInputRef>(null);
   const {
     data: comments = [],
     isPending,
@@ -44,11 +46,22 @@ const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
           replyTarget={replyTarget}
           onClearReply={() => setReplyTarget(null)}
           InputComponent={BottomSheetTextInput}
+          inputRef={inputRef}
         />
       </BottomSheetFooter>
     ),
     [postId, replyTarget],
   );
+
+  useEffect(() => {
+    if (!replyTarget) return;
+
+    const frameId = requestAnimationFrame(() => {
+      inputRef.current?.focus();
+    });
+
+    return () => cancelAnimationFrame(frameId);
+  }, [replyTarget]);
 
   const handleChange = useCallback((index: number) => {
     setIsOpen(index >= 0);
@@ -74,7 +87,7 @@ const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
     ({ item }: { item: Comment }) => (
       <CommentItem
         comment={item}
-        onReply={setReplyTarget}
+        onReply={(target) => setReplyTarget(target)}
         onToggleLike={handleToggleLike}
       />
     ),
@@ -123,7 +136,7 @@ const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
         updateCellsBatchingPeriod={50}
         windowSize={5}
         removeClippedSubviews
-        keyboardShouldPersistTaps="handled"
+        keyboardShouldPersistTaps="always"
       />
     </BaseBottomSheet>
   );

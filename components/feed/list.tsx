@@ -5,7 +5,7 @@ import {
 import { Post } from "@/api/domains/post/types";
 import { LoadMoreFooter } from "@/components/common/load-more-footer";
 import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
-import FeedCard, { FeedCardSkeleton } from "@/components/feed/feed-card";
+import FeedCard, { FeedCardSkeleton } from "@/components/feed/card";
 import { useScrollToTop } from "@react-navigation/native";
 import { View } from "react-native";
 import Animated, {

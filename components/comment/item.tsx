@@ -1,6 +1,6 @@
 import { Comment } from "@/api/domains/comment/types";
-import { ReplyTarget } from "@/components/feed/comment-input-bar";
-import { UserPostProfileInfo } from "@/components/feed/post-profile-info";
+import { ReplyTarget } from "@/components/comment/input-bar";
+import { UserPostProfileInfo } from "@/components/post/profile-info";
 import { Text } from "@/components/ui/text";
 import { Heart, MessageCircle } from "@/lib/icons";
 import { formatRelativeTime } from "@/lib/utils";

@@ -4,8 +4,8 @@ import {
   useUnlikeCommentMutation,
 } from "@/api/domains/comment/queries";
 import { Comment } from "@/api/domains/comment/types";
-import { ReplyTarget } from "@/components/feed/comment-input-bar";
-import CommentItem from "@/components/feed/comment-item";
+import { ReplyTarget } from "@/components/comment/input-bar";
+import CommentItem from "@/components/comment/item";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
 import { useCallback } from "react";

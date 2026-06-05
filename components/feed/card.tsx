@@ -5,12 +5,12 @@ import MoreIcon from "@/assets/icons/more.svg";
 import CommentSheet from "@/components/bottom-sheet/comment-sheet";
 import MoreSheet from "@/components/bottom-sheet/more-sheet";
 import IconButton from "@/components/common/icon-button";
-import PostCarousel from "@/components/feed/post-carousel";
-import PostOverlayActions from "@/components/feed/post-overlay-actions";
+import PostCarousel from "@/components/post/carousel";
+import PostOverlayActions from "@/components/post/overlay-actions";
 import {
   CatPostProfileInfo,
   UserPostProfileInfo,
-} from "@/components/feed/post-profile-info";
+} from "@/components/post/profile-info";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useColors } from "@/hooks/use-colors";
 import usePostActions from "@/hooks/use-post-actions";

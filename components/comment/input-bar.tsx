@@ -3,7 +3,11 @@ import ArrowUpIcon from "@/assets/icons/arrow-up.svg";
 import { useColors } from "@/hooks/use-colors";
 import { X } from "@/lib/icons";
 import React, { useState } from "react";
-import { Pressable, Text, TextInput, TextInputProps, View } from "react-native";
+import { Pressable, Text, TextInput, View } from "react-native";
+
+export interface CommentInputRef {
+  focus: () => void;
+}
 
 export interface ReplyTarget {
   id: string;
@@ -14,7 +18,8 @@ interface CommentInputBarProps {
   postId: string;
   replyTarget?: ReplyTarget | null;
   onClearReply?: () => void;
-  InputComponent?: React.ComponentType<TextInputProps>;
+  InputComponent?: React.ElementType;
+  inputRef?: React.Ref<CommentInputRef>;
   paddingBottom?: number;
 }
 
@@ -23,6 +28,7 @@ const CommentInputBar = ({
   replyTarget,
   onClearReply,
   InputComponent = TextInput,
+  inputRef,
   paddingBottom,
 }: CommentInputBarProps) => {
   const { colors } = useColors();
@@ -55,6 +61,7 @@ const CommentInputBar = ({
       <View className="flex-row items-end gap-2 px-4 pb-2.5 pt-2.5">
         <View className="min-h-10 flex-1 justify-center rounded bg-semantic-bg-secondary px-3 py-2.5">
           <InputComponent
+            ref={inputRef}
             value={text}
             onChangeText={setText}
             placeholder={

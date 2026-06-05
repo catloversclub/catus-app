@@ -8,13 +8,13 @@ import { RefreshableScrollView } from "@/components/common/logo-refresh-control"
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
 import CommentInputBar, {
   ReplyTarget,
-} from "@/components/feed/comment-input-bar";
+} from "@/components/comment/input-bar";
 import CommentList, {
   CommentListSkeleton,
-} from "@/components/feed/comment-list";
+} from "@/components/comment/list";
 import PostDetailCard, {
   PostDetailCardSkeleton,
-} from "@/components/feed/post-detail-card";
+} from "@/components/post/detail-card";
 import { useKeyboardAvoidingView } from "@/hooks/use-keyboard-avoiding-view";
 import { useHeaderHeight } from "@react-navigation/elements";
 import Animated from "react-native-reanimated";

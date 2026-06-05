@@ -2,7 +2,7 @@ import {
   FeedListSkeleton,
   FollowingFeedList,
   RecommendedFeedList,
-} from "@/components/feed/feed-list";
+} from "@/components/feed/list";
 import TabPager from "@/components/layout/tab-pager";
 import { useColors } from "@/hooks/use-colors";
 import { useScrollHeader } from "@/hooks/use-scroll-header";
