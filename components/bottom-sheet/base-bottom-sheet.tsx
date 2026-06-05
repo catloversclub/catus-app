@@ -20,6 +20,7 @@ interface BaseBottomSheetProps {
   keyboardBlurBehavior?: "none" | "restore";
   snapPoints?: (string | number)[];
   footerComponent?: React.FC<BottomSheetFooterProps>;
+  stackBehavior?: "push" | "switch" | "replace";
 }
 
 const BaseBottomSheet = ({
@@ -31,6 +32,7 @@ const BaseBottomSheet = ({
   keyboardBlurBehavior,
   snapPoints,
   footerComponent,
+  stackBehavior = "replace",
 }: BaseBottomSheetProps) => {
   const { colors } = useColors();
 
@@ -63,6 +65,7 @@ const BaseBottomSheet = ({
       snapPoints={snapPoints}
       enableDynamicSizing={!snapPoints}
       footerComponent={footerComponent}
+      stackBehavior={stackBehavior}
     >
       {snapPoints ? (
         children
