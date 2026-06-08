@@ -1,29 +1,39 @@
-import { useColors } from "@/hooks/use-colors";
-import { Stack } from "expo-router";
-import { Text } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import { useCatByIdQuery } from "@/api/domains/cat/queries";
+import CatEditForm from "@/components/cat/form/edit-form";
+import { CatProfile } from "@/api/domains/cat/types";
+import { useUpdateCat } from "@/hooks/cat/use-update-cat";
+import { useCatStore } from "@/store/cat/cat-store";
+import { router, useLocalSearchParams } from "expo-router";
+import { useEffect } from "react";
 
-const CatDetailPage = () => {
-  const { colors } = useColors();
+const CatUpdatePage = () => {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const { data: cat } = useCatByIdQuery(id);
+  const { imageUri, setImageUri } = useCatStore();
+
+  const { updateCat, submitProfileImage, isPending } = useUpdateCat();
+
+  const handleOnSubmit = async (data: CatProfile) => {
+    await updateCat({ catId: id, payload: data });
+
+    if (imageUri && imageUri !== cat.profileImageUrl) {
+      await submitProfileImage({ catId: id, imageUri });
+    }
+
+    router.back();
+  };
+
+  useEffect(() => {
+    setImageUri(cat.profileImageUrl);
+  }, [cat.profileImageUrl, setImageUri]);
+
   return (
-    <>
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          headerShadowVisible: false,
-          title: "고양이 상세",
-          headerTintColor: colors.text.primary,
-          headerStyle: { backgroundColor: colors.bg.primary },
-        }}
-      />
-
-      <ScrollView className="flex-1 bg-semantic-bg-primary py-6 ">
-        <Text className="typo-label1 text-semantic-text-secondary">
-          고양이 상세페이지
-        </Text>
-      </ScrollView>
-    </>
+    <CatEditForm
+      initialData={cat}
+      onSubmit={handleOnSubmit}
+      isPending={isPending}
+    />
   );
 };
 
-export default CatDetailPage;
+export default CatUpdatePage;

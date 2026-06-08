@@ -23,11 +23,8 @@ const CatCard = ({ cat, routeToDetail = true }: CatCardProps) => {
     .filter(Boolean)
     .join(" · ");
 
-  const handleRouteToUpdate = async () => {
-    router.push({
-      pathname: ROUTES.AUTH.ONBOARDING.STEP4_UPDATE,
-      params: { catId: cat.id },
-    });
+  const handleRouteToUpdate = () => {
+    router.push(ROUTES.CAT.UPDATE(cat.id));
   };
 
   const handleRouteToDetail = () => {

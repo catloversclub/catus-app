@@ -5,39 +5,23 @@ import RegisterGender from "@/components/cat/form/field/gender";
 import RegisterCatName from "@/components/cat/form/field/name";
 import CatProfileImage from "@/components/cat/profile-image";
 import BottomActionBar from "@/components/layout/bottom-action-bar";
-import ProgressBar from "@/components/onboarding/progress-bar";
+import SelectAppearance from "@/components/tag/select-appearance";
+import SelectPersonality from "@/components/tag/select-personality";
 import { useKeyboardAvoidingView } from "@/hooks/use-keyboard-avoiding-view";
 import { useCatStore } from "@/store/cat/cat-store";
-
 import { useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 
-export type CatProfileFormData = Partial<
-  Omit<CatProfile, "personalities" | "appearances">
->;
-
-interface CatProfileFormProps {
-  initialData?: CatProfileFormData;
+interface CatEditFormProps {
+  initialData?: Partial<CatProfile>;
   onSubmit: (data: CatProfile) => void;
-  onSkip?: () => void;
   isPending: boolean;
-  isUpdate?: boolean;
-  stepNumber?: number;
-  submitLabel?: string;
 }
 
-const CatProfileForm = ({
-  initialData,
-  onSubmit,
-  onSkip,
-  isPending,
-  isUpdate = false,
-  stepNumber,
-  submitLabel = "다음으로",
-}: CatProfileFormProps) => {
+const CatEditForm = ({ initialData, onSubmit, isPending }: CatEditFormProps) => {
   const { imageUri, setImageUri } = useCatStore();
 
   const { control, handleSubmit, watch } = useForm<CatProfile>({
@@ -46,6 +30,8 @@ const CatProfileForm = ({
       gender: initialData?.gender ?? undefined,
       birthDate: initialData?.birthDate ?? null,
       breed: initialData?.breed ?? null,
+      personalities: initialData?.personalities ?? [],
+      appearances: initialData?.appearances ?? [],
     },
   });
 
@@ -58,7 +44,6 @@ const CatProfileForm = ({
       className="flex-1 bg-semantic-bg-primary py-6"
       {...keyboardAvoidingViewProps}
     >
-      {stepNumber && <ProgressBar progress={stepNumber} />}
       <ScrollView
         className="px-5"
         contentContainerStyle={{ flexGrow: 1 }}
@@ -66,15 +51,6 @@ const CatProfileForm = ({
         keyboardShouldPersistTaps="handled"
         nestedScrollEnabled={true}
       >
-        <View className="h-10" />
-        <Text className="typo-title2 text-semantic-text-primary w-full">
-          고양이의 프로필을 완성해 주세요!
-        </Text>
-        <Text className="typo-body4 text-semantic-text-tertiary w-full">
-          여러 마리의 고양이가 있다면 {"\n"}다음 화면에서 {"\'"}더 추가하기
-          {"\'"}를 클릭해주세요.
-        </Text>
-        <View className="h-6" />
         <View className="items-center">
           <CatProfileImage
             imageUrl={imageUri}
@@ -136,30 +112,45 @@ const CatProfileForm = ({
               />
             )}
           />
+          <Controller
+            control={control}
+            name="personalities"
+            render={({ field }) => (
+              <SelectPersonality
+                selectedPersonality={new Set(field.value)}
+                setSelectedPersonality={(value) =>
+                  field.onChange(Array.from(value))
+                }
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="appearances"
+            render={({ field }) => (
+              <SelectAppearance
+                selectedAppearance={new Set(field.value)}
+                setSelectedAppearance={(value) =>
+                  field.onChange(Array.from(value))
+                }
+              />
+            )}
+          />
         </View>
         <View className="h-[80px]" />
       </ScrollView>
       <BottomActionBar
         buttons={[
           {
-            label: submitLabel,
+            label: "저장",
             onPress: handleSubmit(onSubmit),
             disabled: watch("name") === "" || isPending,
             isPending: isPending,
           },
-          ...(onSkip
-            ? [
-                {
-                  label: "건너뛰기",
-                  variant: "ghost" as const,
-                  onPress: onSkip,
-                },
-              ]
-            : []),
         ]}
       />
     </KeyboardAvoidingView>
   );
 };
 
-export default CatProfileForm;
+export default CatEditForm;
