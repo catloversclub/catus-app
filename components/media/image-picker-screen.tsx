@@ -1,12 +1,11 @@
-import Button from "@/components/common/button";
+import BottomActionBar from "@/components/layout/bottom-action-bar";
 import ImagePickerGrid from "@/components/media/image-picker-grid";
 import MediaPermissionModals from "@/components/modal/media-permission-modals";
 import { useMediaPermissions } from "@/hooks/use-media-permissions";
 import * as ImagePicker from "expo-image-picker";
 import * as MediaLibrary from "expo-media-library";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useWindowDimensions, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface ImagePickerScreenProps {
   selectionLimit: number;
@@ -21,7 +20,6 @@ const ImagePickerScreen = ({
   onConfirm,
   onCancel,
 }: ImagePickerScreenProps) => {
-  const { bottom } = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const {
     galleryPermission,
@@ -39,10 +37,6 @@ const ImagePickerScreen = ({
   const [showCameraPermissionModal, setShowCameraPermissionModal] =
     useState(false);
   const loadingRef = useRef(false);
-  const assetsById = useMemo(
-    () => new Map(assets.map((asset) => [asset.id, asset])),
-    [assets],
-  );
 
   const loadPhotos = useCallback(async (cursor?: string) => {
     if (loadingRef.current) return;
@@ -68,12 +62,6 @@ const ImagePickerScreen = ({
       loadPhotos();
     }
   }, [galleryPermission?.status, loadPhotos]);
-
-  useEffect(() => {
-    if (cameraPermission?.status === "granted") {
-      setShowCameraPermissionModal(false);
-    }
-  }, [cameraPermission?.status]);
 
   const toggleSelection = (assetId: string) => {
     setSelectedIds((prev) => {
@@ -101,10 +89,7 @@ const ImagePickerScreen = ({
 
   const handleConfirm = async () => {
     if (selectedIds.length === 0) return;
-    const selectedAssets = selectedIds.flatMap((id) => {
-      const asset = assetsById.get(id);
-      return asset ? [asset] : [];
-    });
+    const selectedAssets = assets.filter((a) => selectedIds.includes(a.id));
     const infos = await Promise.all(
       selectedAssets.map((asset) => MediaLibrary.getAssetInfoAsync(asset)),
     );
@@ -120,7 +105,6 @@ const ImagePickerScreen = ({
       setShowCameraPermissionModal(false);
     }
   };
-  const isGalleryPermissionLoaded = galleryPermission !== null;
 
   return (
     <>
@@ -137,28 +121,22 @@ const ImagePickerScreen = ({
               onLoadMore={() => loadPhotos(endCursor)}
             />
 
-            <View
-              className="border-t border-semantic-border-primary bg-semantic-bg-primary px-3 pt-3"
-              style={{
-                paddingBottom: Math.max(bottom, 12) + 12,
-              }}
-            >
-              <Button
-                button={{
+            <BottomActionBar
+              buttons={[
+                {
                   label: confirmLabel,
                   onPress: handleConfirm,
                   disabled: selectedIds.length === 0,
-                  size: "lg",
-                }}
-              />
-            </View>
+                },
+              ]}
+            />
           </>
         ) : null}
       </View>
 
       <MediaPermissionModals
         gallery={{
-          visible: isGalleryPermissionLoaded && !isGalleryPermissionGranted,
+          visible: galleryPermission !== null && !isGalleryPermissionGranted,
           isDenied: isGalleryPermissionDenied,
           onRequestPermission: requestGalleryPermission,
           onClose: onCancel,

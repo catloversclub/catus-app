@@ -3,8 +3,9 @@ import ArrowLeftIcon from "@/assets/icons/arrow-left.svg";
 import CheckboxFilledIcon from "@/assets/icons/checkbox-filled.svg";
 import DefaultAvatarCatIcon from "@/assets/icons/default-avatar-cat.svg";
 import PlusIcon from "@/assets/icons/plus.svg";
-import Button from "@/components/common/button";
+import BottomActionBar from "@/components/layout/bottom-action-bar";
 import IconButton from "@/components/common/icon-button";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toggle from "@/components/common/toggle";
 import CenterModal from "@/components/modal/center-modal";
 import { useColors } from "@/hooks/use-colors";
@@ -27,7 +28,7 @@ import {
   View,
 } from "react-native";
 import PagerView from "react-native-pager-view";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 
 const MAX_CAPTION = 300;
 
@@ -286,21 +287,16 @@ const EditListScreen = () => {
           </View>
         </ScrollView>
 
-        {/* Bottom upload button */}
-        <View
-          style={{ paddingBottom: Math.max(bottom, 12) + 12 }}
-          className="border-t border-semantic-border-primary pt-3 px-3 bg-semantic-bg-primary"
-        >
-          <Button
-            button={{
+        <BottomActionBar
+          buttons={[
+            {
               label: "업로드",
               onPress: handleUpload,
               disabled: !canUpload,
               isPending: isUploading,
-              size: "lg",
-            }}
-          />
-        </View>
+            },
+          ]}
+        />
       </View>
 
       {/* 임시저장 Modal */}
