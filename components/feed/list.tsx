@@ -7,7 +7,7 @@ import { LoadMoreFooter } from "@/components/common/load-more-footer";
 import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
 import FeedCard, { FeedCardSkeleton } from "@/components/feed/card";
 import { useScrollToTop } from "@react-navigation/native";
-import { View } from "react-native";
+import { Text, View } from "react-native";
 import Animated, {
   useAnimatedRef,
   useAnimatedScrollHandler,
@@ -42,20 +42,31 @@ const FeedList = ({
   });
 
   return (
-    <View style={{ flex: 1 }}>
+    <View className="flex-1">
       <Animated.FlatList
         ref={listRef}
         scrollsToTop={isActive}
-        style={{ flex: 1 }}
+        className="flex-1"
         contentContainerStyle={{ flexGrow: 1 }}
         data={posts}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <FeedCard post={item} />}
+        ListEmptyComponent={
+          <View className="flex-1 items-center justify-center bg-semantic-bg-primary">
+            <Text className="typo-body2 text-semantic-text-primary text-center">
+              아직 팔로우 중인 계정이 없어요.{"\n"}계정을 둘러보고 팔로우해
+              보세요 👀
+            </Text>
+          </View>
+        }
         refreshControl={refreshControl}
         onScroll={scrollHandler}
         scrollEventThrottle={16}
+        alwaysBounceVertical
         onEndReached={() => {
-          if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+          if (posts.length > 0 && hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+          }
         }}
         onEndReachedThreshold={0.5}
         ListFooterComponent={isFetchingNextPage ? <LoadMoreFooter /> : null}
@@ -91,4 +102,4 @@ const FeedListSkeleton = () => (
   </View>
 );
 
-export { FollowingFeedList, FeedListSkeleton, RecommendedFeedList };
+export { FeedListSkeleton, FollowingFeedList, RecommendedFeedList };

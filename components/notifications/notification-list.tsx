@@ -68,11 +68,8 @@ const NotificationList = ({ loadMoreRef }: NotificationListProps) => {
 
   if (notifications.length === 0) {
     return (
-      <View
-        className="flex-1 items-center justify-center bg-semantic-bg-primary"
-        style={{ paddingTop: 120 }}
-      >
-        <Text className="typo-body1 text-semantic-text-primary">
+      <View className="flex-1 items-center justify-center bg-semantic-bg-primary">
+        <Text className="typo-body2 text-semantic-text-primary">
           아직 알림이 없어요.
         </Text>
       </View>
