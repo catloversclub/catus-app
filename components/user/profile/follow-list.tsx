@@ -119,6 +119,7 @@ const FollowerList = ({ userId }: { userId: string }) => {
       {logoOverlay}
       <FlatList
         style={{ flex: 1, backgroundColor: colors.bg.primary }}
+        contentContainerStyle={{ flexGrow: 1 }}
         data={followers}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
@@ -168,6 +169,7 @@ const FollowingList = ({ userId }: { userId: string }) => {
       {logoOverlay}
       <FlatList
         style={{ flex: 1, backgroundColor: colors.bg.primary }}
+        contentContainerStyle={{ flexGrow: 1 }}
         data={followings}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (

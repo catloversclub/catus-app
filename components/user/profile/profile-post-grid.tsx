@@ -144,6 +144,7 @@ const ProfilePostGrid = ({
       {logoOverlay}
       <FlatList
         style={{ flex: 1 }}
+        contentContainerStyle={{ flexGrow: 1 }}
         ListHeaderComponent={ListHeaderComponent}
         data={data}
         keyExtractor={(item, index) => {

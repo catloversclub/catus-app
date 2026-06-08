@@ -48,6 +48,7 @@ const FeedList = ({
         ref={listRef}
         scrollsToTop={isActive}
         style={{ flex: 1 }}
+        contentContainerStyle={{ flexGrow: 1 }}
         data={posts}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <FeedCard post={item} />}

@@ -130,7 +130,7 @@ const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
         keyExtractor={(item) => item.id}
         renderItem={renderComment}
         ListEmptyComponent={listEmptyComponent}
-        contentContainerStyle={{ paddingBottom: 80 }}
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 80 }}
         initialNumToRender={8}
         maxToRenderPerBatch={6}
         updateCellsBatchingPeriod={50}
