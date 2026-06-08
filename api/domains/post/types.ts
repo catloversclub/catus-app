@@ -4,12 +4,13 @@ export interface Post {
   id: string;
   content: string | null;
   likeCount: number;
+  isShareable: boolean;
+  isCommentable: boolean;
   createdAt: string;
   updatedAt: string;
   authorId: string;
-  catId: string | null;
   author: Author;
-  cat: Cat | null;
+  cats: Cat[];
   images: PostImage[];
   isLikedByMe: boolean;
   isBookmarkedByMe: boolean;
@@ -49,8 +50,10 @@ export interface GetFeedParams {
 export type FeedResponse = Post[];
 
 export interface CreatePostRequest {
-  catId?: string | null;
+  catIds?: string[] | null;
   content?: string | null;
+  isShareable?: boolean | null;
+  isCommentable?: boolean | null;
   imageUrls?: string[] | null;
 }
 
@@ -58,21 +61,22 @@ export type CreatePostResponse = Post;
 
 export interface UpdatePostRequest {
   content?: string | null;
-  catId?: string | null;
+  catIds?: string[] | null;
+  isShareable?: boolean | null;
+  isCommentable?: boolean | null;
   imageUrls?: string[] | null;
 }
 
 export type UpdatePostResponse = Post;
 
-export type DeletePostResponse = Pick<
+export type DeletePostResponse = Omit<
   Post,
-  | "id"
-  | "likeCount"
-  | "content"
-  | "createdAt"
-  | "updatedAt"
-  | "authorId"
-  | "catId"
+  | "author"
+  | "cats"
+  | "images"
+  | "isLikedByMe"
+  | "isBookmarkedByMe"
+  | "dailyLikeCount"
 >;
 
 export interface PostLikeResponse {

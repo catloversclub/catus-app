@@ -109,7 +109,9 @@ const ComposeScreen = () => {
 
       await createPost({
         content: caption.trim() || null,
-        catId: selectedCats[0]?.id ?? null,
+        catIds: selectedCats.map((cat) => cat.id),
+        isCommentable: commentsEnabled,
+        isShareable: sharingEnabled,
         imageUrls: uploads.map(
           (upload) => `${STORAGE_BASE_URL}/${upload.fields.key}`,
         ),

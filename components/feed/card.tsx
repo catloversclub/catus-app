@@ -23,14 +23,15 @@ interface ProfileInfoProps {
 
 const ProfileInfo = ({ post, onMorePress }: ProfileInfoProps) => {
   const { colors } = useColors();
+  const primaryCat = post.cats[0];
 
   return (
     <View className="flex-row items-center justify-between">
-      {post.cat ? (
+      {primaryCat ? (
         <CatPostProfileInfo
-          imageUrl={post.cat.profileImageUrl}
-          catId={post.cat.id}
-          name={post.cat.name}
+          imageUrl={primaryCat.profileImageUrl}
+          catId={primaryCat.id}
+          name={primaryCat.name}
           subtitle={formatRelativeTime(post.createdAt)}
         />
       ) : (

@@ -114,7 +114,7 @@ const PostCarousel = ({
     [],
   );
 
-  const catName = post.cat?.name ?? post.author.nickname;
+  const catName = post.cats[0]?.name ?? post.author.nickname;
 
   if (imageHeight === null) {
     return (
