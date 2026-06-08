@@ -40,7 +40,7 @@ const DeleteAccount = () => {
           },
           {
             label: "계정 유지하기",
-            onPress: () => router.push("/settings"),
+            onPress: () => router.dismissAll(),
             variant: "secondary",
             disabled: isPending,
           },
