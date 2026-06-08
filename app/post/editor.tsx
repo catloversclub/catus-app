@@ -1,15 +1,16 @@
 import ArrowLeftIcon from "@/assets/icons/arrow-left.svg";
+import Button from "@/components/common/button";
 import IconButton from "@/components/common/icon-button";
 import CenterModal from "@/components/modal/center-modal";
 import CropTool from "@/components/post-editor/crop-tool";
 import MosaicTool from "@/components/post-editor/mosaic-tool";
 import TextTool from "@/components/post-editor/text-tool";
 import { DARK } from "@/constants/editor-dark";
-import { useColors } from "@/hooks/use-colors";
-import { Stack, router, useLocalSearchParams } from "expo-router";
+import { useImageUrisParam } from "@/hooks/use-image-uris-param";
+import { Stack, router } from "expo-router";
 import { Image } from "expo-image";
-import { useMemo, useState } from "react";
-import { Pressable, Text, TouchableOpacity, View } from "react-native";
+import { useState } from "react";
+import { Text, TouchableOpacity, View } from "react-native";
 import PagerView from "react-native-pager-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -23,17 +24,7 @@ const CHIPS: { id: Exclude<EditMode, "none">; label: string }[] = [
 
 const EditorScreen = () => {
   const { top, bottom } = useSafeAreaInsets();
-  const { colors } = useColors();
-  const { imageUris } = useLocalSearchParams<{ imageUris: string }>();
-
-  const images = useMemo(() => {
-    if (!imageUris) return [];
-    try {
-      return JSON.parse(imageUris) as string[];
-    } catch {
-      return [];
-    }
-  }, [imageUris]);
+  const images = useImageUrisParam();
 
   const [editedImages, setEditedImages] = useState<string[]>(images);
   const [currentPage, setCurrentPage] = useState(0);
@@ -87,40 +78,40 @@ const EditorScreen = () => {
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
-      <View style={{ flex: 1, backgroundColor: DARK.bg, paddingTop: top }}>
+      <View style={{ paddingTop: top }} className="flex-1 bg-gray-990">
 
         {/* AppBar */}
-        <View style={{ flexDirection: "row", alignItems: "center", height: 52, paddingHorizontal: 12 }}>
+        <View className="flex-row items-center h-[52px] px-3">
           <IconButton onPress={() => router.back()} className="p-3">
             <ArrowLeftIcon width={20} height={20} color={DARK.text} />
           </IconButton>
-          <Text style={{ flex: 1, textAlign: "center", color: DARK.text, fontSize: 16, fontWeight: "600", letterSpacing: -0.32, marginRight: 44 }}>
+          <Text className="flex-1 text-center text-gray-0 text-base font-semibold mr-11" style={{ letterSpacing: -0.32 }}>
             이미지 편집
           </Text>
         </View>
 
         {/* Number badge */}
-        <View style={{ alignSelf: "flex-end", paddingRight: 12, marginBottom: 4 }}>
-          <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: DARK.yellow, alignItems: "center", justifyContent: "center" }}>
-            <Text style={{ color: DARK.yellowText, fontSize: 16, fontWeight: "600" }}>
+        <View className="self-end pr-3 mb-1">
+          <View className="w-9 h-9 rounded-full bg-yellow-500 items-center justify-center">
+            <Text className="text-gray-990 text-base font-semibold">
               {currentPage + 1}
             </Text>
           </View>
         </View>
 
         {/* Image pager */}
-        <View style={{ flex: 1, paddingHorizontal: 12 }}>
+        <View className="flex-1 px-3">
           {editedImages.length > 0 && (
             <PagerView
-              style={{ flex: 1 }}
+              className="flex-1"
               initialPage={0}
               onPageSelected={(e) => setCurrentPage(e.nativeEvent.position)}
             >
               {editedImages.map((uri, i) => (
-                <View key={i} style={{ flex: 1, justifyContent: "center" }}>
+                <View key={i} className="flex-1 justify-center">
                   <Image
                     source={{ uri }}
-                    style={{ width: "100%", height: 300 }}
+                    className="w-full h-[300px]"
                     contentFit="contain"
                   />
                 </View>
@@ -130,21 +121,21 @@ const EditorScreen = () => {
         </View>
 
         {/* Bottom: chips + button */}
-        <View style={{ paddingHorizontal: 12, paddingBottom: Math.max(bottom, 12) + 12, gap: 16, alignItems: "center" }}>
+        <View style={{ paddingBottom: Math.max(bottom, 12) + 12 }} className="px-3 gap-4 items-center">
           {/* Chip tabs */}
-          <View style={{ backgroundColor: DARK.bgSecondary, borderRadius: 100, flexDirection: "row", alignItems: "center", paddingHorizontal: 6, paddingVertical: 4, width: 224 }}>
+          <View className="bg-gray-950 rounded-full flex-row items-center px-1.5 py-1 w-[224px]">
             {CHIPS.map((chip, idx) => (
-              <View key={chip.id} style={{ flexDirection: "row", flex: 1, alignItems: "center" }}>
+              <View key={chip.id} className="flex-row flex-1 items-center">
                 <TouchableOpacity
                   onPress={() => setCurrentMode(chip.id)}
-                  style={{ flex: 1, alignItems: "center", justifyContent: "center", paddingVertical: 4, paddingHorizontal: 10, borderRadius: 4 }}
+                  className="flex-1 items-center justify-center py-1 px-2.5 rounded"
                 >
-                  <Text style={{ color: DARK.textMuted, fontSize: 12, letterSpacing: -0.36 }}>
+                  <Text className="text-gray-100 text-xs" style={{ letterSpacing: -0.36 }}>
                     {chip.label}
                   </Text>
                 </TouchableOpacity>
                 {idx < CHIPS.length - 1 && (
-                  <View style={{ width: 1, height: 16, backgroundColor: DARK.separator }} />
+                  <View className="w-px h-4 bg-gray-100/25" />
                 )}
               </View>
             ))}
@@ -153,9 +144,9 @@ const EditorScreen = () => {
           {/* 다음으로 */}
           <TouchableOpacity
             onPress={handleNext}
-            style={{ backgroundColor: DARK.yellow, borderRadius: 4, height: 50, alignItems: "center", justifyContent: "center", width: "100%" }}
+            className="bg-yellow-500 rounded h-[50px] items-center justify-center w-full"
           >
-            <Text style={{ color: DARK.yellowText, fontSize: 16, fontWeight: "600", letterSpacing: -0.32 }}>
+            <Text className="text-gray-990 text-base font-semibold" style={{ letterSpacing: -0.32 }}>
               다음으로
             </Text>
           </TouchableOpacity>
@@ -164,31 +155,47 @@ const EditorScreen = () => {
 
       {/* 임시저장 불러오기 Modal */}
       <CenterModal visible={showDraftModal} onClose={() => setShowDraftModal(false)}>
-        <View style={{ backgroundColor: colors.bg.primary, borderRadius: 6, paddingHorizontal: 16, paddingTop: 24, paddingBottom: 16, gap: 20 }}>
-          <View style={{ gap: 12 }}>
-            <View style={{ width: 24, height: 24, borderWidth: 2, borderStyle: "dashed", borderColor: colors.icon.secondary, borderRadius: 2 }} />
-            <Text style={{ fontSize: 16, fontWeight: "600", color: colors.text.secondary, letterSpacing: -0.32, lineHeight: 25.6 }}>
+        <View className="bg-semantic-bg-primary rounded-[6px] px-4 pt-6 pb-4 gap-5">
+          <View className="gap-3">
+            <View
+              className="w-6 h-6 border-2 border-semantic-icon-secondary rounded-sm"
+              style={{ borderStyle: "dashed" }}
+            />
+            <Text
+              className="text-base font-semibold text-semantic-text-secondary"
+              style={{ letterSpacing: -0.32, lineHeight: 25.6 }}
+            >
               임시 저장된 글을 불러올까요?
             </Text>
           </View>
-          <View style={{ flexDirection: "row", gap: 6 }}>
-            <Pressable
-              onPress={() => setShowDraftModal(false)}
-              style={{ flex: 1, borderWidth: 1, borderColor: colors.border.primary, borderRadius: 4, paddingVertical: 12, alignItems: "center" }}
-            >
-              <Text style={{ fontSize: 16, fontWeight: "600", color: colors.text.tertiary }}>취소</Text>
-            </Pressable>
-            <Pressable
-              onPress={() => { setShowDraftModal(false); handleNext(); }}
-              style={{ flex: 1, backgroundColor: colors.button.primary.bg, borderRadius: 4, paddingVertical: 12, alignItems: "center" }}
-            >
-              <Text style={{ fontSize: 16, fontWeight: "600", color: colors.button.primary.text }}>불러오기</Text>
-            </Pressable>
+          <View className="flex-row gap-1.5">
+            <View className="flex-1">
+              <Button
+                button={{
+                  label: "취소",
+                  onPress: () => setShowDraftModal(false),
+                  variant: "secondary",
+                  size: "lg",
+                }}
+              />
+            </View>
+            <View className="flex-1">
+              <Button
+                button={{
+                  label: "불러오기",
+                  onPress: () => {
+                    setShowDraftModal(false);
+                    handleNext();
+                  },
+                  size: "lg",
+                }}
+              />
+            </View>
           </View>
         </View>
       </CenterModal>
     </>
   );
-}
+};
 
 export default EditorScreen;

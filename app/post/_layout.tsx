@@ -4,9 +4,7 @@ import { Stack } from "expo-router";
 const PostLayout = () => {
   const screenOptions = useDefaultStackScreenOptions();
   return (
-    <Stack screenOptions={screenOptions}>
-      <Stack.Screen name="[id]" options={{ title: "" }} />
-    </Stack>
+    <Stack screenOptions={screenOptions} />
   );
 };
 

@@ -28,12 +28,12 @@ const PostDetailScreen = () => {
   const onRefresh = useRefreshQueries([postKeys.detail(id), commentKeys.byPost(id)]);
 
   return (
-    <View style={{ flex: 1 }} className="bg-semantic-bg-primary">
-      <KeyboardAvoidingView style={{ flex: 1 }} {...keyboardAvoidingViewProps}>
-        <View style={{ flex: 1 }}>
+    <View className="flex-1 bg-semantic-bg-primary">
+      <KeyboardAvoidingView className="flex-1" {...keyboardAvoidingViewProps}>
+        <View className="flex-1">
           <RefreshableScrollView
             onRefresh={onRefresh}
-            contentContainerStyle={{ paddingBottom: 16, rowGap: 24 }}
+            contentContainerClassName="pb-4 gap-y-6"
           >
             <SuspenseWithDelay fallback={<PostDetailCardSkeleton />}>
               <PostDetailCard postId={id} />
