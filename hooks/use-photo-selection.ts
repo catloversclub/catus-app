@@ -23,15 +23,11 @@ const usePhotoSelection = ({
     });
   };
 
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     if (selectedIds.length === 0) return;
-    const selectedAssets = assets.filter((a) => selectedIds.includes(a.id));
-    const infos = await Promise.all(
-      selectedAssets.map((asset) => MediaLibrary.getAssetInfoAsync(asset)),
-    );
-    const uris = infos
-      .map((info) => info.localUri ?? info.uri)
-      .filter(Boolean) as string[];
+    const uris = assets
+      .filter((a) => selectedIds.includes(a.id))
+      .map((a) => a.uri);
     onConfirm(uris);
   };
 

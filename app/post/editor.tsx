@@ -1,7 +1,5 @@
 import ArrowLeftIcon from "@/assets/icons/arrow-left.svg";
-import Button from "@/components/common/button";
 import IconButton from "@/components/common/icon-button";
-import CenterModal from "@/components/modal/center-modal";
 import CropTool from "@/components/post-editor/crop-tool";
 import MosaicTool from "@/components/post-editor/mosaic-tool";
 import TextTool from "@/components/post-editor/text-tool";
@@ -26,17 +24,14 @@ const EditorScreen = () => {
   const { top, bottom } = useSafeAreaInsets();
   const images = useImageUrisParam();
 
-  const [editedImages, setEditedImages] = useState<string[]>(images);
+  const [edits, setEdits] = useState<Record<number, string>>({});
   const [currentPage, setCurrentPage] = useState(0);
   const [currentMode, setCurrentMode] = useState<EditMode>("none");
-  const [showDraftModal, setShowDraftModal] = useState(false);
+
+  const editedImages = images.map((uri, i) => edits[i] ?? uri);
 
   const handleEditSave = (editedUri: string) => {
-    setEditedImages((prev) => {
-      const next = [...prev];
-      next[currentPage] = editedUri;
-      return next;
-    });
+    setEdits((prev) => ({ ...prev, [currentPage]: editedUri }));
     setCurrentMode("none");
   };
 
@@ -103,7 +98,7 @@ const EditorScreen = () => {
         <View className="flex-1 px-3">
           {editedImages.length > 0 && (
             <PagerView
-              className="flex-1"
+              style={{ flex: 1 }}
               initialPage={0}
               onPageSelected={(e) => setCurrentPage(e.nativeEvent.position)}
             >
@@ -111,7 +106,7 @@ const EditorScreen = () => {
                 <View key={i} className="flex-1 justify-center">
                   <Image
                     source={{ uri }}
-                    className="w-full h-[300px]"
+                    style={{ width: "100%", height: 300 }}
                     contentFit="contain"
                   />
                 </View>
@@ -152,48 +147,6 @@ const EditorScreen = () => {
           </TouchableOpacity>
         </View>
       </View>
-
-      {/* 임시저장 불러오기 Modal */}
-      <CenterModal visible={showDraftModal} onClose={() => setShowDraftModal(false)}>
-        <View className="bg-semantic-bg-primary rounded-[6px] px-4 pt-6 pb-4 gap-5">
-          <View className="gap-3">
-            <View
-              className="w-6 h-6 border-2 border-semantic-icon-secondary rounded-sm"
-              style={{ borderStyle: "dashed" }}
-            />
-            <Text
-              className="text-base font-semibold text-semantic-text-secondary"
-              style={{ letterSpacing: -0.32, lineHeight: 25.6 }}
-            >
-              임시 저장된 글을 불러올까요?
-            </Text>
-          </View>
-          <View className="flex-row gap-1.5">
-            <View className="flex-1">
-              <Button
-                button={{
-                  label: "취소",
-                  onPress: () => setShowDraftModal(false),
-                  variant: "secondary",
-                  size: "lg",
-                }}
-              />
-            </View>
-            <View className="flex-1">
-              <Button
-                button={{
-                  label: "불러오기",
-                  onPress: () => {
-                    setShowDraftModal(false);
-                    handleNext();
-                  },
-                  size: "lg",
-                }}
-              />
-            </View>
-          </View>
-        </View>
-      </CenterModal>
     </>
   );
 };
