@@ -6,7 +6,6 @@ import { useCallback, useEffect, useState } from "react";
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
-  ScrollView,
   ScrollViewProps,
 } from "react-native";
 import Animated, {
@@ -136,17 +135,17 @@ const RefreshableScrollView = ({
         height={10}
         style={{ position: "absolute", top: 0, left: 0, zIndex: 1 }}
       />
-      <ScrollView
+      <Animated.ScrollView
         showsVerticalScrollIndicator={false}
         onScrollEndDrag={handleScrollEndDrag}
-        {...props}
+        {...(props as any)}
         contentContainerStyle={[
           { paddingTop: 10, flexGrow: 1 },
           props.contentContainerStyle,
         ]}
       >
         {children}
-      </ScrollView>
+      </Animated.ScrollView>
     </>
   );
 };

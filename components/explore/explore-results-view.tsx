@@ -21,9 +21,11 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
+import { useAnimatedScrollHandler } from "react-native-reanimated";
 
 interface ExploreResultsViewProps {
   query: string;
+  scrollHandler: ReturnType<typeof useAnimatedScrollHandler>;
 }
 
 // ─── Skeletons ───────────────────────────────────────────────
@@ -322,7 +324,7 @@ const SearchUsersHorizontalList = ({ query }: { query: string }) => {
 
 // ─── Results view ─────────────────────────────────────────────
 
-const ExploreResultsView = ({ query }: ExploreResultsViewProps) => {
+const ExploreResultsView = ({ query, scrollHandler }: ExploreResultsViewProps) => {
   const refreshQueries = useRefreshQueries([
     searchKeys.results("post", query),
     searchKeys.results("profile", query),
@@ -331,6 +333,8 @@ const ExploreResultsView = ({ query }: ExploreResultsViewProps) => {
   return (
     <RefreshableScrollView
       onRefresh={refreshQueries}
+      onScroll={scrollHandler as any}
+      scrollEventThrottle={16}
       className="flex-1"
       contentContainerClassName="gap-8 pb-8"
     >

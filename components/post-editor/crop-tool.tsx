@@ -3,14 +3,10 @@ import ContainedImageFrame, {
   ContainedImageLayout,
 } from "@/components/post-editor/contained-image-frame";
 import EditorHeader from "@/components/post-editor/editor-header";
+import { cn } from "@/lib/utils";
 import * as ImageManipulator from "expo-image-manipulator";
 import React, { useEffect, useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   useAnimatedStyle,
@@ -19,13 +15,6 @@ import Animated, {
 
 const RATIOS = ["자유", "1:1", "3:2", "4:3", "16:9"] as const;
 type Ratio = (typeof RATIOS)[number];
-const EDITOR_COLORS = {
-  bgSecondary: "#303030", // gray-950
-  text: "#FDFDFD", // gray-0
-  textMuted: "#E7E7E7", // gray-100
-  yellow: "#FECF16", // yellow-500
-  yellowText: "#1B1B1B", // gray-990
-} as const;
 const RATIO_MAP: Record<string, number> = {
   "1:1": 1,
   "3:2": 3 / 2,
@@ -41,6 +30,7 @@ interface CropToolProps {
 
 const CropTool = ({ uri, onSave, onCancel }: CropToolProps) => {
   const [aspectRatio, setAspectRatio] = useState<Ratio>("자유");
+  const [isCropping, setIsCropping] = useState(false);
   const [imageLayout, setImageLayout] = useState<ContainedImageLayout | null>(
     null,
   );
@@ -145,18 +135,47 @@ const CropTool = ({ uri, onSave, onCancel }: CropToolProps) => {
       return;
     }
 
+    setIsCropping(true);
     try {
       const scaleX = imageLayout.naturalWidth / imageLayout.width;
       const scaleY = imageLayout.naturalHeight / imageLayout.height;
+      const originX = Math.max(
+        0,
+        Math.min(
+          imageLayout.naturalWidth - 1,
+          Math.round(boxX.value * scaleX),
+        ),
+      );
+      const originY = Math.max(
+        0,
+        Math.min(
+          imageLayout.naturalHeight - 1,
+          Math.round(boxY.value * scaleY),
+        ),
+      );
+      const width = Math.max(
+        1,
+        Math.min(
+          imageLayout.naturalWidth - originX,
+          Math.round(boxWidth.value * scaleX),
+        ),
+      );
+      const height = Math.max(
+        1,
+        Math.min(
+          imageLayout.naturalHeight - originY,
+          Math.round(boxHeight.value * scaleY),
+        ),
+      );
       const result = await ImageManipulator.manipulateAsync(
         uri,
         [
           {
             crop: {
-              originX: Math.round(boxX.value * scaleX),
-              originY: Math.round(boxY.value * scaleY),
-              width: Math.round(boxWidth.value * scaleX),
-              height: Math.round(boxHeight.value * scaleY),
+              originX,
+              originY,
+              width,
+              height,
             },
           },
         ],
@@ -165,6 +184,8 @@ const CropTool = ({ uri, onSave, onCancel }: CropToolProps) => {
       onSave(result.uri);
     } catch (e) {
       console.error("Crop failed:", e);
+    } finally {
+      setIsCropping(false);
     }
   };
 
@@ -184,81 +205,45 @@ const CropTool = ({ uri, onSave, onCancel }: CropToolProps) => {
           {(layout) => {
             return (
               <View
+                className="absolute"
                 style={{
-                  position: "absolute",
                   left: layout.x,
                   top: layout.y,
                   width: layout.width,
                   height: layout.height,
                 }}
               >
-                <View
-                  style={[
-                    StyleSheet.absoluteFill,
-                    { backgroundColor: "rgba(0,0,0,0.55)" },
-                  ]}
-                />
+                <View className="absolute inset-0 bg-black/55" />
                 <GestureDetector gesture={moveGesture}>
-                  <Animated.View style={[styles.cropBox, boxStyle]}>
-                    <View style={StyleSheet.absoluteFill}>
-                      <View style={{ flex: 1, flexDirection: "row" }}>
-                        <View
-                          style={{
-                            flex: 1,
-                            borderRightWidth: StyleSheet.hairlineWidth,
-                            borderRightColor: "rgba(255,255,255,0.4)",
-                          }}
-                        />
-                        <View
-                          style={{
-                            flex: 1,
-                            borderRightWidth: StyleSheet.hairlineWidth,
-                            borderRightColor: "rgba(255,255,255,0.4)",
-                          }}
-                        />
-                        <View style={{ flex: 1 }} />
+                  <Animated.View
+                    className="absolute border-[1.5px] border-white bg-transparent"
+                    style={boxStyle}
+                  >
+                    <View className="absolute inset-0">
+                      <View className="flex-1 flex-row">
+                        <View className="flex-1 border-r-hairline border-white/40" />
+                        <View className="flex-1 border-r-hairline border-white/40" />
+                        <View className="flex-1" />
                       </View>
                     </View>
-                    <View style={StyleSheet.absoluteFill}>
-                      <View
-                        style={{
-                          flex: 1,
-                          borderBottomWidth: StyleSheet.hairlineWidth,
-                          borderBottomColor: "rgba(255,255,255,0.4)",
-                        }}
-                      />
-                      <View
-                        style={{
-                          flex: 1,
-                          borderBottomWidth: StyleSheet.hairlineWidth,
-                          borderBottomColor: "rgba(255,255,255,0.4)",
-                        }}
-                      />
-                      <View style={{ flex: 1 }} />
+                    <View className="absolute inset-0">
+                      <View className="flex-1 border-b-hairline border-white/40" />
+                      <View className="flex-1 border-b-hairline border-white/40" />
+                      <View className="flex-1" />
                     </View>
-                    <View style={[styles.corner, { top: -1, left: -1 }]} />
+                    <View className="absolute top-[-1px] left-[-1px] size-5 border-l-[2.5px] border-t-[2.5px] border-white" />
                     <View
-                      style={[
-                        styles.corner,
-                        { top: -1, right: -1, transform: [{ scaleX: -1 }] },
-                      ]}
+                      className="absolute top-[-1px] right-[-1px] size-5 border-l-[2.5px] border-t-[2.5px] border-white"
+                      style={{ transform: [{ scaleX: -1 }] }}
                     />
                     <View
-                      style={[
-                        styles.corner,
-                        { bottom: -1, left: -1, transform: [{ scaleY: -1 }] },
-                      ]}
+                      className="absolute bottom-[-1px] left-[-1px] size-5 border-l-[2.5px] border-t-[2.5px] border-white"
+                      style={{ transform: [{ scaleY: -1 }] }}
                     />
                     <GestureDetector gesture={resizeGesture}>
                       <View
-                        style={[
-                          styles.corner,
-                          {
-                            bottom: -1,
-                            right: -1,
-                            transform: [{ scale: -1 }],
-                          },
-                        ]}
+                        className="absolute bottom-[-1px] right-[-1px] size-5 border-l-[2.5px] border-t-[2.5px] border-white"
+                        style={{ transform: [{ scale: -1 }] }}
                       />
                     </GestureDetector>
                   </Animated.View>
@@ -269,60 +254,29 @@ const CropTool = ({ uri, onSave, onCancel }: CropToolProps) => {
         </ContainedImageFrame>
       </View>
 
-      {/* Bottom panel */}
-      <View
-        style={{
-          paddingHorizontal: 12,
-          paddingTop: 12,
-          paddingBottom: 12,
-          gap: 16,
-          alignItems: "center",
-        }}
-      >
-        {/* Rotate button */}
+      <View className="items-center gap-4 px-3 py-3">
         <TouchableOpacity
           onPress={handleRotate}
-          style={{
-            width: 44,
-            height: 44,
-            borderRadius: 22,
-            backgroundColor: "#fdfdfd",
-            borderWidth: 1,
-            borderColor: "#e7e7e7",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
+          className="size-11 rounded-full bg-gray-0 border border-gray-100 items-center justify-center"
         >
-          <Text style={{ fontSize: 18, color: "#1b1b1b" }}>↻</Text>
+          <Text className="text-[18px] text-gray-990">↻</Text>
         </TouchableOpacity>
 
-        {/* Ratio chips */}
-        <View style={{ flexDirection: "row", gap: 6 }}>
+        <View className="flex-row gap-1.5">
           {RATIOS.map((ratio) => (
             <TouchableOpacity
               key={ratio}
               onPress={() => setAspectRatio(ratio)}
-              style={{
-                width: 48,
-                height: 26,
-                borderRadius: 4,
-                backgroundColor:
-                  aspectRatio === ratio
-                    ? EDITOR_COLORS.yellow
-                    : EDITOR_COLORS.bgSecondary,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
+              className={cn(
+                "w-12 h-[26px] rounded items-center justify-center",
+                aspectRatio === ratio ? "bg-yellow-500" : "bg-gray-950",
+              )}
             >
               <Text
-                style={{
-                  fontSize: 12,
-                  fontWeight: "600",
-                  color:
-                    aspectRatio === ratio
-                      ? EDITOR_COLORS.yellowText
-                      : EDITOR_COLORS.textMuted,
-                }}
+                className={cn(
+                  "text-xs font-semibold",
+                  aspectRatio === ratio ? "text-gray-990" : "text-gray-100",
+                )}
               >
                 {ratio}
               </Text>
@@ -330,26 +284,19 @@ const CropTool = ({ uri, onSave, onCancel }: CropToolProps) => {
           ))}
         </View>
       </View>
-      <BottomActionBar buttons={[{ label: "완료", onPress: handleCrop }]} />
+      <BottomActionBar
+        containerClassName="bg-gray-990"
+        buttons={[
+          {
+            label: "완료",
+            onPress: handleCrop,
+            disabled: !imageLayout,
+            isPending: isCropping,
+          },
+        ]}
+      />
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  cropBox: {
-    position: "absolute",
-    borderWidth: 1.5,
-    borderColor: "#fff",
-    backgroundColor: "transparent",
-  },
-  corner: {
-    position: "absolute",
-    width: 20,
-    height: 20,
-    borderTopWidth: 2.5,
-    borderLeftWidth: 2.5,
-    borderColor: "#fff",
-  },
-});
 
 export default CropTool;

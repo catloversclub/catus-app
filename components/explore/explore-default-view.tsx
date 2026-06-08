@@ -6,12 +6,12 @@ import { useRefreshQueries } from "@/hooks/use-refresh-queries";
 import { Image } from "expo-image";
 import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
 import { Link } from "expo-router";
-import {
-  Pressable,
-  Text,
-  useWindowDimensions,
-  View,
-} from "react-native";
+import { Pressable, Text, useWindowDimensions, View } from "react-native";
+import { useAnimatedScrollHandler } from "react-native-reanimated";
+
+interface ExploreDefaultViewProps {
+  scrollHandler: ReturnType<typeof useAnimatedScrollHandler>;
+}
 
 const DailyPopularSkeleton = () => {
   const { width } = useWindowDimensions();
@@ -82,11 +82,13 @@ const DailyPopularGrid = () => {
   );
 }
 
-const ExploreDefaultView = () => {
+const ExploreDefaultView = ({ scrollHandler }: ExploreDefaultViewProps) => {
   const refreshQueries = useRefreshQueries([postKeys.dailyPopular()]);
   return (
     <RefreshableScrollView
       onRefresh={refreshQueries}
+      onScroll={scrollHandler as any}
+      scrollEventThrottle={16}
       className="flex-1"
       contentContainerClassName="gap-6 pb-6"
     >

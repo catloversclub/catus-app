@@ -6,28 +6,24 @@ import ExploreDefaultView from "@/components/explore/explore-default-view";
 import ExploreIdleView from "@/components/explore/explore-idle-view";
 import ExploreResultsView from "@/components/explore/explore-results-view";
 import ExploreTypingView from "@/components/explore/explore-typing-view";
-import { useSearchHistoryStore } from "@/store/explore/search-history-store";
 import { useColors } from "@/hooks/use-colors";
 import { useDefaultStackScreenOptions } from "@/hooks/use-default-screen-options";
+import { useExploreScrollHeader } from "@/hooks/use-explore-scroll-header";
+import { useSearchHistoryStore } from "@/store/explore/search-history-store";
 import { Stack } from "expo-router";
-import { useState } from "react";
-import { Keyboard, StyleSheet, Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Keyboard, Text, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Animated, { FadeIn, FadeOut, runOnJS } from "react-native-reanimated";
+import Animated, { runOnJS } from "react-native-reanimated";
 
 type ExploreMode = "default" | "idle" | "typing" | "results";
-
-const CONTENT_ENTERING = FadeIn.duration(220)
-  .withInitialValues({ opacity: 0, transform: [{ translateY: 8 }] })
-  .springify()
-  .damping(20)
-  .stiffness(180);
-const CONTENT_EXITING = FadeOut.duration(120);
 
 const ExploreScreen = () => {
   const { colors } = useColors();
   const defaultOptions = useDefaultStackScreenOptions();
   const addSearch = useSearchHistoryStore((s) => s.addSearch);
+  const { scrollHandler, searchInputStyle, resetToVisible } =
+    useExploreScrollHeader();
 
   const [mode, setMode] = useState<ExploreMode>("default");
   const [query, setQuery] = useState("");
@@ -35,6 +31,10 @@ const ExploreScreen = () => {
   const [showEmptyToast, setShowEmptyToast] = useState(false);
 
   const isSearchMode = mode !== "default";
+
+  useEffect(() => {
+    resetToVisible();
+  }, [mode, resetToVisible]);
 
   const handleFocus = () => {
     if (mode === "default") setMode("idle");
@@ -84,15 +84,25 @@ const ExploreScreen = () => {
   const renderContent = () => {
     switch (mode) {
       case "default":
-        return <ExploreDefaultView />;
+        return <ExploreDefaultView scrollHandler={scrollHandler} />;
       case "idle":
-        return <ExploreIdleView onSearchPress={handleSuggestionPress} />;
+        return (
+          <ExploreIdleView
+            scrollHandler={scrollHandler}
+            onSearchPress={handleSuggestionPress}
+          />
+        );
       case "typing":
         return (
           <ExploreTypingView query={query} onPress={handleSuggestionPress} />
         );
       case "results":
-        return <ExploreResultsView query={submittedQuery} />;
+        return (
+          <ExploreResultsView
+            query={submittedQuery}
+            scrollHandler={scrollHandler}
+          />
+        );
     }
   };
 
@@ -117,26 +127,19 @@ const ExploreScreen = () => {
       />
 
       <View className="flex-1 bg-semantic-bg-primary">
-        <View className="px-3 mt-3">
-          <SearchInput
-            value={query}
-            onValueChange={handleQueryChange}
-            onFocus={handleFocus}
-            onSubmitEditing={handleSubmit}
-            placeholder="어떤 고양이를 좋아하세요?"
-          />
-        </View>
+        <Animated.View style={searchInputStyle}>
+          <View className="px-3 mt-3">
+            <SearchInput
+              value={query}
+              onValueChange={handleQueryChange}
+              onFocus={handleFocus}
+              onSubmitEditing={handleSubmit}
+              placeholder="어떤 고양이를 좋아하세요?"
+            />
+          </View>
+        </Animated.View>
 
-        <View className="flex-1">
-          <Animated.View
-            key={mode}
-            entering={CONTENT_ENTERING}
-            exiting={CONTENT_EXITING}
-            style={StyleSheet.absoluteFill}
-          >
-            {renderContent()}
-          </Animated.View>
-        </View>
+        <View className="flex-1">{renderContent()}</View>
 
         {showEmptyToast && (
           <View className="absolute bottom-4 left-3 right-3 flex-row items-center gap-1.5 px-2.5 py-3 rounded bg-semantic-bg-secondary border border-semantic-border-primary">
@@ -158,6 +161,6 @@ const ExploreScreen = () => {
       </View>
     </>
   );
-}
+};
 
 export default ExploreScreen;

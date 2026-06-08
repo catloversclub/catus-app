@@ -1,19 +1,20 @@
 import ImagePickerScreen from "@/components/media/image-picker-screen";
 import DraftRestoreModal from "@/components/post/draft-restore-modal";
+import { ROUTES } from "@/constants/route";
+import { useComposeStore } from "@/store/post/compose-store";
 import { useDraftStore } from "@/store/post/draft-store";
 import { router, Stack } from "expo-router";
 
 const GalleryScreen = () => {
   const { draft, clearDraft } = useDraftStore();
+  const setComposeImageUris = useComposeStore((s) => s.setImageUris);
 
   const handleLoadDraft = () => {
     if (!draft) return;
     const uris = draft.imageUris;
+    setComposeImageUris(uris);
     clearDraft();
-    router.push({
-      pathname: "/post/edit-list",
-      params: { imageUris: JSON.stringify(uris) },
-    });
+    router.push(ROUTES.POST.COMPOSE);
   };
 
   const handleDismissDraft = () => {
@@ -22,7 +23,7 @@ const GalleryScreen = () => {
 
   const handleConfirm = (uris: string[]) => {
     router.push({
-      pathname: "/post/editor",
+      pathname: ROUTES.POST.EDITOR,
       params: { imageUris: JSON.stringify(uris) },
     });
   };

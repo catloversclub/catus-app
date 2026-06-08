@@ -1,4 +1,4 @@
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 interface CarouselCounterProps {
   current: number;
@@ -19,16 +19,20 @@ const CarouselCounter = ({ current, total }: CarouselCounterProps) => (
 interface CarouselDotsProps {
   count: number;
   current: number;
+  onDotPress?: (index: number) => void;
 }
 
-const CarouselDots = ({ count, current }: CarouselDotsProps) => (
+const CarouselDots = ({ count, current, onDotPress }: CarouselDotsProps) => (
   <View className="w-full flex-row justify-center gap-1.5">
     {Array.from({ length: count }).map((_, index) => (
-      <View
+      <Pressable
         key={index}
+        disabled={!onDotPress}
+        hitSlop={8}
         className={`h-1.5 w-1.5 rounded-full ${
           index === current ? "bg-semantic-icon-accent" : "bg-semantic-icon-minor"
         }`}
+        onPress={() => onDotPress?.(index)}
       />
     ))}
   </View>

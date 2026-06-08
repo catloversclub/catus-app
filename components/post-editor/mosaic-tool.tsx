@@ -1,10 +1,11 @@
 import BottomActionBar from "@/components/layout/bottom-action-bar";
 import { useContainedImageLayout } from "@/components/post-editor/contained-image-frame";
 import EditorHeader from "@/components/post-editor/editor-header";
+import { cn } from "@/lib/utils";
 import { BlurView } from "expo-blur";
 import { Image } from "expo-image";
 import React, { useRef, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import {
   Gesture,
   GestureDetector,
@@ -22,15 +23,6 @@ interface MosaicData {
   y: number;
   size: number;
 }
-
-const EDITOR_COLORS = {
-  bgSecondary: "#303030", // gray-950
-  text: "#FDFDFD", // gray-0
-  disabled: "#555555",
-  separator: "rgba(231,231,231,0.25)", // gray-100/25
-  yellow: "#FECF16", // yellow-500
-  yellowText: "#1B1B1B", // gray-990
-} as const;
 
 interface MosaicToolProps {
   uri: string;
@@ -56,8 +48,11 @@ const MosaicItem = ({ item }: { item: MosaicData }) => {
 
   return (
     <GestureDetector gesture={moveGesture}>
-      <Animated.View style={[animatedStyle, styles.mosaicBox]}>
-        <BlurView intensity={80} style={StyleSheet.absoluteFill} tint="dark" />
+      <Animated.View
+        className="absolute overflow-hidden border border-yellow-500/50"
+        style={animatedStyle}
+      >
+        <BlurView intensity={80} className="absolute inset-0" tint="dark" />
       </Animated.View>
     </GestureDetector>
   );
@@ -129,10 +124,10 @@ const MosaicTool = ({ uri, onSave, onCancel }: MosaicToolProps) => {
                 height: imageLayout.height,
               }}
             >
-              <View style={{ flex: 1, backgroundColor: "#000" }}>
+              <View className="flex-1 bg-black">
                 <Image
                   source={{ uri }}
-                  style={StyleSheet.absoluteFill}
+                  className="absolute inset-0"
                   contentFit="fill"
                 />
                 {mosaics.map((item) => (
@@ -144,66 +139,56 @@ const MosaicTool = ({ uri, onSave, onCancel }: MosaicToolProps) => {
         </View>
       </View>
 
-      {/* Bottom panel */}
-      <View style={{ paddingHorizontal: 12, paddingTop: 12, paddingBottom: 12, gap: 24, alignItems: "center" }}>
-        {/* Controls row */}
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
-          {/* Undo */}
+      <View className="items-center gap-6 px-3 py-3">
+        <View className="flex-row items-center gap-3">
           <TouchableOpacity
             onPress={handleUndo}
             className="w-11 h-11 rounded-full bg-gray-950 items-center justify-center"
           >
-            <Text style={{ color: mosaics.length > 0 ? EDITOR_COLORS.text : EDITOR_COLORS.disabled, fontSize: 18 }}>↩</Text>
+            <Text
+              className={cn(
+                "text-[18px]",
+                mosaics.length > 0 ? "text-gray-0" : "text-[#555555]",
+              )}
+            >
+              ↩
+            </Text>
           </TouchableOpacity>
-          {/* Redo */}
           <TouchableOpacity
             onPress={handleRedo}
             className="w-11 h-11 rounded-full bg-gray-950 items-center justify-center"
           >
-            <Text style={{ color: EDITOR_COLORS.disabled, fontSize: 18 }}>↪</Text>
+            <Text className="text-[18px] text-[#555555]">↪</Text>
           </TouchableOpacity>
 
-          {/* Separator */}
-          <View style={{ width: 1, height: 32, backgroundColor: EDITOR_COLORS.separator }} />
+          <View className="w-px h-8 bg-gray-100/25" />
 
-          {/* Rect brush */}
           <TouchableOpacity
             onPress={() => { setSelectedType("rect"); addMosaic("rect"); }}
-            style={{
-              width: 24,
-              height: 24,
-              backgroundColor: selectedType === "rect" ? "#aaa" : "#555",
-              borderWidth: selectedType === "rect" ? 2 : 1,
-              borderColor: selectedType === "rect" ? EDITOR_COLORS.yellow : "#777",
-            }}
+            className={cn(
+              "size-6 border",
+              selectedType === "rect"
+                ? "bg-gray-400 border-2 border-yellow-500"
+                : "bg-[#555555] border-[#777777]",
+            )}
           />
-          {/* Circle brush */}
           <TouchableOpacity
             onPress={() => { setSelectedType("circle"); addMosaic("circle"); }}
-            style={{
-              width: 24,
-              height: 24,
-              borderRadius: 12,
-              backgroundColor: selectedType === "circle" ? "#aaa" : "#555",
-              borderWidth: selectedType === "circle" ? 2 : 1,
-              borderColor: selectedType === "circle" ? EDITOR_COLORS.yellow : "#777",
-            }}
+            className={cn(
+              "size-6 rounded-full border",
+              selectedType === "circle"
+                ? "bg-gray-400 border-2 border-yellow-500"
+                : "bg-[#555555] border-[#777777]",
+            )}
           />
         </View>
-
       </View>
-      <BottomActionBar buttons={[{ label: "완료", onPress: handleComplete }]} />
+      <BottomActionBar
+        containerClassName="bg-gray-990"
+        buttons={[{ label: "완료", onPress: handleComplete }]}
+      />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  mosaicBox: {
-    position: "absolute",
-    overflow: "hidden",
-    borderWidth: 1,
-    borderColor: "rgba(255,215,0,0.5)",
-  },
-});
 
 export default MosaicTool;

@@ -4,20 +4,19 @@ import IconButton from "@/components/common/icon-button";
 import { useColors } from "@/hooks/use-colors";
 import { useSearchHistoryStore } from "@/store/explore/search-history-store";
 import { useState } from "react";
-import {
-  Keyboard,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
+import Animated, { useAnimatedScrollHandler } from "react-native-reanimated";
 import ViewedCatItem from "./viewed-cat-item";
 
 interface ExploreIdleViewProps {
+  scrollHandler: ReturnType<typeof useAnimatedScrollHandler>;
   onSearchPress: (text: string) => void;
 }
 
-const ExploreIdleView = ({ onSearchPress }: ExploreIdleViewProps) => {
+const ExploreIdleView = ({
+  scrollHandler,
+  onSearchPress,
+}: ExploreIdleViewProps) => {
   const { colors } = useColors();
   const {
     recentSearches,
@@ -38,19 +37,17 @@ const ExploreIdleView = ({ onSearchPress }: ExploreIdleViewProps) => {
   const hasSearches = recentSearches.length > 0;
   const hasCats = viewedCats.length > 0;
 
-  const handleOnScroll = () => {
-    Keyboard.dismiss();
-  };
-
   if (!hasSearches && !hasCats) return null;
 
   return (
-    <ScrollView
+    <Animated.ScrollView
       className="flex-1"
       contentContainerClassName="px-3 pt-6 pb-8 gap-6"
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
-      onScroll={handleOnScroll}
+      keyboardDismissMode="on-drag"
+      onScroll={scrollHandler}
+      scrollEventThrottle={16}
     >
       {hasSearches && (
         <View className="gap-3">
@@ -133,7 +130,7 @@ const ExploreIdleView = ({ onSearchPress }: ExploreIdleViewProps) => {
           )}
         </View>
       )}
-    </ScrollView>
+    </Animated.ScrollView>
   );
 };
 

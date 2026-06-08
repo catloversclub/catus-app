@@ -1,4 +1,5 @@
 import Button, { ButtonType } from "@/components/common/button";
+import { cn } from "@/lib/utils";
 import {
   KeyboardStickyView,
   useReanimatedKeyboardAnimation,
@@ -8,19 +9,26 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface BottomActionBarProps {
   buttons: Omit<ButtonType, "size">[];
+  containerClassName?: string;
 }
 
-const BottomActionBar = ({ buttons }: BottomActionBarProps) => {
+const BottomActionBar = ({
+  buttons,
+  containerClassName,
+}: BottomActionBarProps) => {
   const { bottom } = useSafeAreaInsets();
   const { progress } = useReanimatedKeyboardAnimation();
   const animatedStyle = useAnimatedStyle(() => ({
-    paddingBottom: (1 - progress.value) * bottom,
+    paddingBottom: (1 - progress.value) * bottom + 30,
   }));
 
   return (
     <KeyboardStickyView offset={{ closed: 0, opened: 0 }}>
       <Animated.View
-        className="flex-col w-full pt-3 border-t border-semantic-border-primary px-3 gap-2"
+        className={cn(
+          "flex-col w-full pt-3 px-3 gap-2 bg-semantic-bg-primary",
+          containerClassName,
+        )}
         style={animatedStyle}
       >
         {buttons.map((btn) => (

@@ -8,6 +8,7 @@ import MoreIcon from "@/assets/icons/more.svg";
 import { CatProfileHeader } from "@/components/cat/profile-header";
 import IconButton from "@/components/common/icon-button";
 import { RefreshableScrollView } from "@/components/common/logo-refresh-control";
+import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
 import { ProfileHeaderSkeleton } from "@/components/user/profile/profile-header";
 import ProfilePostGrid, {
   PostGridSkeleton,
@@ -16,7 +17,6 @@ import { useColors } from "@/hooks/use-colors";
 import { useLoadMoreScroll } from "@/hooks/use-load-more-scroll";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
 import { formatDate } from "@/lib/utils";
-import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { View } from "react-native";
 
@@ -71,10 +71,7 @@ interface CatDetailPostGridProps {
   loadMoreRef: React.RefObject<(() => void) | null>;
 }
 
-const CatDetailPostGrid = ({
-  catId,
-  loadMoreRef,
-}: CatDetailPostGridProps) => {
+const CatDetailPostGrid = ({ catId, loadMoreRef }: CatDetailPostGridProps) => {
   const {
     data: postsData,
     fetchNextPage,

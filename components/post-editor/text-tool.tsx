@@ -1,16 +1,10 @@
 import BottomActionBar from "@/components/layout/bottom-action-bar";
 import { useContainedImageLayout } from "@/components/post-editor/contained-image-frame";
 import EditorHeader from "@/components/post-editor/editor-header";
+import { cn } from "@/lib/utils";
 import { Image } from "expo-image";
 import React, { useRef, useState } from "react";
-import {
-  Modal,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Modal, Text, TextInput, TouchableOpacity, View } from "react-native";
 import {
   Gesture,
   GestureDetector,
@@ -26,12 +20,6 @@ interface TextEntry {
   content: string;
   color: string;
 }
-
-const EDITOR_COLORS = {
-  text: "#FDFDFD", // gray-0
-  disabled: "#555555",
-  yellowText: "#1B1B1B", // gray-990
-} as const;
 
 const TextItem = ({ entry }: { entry: TextEntry }) => {
   const x = useSharedValue(0);
@@ -70,7 +58,15 @@ const TextItem = ({ entry }: { entry: TextEntry }) => {
   return (
     <GestureDetector gesture={Gesture.Race(dragGesture, transformGesture)}>
       <Animated.View style={animatedStyle}>
-        <Text style={{ color: entry.color, fontSize: 28, fontWeight: "bold", textShadowColor: "rgba(0,0,0,0.5)", textShadowOffset: { width: 1, height: 1 }, textShadowRadius: 2 }}>
+        <Text
+          className="text-[28px] font-bold"
+          style={{
+            color: entry.color,
+            textShadowColor: "rgba(0,0,0,0.5)",
+            textShadowOffset: { width: 1, height: 1 },
+            textShadowRadius: 2,
+          }}
+        >
           {entry.content}
         </Text>
       </Animated.View>
@@ -138,10 +134,10 @@ const TextTool = ({ uri, onSave, onCancel }: TextToolProps) => {
                 height: imageLayout.height,
               }}
             >
-              <View style={{ flex: 1, backgroundColor: "#000" }}>
+              <View className="flex-1 bg-black">
                 <Image
                   source={{ uri }}
-                  style={StyleSheet.absoluteFill}
+                  className="absolute inset-0"
                   contentFit="fill"
                 />
                 {texts.map((t) => (
@@ -153,18 +149,21 @@ const TextTool = ({ uri, onSave, onCancel }: TextToolProps) => {
         </View>
       </View>
 
-      {/* Bottom panel */}
-      <View style={{ paddingHorizontal: 12, paddingTop: 12, paddingBottom: 12, gap: 24, alignItems: "center" }}>
-        {/* Controls row */}
-        <View style={{ flexDirection: "row", gap: 12 }}>
-          {/* Undo */}
+      <View className="items-center gap-6 px-3 py-3">
+        <View className="flex-row gap-3">
           <TouchableOpacity
             onPress={handleUndo}
             className="w-11 h-11 rounded-full bg-gray-950 items-center justify-center"
           >
-            <Text style={{ color: texts.length > 0 ? EDITOR_COLORS.text : EDITOR_COLORS.disabled, fontSize: 18 }}>↩</Text>
+            <Text
+              className={cn(
+                "text-[18px]",
+                texts.length > 0 ? "text-gray-0" : "text-[#555555]",
+              )}
+            >
+              ↩
+            </Text>
           </TouchableOpacity>
-          {/* Add text */}
           <TouchableOpacity
             onPress={() => setShowInput(true)}
             className="w-11 h-11 rounded-full bg-gray-950 items-center justify-center"
@@ -172,16 +171,17 @@ const TextTool = ({ uri, onSave, onCancel }: TextToolProps) => {
             <Text className="text-gray-0 text-sm font-bold">T</Text>
           </TouchableOpacity>
         </View>
-
       </View>
-      <BottomActionBar buttons={[{ label: "완료", onPress: handleComplete }]} />
+      <BottomActionBar
+        containerClassName="bg-gray-990"
+        buttons={[{ label: "완료", onPress: handleComplete }]}
+      />
 
-      {/* Text input overlay */}
       <Modal visible={showInput} transparent animationType="fade">
-        <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.85)", justifyContent: "center", alignItems: "center", padding: 24 }}>
+        <View className="flex-1 bg-black/85 items-center justify-center p-6">
           <TextInput
             autoFocus
-            style={{ color: "#fff", fontSize: 26, fontWeight: "bold", width: "100%", textAlign: "center", minHeight: 60 }}
+            className="min-h-[60px] w-full text-center text-[26px] font-bold text-white"
             value={inputText}
             onChangeText={setInputText}
             placeholder="문구를 입력하세요"

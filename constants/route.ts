@@ -35,7 +35,7 @@ export const ROUTES = {
   POST: {
     DETAIL: (id: string) => `/post/${id}` as const,
     CREATE: "/post/create-post" as const,
-    EDIT_LIST: "/post/edit-list" as const,
+    COMPOSE: "/post/compose" as const,
     EDITOR: "/post/editor" as const,
   },
   SETTINGS: {
