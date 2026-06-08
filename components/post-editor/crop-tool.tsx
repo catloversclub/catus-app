@@ -1,6 +1,5 @@
-import ArrowLeftIcon from "@/assets/icons/arrow-left.svg";
-import IconButton from "@/components/common/icon-button";
-import { DARK } from "@/constants/editor-dark";
+import BottomActionBar from "@/components/layout/bottom-action-bar";
+import EditorHeader from "@/components/post-editor/editor-header";
 import { Image } from "expo-image";
 import * as ImageManipulator from "expo-image-manipulator";
 import React, { useEffect, useState } from "react";
@@ -17,13 +16,19 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from "react-native-reanimated";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const CANVAS_SIZE = SCREEN_WIDTH - 24; // 12px padding each side
 
 const RATIOS = ["자유", "1:1", "3:2", "4:3", "16:9"] as const;
 type Ratio = (typeof RATIOS)[number];
+const EDITOR_COLORS = {
+  bgSecondary: "#303030", // gray-950
+  text: "#FDFDFD", // gray-0
+  textMuted: "#E7E7E7", // gray-100
+  yellow: "#FECF16", // yellow-500
+  yellowText: "#1B1B1B", // gray-990
+} as const;
 const RATIO_MAP: Record<string, number> = {
   "1:1": 1,
   "3:2": 3 / 2,
@@ -38,7 +43,6 @@ interface CropToolProps {
 }
 
 const CropTool = ({ uri, onSave, onCancel }: CropToolProps) => {
-  const { top, bottom } = useSafeAreaInsets();
   const [aspectRatio, setAspectRatio] = useState<Ratio>("자유");
 
   const boxX = useSharedValue(0);
@@ -132,33 +136,8 @@ const CropTool = ({ uri, onSave, onCancel }: CropToolProps) => {
   }));
 
   return (
-    <View style={{ flex: 1, backgroundColor: DARK.bg, paddingTop: top }}>
-      {/* Header */}
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          height: 52,
-          paddingHorizontal: 12,
-        }}
-      >
-        <IconButton onPress={onCancel} className="p-3">
-          <ArrowLeftIcon width={20} height={20} color={DARK.text} />
-        </IconButton>
-        <Text
-          style={{
-            flex: 1,
-            textAlign: "center",
-            color: DARK.text,
-            fontSize: 16,
-            fontWeight: "600",
-            letterSpacing: -0.32,
-            marginRight: 44,
-          }}
-        >
-          자르기
-        </Text>
-      </View>
+    <View className="flex-1 bg-gray-990">
+      <EditorHeader title="자르기" onBack={onCancel} />
 
       {/* Image + crop overlay */}
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -252,7 +231,7 @@ const CropTool = ({ uri, onSave, onCancel }: CropToolProps) => {
         style={{
           paddingHorizontal: 12,
           paddingTop: 12,
-          paddingBottom: Math.max(bottom, 12) + 12,
+          paddingBottom: 12,
           gap: 16,
           alignItems: "center",
         }}
@@ -285,7 +264,9 @@ const CropTool = ({ uri, onSave, onCancel }: CropToolProps) => {
                 height: 26,
                 borderRadius: 4,
                 backgroundColor:
-                  aspectRatio === ratio ? DARK.yellow : DARK.bgSecondary,
+                  aspectRatio === ratio
+                    ? EDITOR_COLORS.yellow
+                    : EDITOR_COLORS.bgSecondary,
                 alignItems: "center",
                 justifyContent: "center",
               }}
@@ -295,7 +276,9 @@ const CropTool = ({ uri, onSave, onCancel }: CropToolProps) => {
                   fontSize: 12,
                   fontWeight: "600",
                   color:
-                    aspectRatio === ratio ? DARK.yellowText : DARK.textMuted,
+                    aspectRatio === ratio
+                      ? EDITOR_COLORS.yellowText
+                      : EDITOR_COLORS.textMuted,
                 }}
               >
                 {ratio}
@@ -303,31 +286,8 @@ const CropTool = ({ uri, onSave, onCancel }: CropToolProps) => {
             </TouchableOpacity>
           ))}
         </View>
-
-        {/* 완료 */}
-        <TouchableOpacity
-          onPress={handleCrop}
-          style={{
-            backgroundColor: DARK.yellow,
-            borderRadius: 4,
-            height: 50,
-            alignItems: "center",
-            justifyContent: "center",
-            width: "100%",
-          }}
-        >
-          <Text
-            style={{
-              color: DARK.yellowText,
-              fontSize: 16,
-              fontWeight: "600",
-              letterSpacing: -0.32,
-            }}
-          >
-            완료
-          </Text>
-        </TouchableOpacity>
       </View>
+      <BottomActionBar buttons={[{ label: "완료", onPress: handleCrop }]} />
     </View>
   );
 };

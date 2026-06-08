@@ -1,6 +1,5 @@
-import ArrowLeftIcon from "@/assets/icons/arrow-left.svg";
-import IconButton from "@/components/common/icon-button";
-import { DARK } from "@/constants/editor-dark";
+import BottomActionBar from "@/components/layout/bottom-action-bar";
+import EditorHeader from "@/components/post-editor/editor-header";
 import { Image } from "expo-image";
 import React, { useRef, useState } from "react";
 import {
@@ -19,7 +18,6 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from "react-native-reanimated";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ViewShot from "react-native-view-shot";
 
 interface TextEntry {
@@ -27,6 +25,12 @@ interface TextEntry {
   content: string;
   color: string;
 }
+
+const EDITOR_COLORS = {
+  text: "#FDFDFD", // gray-0
+  disabled: "#555555",
+  yellowText: "#1B1B1B", // gray-990
+} as const;
 
 const TextItem = ({ entry }: { entry: TextEntry }) => {
   const x = useSharedValue(0);
@@ -80,7 +84,6 @@ interface TextToolProps {
 }
 
 const TextTool = ({ uri, onSave, onCancel }: TextToolProps) => {
-  const { top, bottom } = useSafeAreaInsets();
   const [texts, setTexts] = useState<TextEntry[]>([]);
   const [showInput, setShowInput] = useState(false);
   const [inputText, setInputText] = useState("");
@@ -112,16 +115,8 @@ const TextTool = ({ uri, onSave, onCancel }: TextToolProps) => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: DARK.bg, paddingTop: top }}>
-      {/* Header */}
-      <View style={{ flexDirection: "row", alignItems: "center", height: 52, paddingHorizontal: 12 }}>
-        <IconButton onPress={onCancel} className="p-3">
-          <ArrowLeftIcon width={20} height={20} color={DARK.text} />
-        </IconButton>
-        <Text style={{ flex: 1, textAlign: "center", color: DARK.text, fontSize: 16, fontWeight: "600", letterSpacing: -0.32, marginRight: 44 }}>
-          텍스트 입력
-        </Text>
-      </View>
+    <View className="flex-1 bg-gray-990">
+      <EditorHeader title="텍스트 입력" onBack={onCancel} />
 
       {/* Canvas */}
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -140,35 +135,27 @@ const TextTool = ({ uri, onSave, onCancel }: TextToolProps) => {
       </View>
 
       {/* Bottom panel */}
-      <View style={{ paddingHorizontal: 12, paddingTop: 12, paddingBottom: Math.max(bottom, 12) + 12, gap: 24, alignItems: "center" }}>
+      <View style={{ paddingHorizontal: 12, paddingTop: 12, paddingBottom: 12, gap: 24, alignItems: "center" }}>
         {/* Controls row */}
         <View style={{ flexDirection: "row", gap: 12 }}>
           {/* Undo */}
           <TouchableOpacity
             onPress={handleUndo}
-            style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: DARK.bgSecondary, alignItems: "center", justifyContent: "center" }}
+            className="w-11 h-11 rounded-full bg-gray-950 items-center justify-center"
           >
-            <Text style={{ color: texts.length > 0 ? DARK.text : "#555", fontSize: 18 }}>↩</Text>
+            <Text style={{ color: texts.length > 0 ? EDITOR_COLORS.text : EDITOR_COLORS.disabled, fontSize: 18 }}>↩</Text>
           </TouchableOpacity>
           {/* Add text */}
           <TouchableOpacity
             onPress={() => setShowInput(true)}
-            style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: DARK.bgSecondary, alignItems: "center", justifyContent: "center" }}
+            className="w-11 h-11 rounded-full bg-gray-950 items-center justify-center"
           >
-            <Text style={{ color: DARK.text, fontSize: 14, fontWeight: "700" }}>T</Text>
+            <Text className="text-gray-0 text-sm font-bold">T</Text>
           </TouchableOpacity>
         </View>
 
-        {/* 완료 */}
-        <TouchableOpacity
-          onPress={handleComplete}
-          style={{ backgroundColor: DARK.yellow, borderRadius: 4, height: 50, alignItems: "center", justifyContent: "center", width: "100%" }}
-        >
-          <Text style={{ color: DARK.yellowText, fontSize: 16, fontWeight: "600", letterSpacing: -0.32 }}>
-            완료
-          </Text>
-        </TouchableOpacity>
       </View>
+      <BottomActionBar buttons={[{ label: "완료", onPress: handleComplete }]} />
 
       {/* Text input overlay */}
       <Modal visible={showInput} transparent animationType="fade">
@@ -184,9 +171,9 @@ const TextTool = ({ uri, onSave, onCancel }: TextToolProps) => {
           />
           <TouchableOpacity
             onPress={handleAddText}
-            style={{ marginTop: 24, backgroundColor: DARK.yellow, paddingHorizontal: 40, paddingVertical: 12, borderRadius: 100 }}
+            className="mt-6 bg-yellow-500 px-10 py-3 rounded-full"
           >
-            <Text style={{ fontWeight: "700", fontSize: 16, color: DARK.yellowText }}>확인</Text>
+            <Text className="text-gray-990 text-base font-bold">확인</Text>
           </TouchableOpacity>
         </View>
       </Modal>
