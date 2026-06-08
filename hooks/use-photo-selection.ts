@@ -25,9 +25,11 @@ const usePhotoSelection = ({
 
   const handleConfirm = () => {
     if (selectedIds.length === 0) return;
-    const uris = assets
-      .filter((a) => selectedIds.includes(a.id))
-      .map((a) => a.uri);
+    const assetUriById = new Map(assets.map((asset) => [asset.id, asset.uri]));
+    const uris = selectedIds.flatMap((id) => {
+      const uri = assetUriById.get(id);
+      return uri ? [uri] : [];
+    });
     onConfirm(uris);
   };
 
