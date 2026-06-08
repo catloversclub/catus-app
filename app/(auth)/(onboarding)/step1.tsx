@@ -55,42 +55,44 @@ const Step1Form = ({ currentNickname }: Step1FormProps) => {
   };
 
   return (
-    <KeyboardAvoidingView
-      className="flex-1 bg-semantic-bg-primary py-6"
-      {...keyboardAvoidingViewProps}
-    >
-      <ProgressBar progress={1} />
-      <ScrollView className="px-5" contentContainerStyle={{ flexGrow: 1 }}>
-        <View className="h-10" />
-        <Text className="typo-title2 text-semantic-text-primary">
-          닉네임을 입력해주세요
-        </Text>
-        <View className="h-6" />
-        <NameField
-          name={nickname}
-          setName={handleChangeNickname}
-          placeholder="닉네임"
-          isError={hasChecked && !isValidNickname}
-        />
-        <View className="h-1.5" />
-        <View className="flex-row justify-end w-full">
-          <Text
-            className={cn(
-              "flex-1 typo-label2",
-              hasChecked
-                ? isValidNickname
-                  ? "text-semantic-text-success"
-                  : "text-semantic-text-error"
-                : "text-semantic-text-tertiary",
-            )}
-          >
-            {statusText}
+    <View className="flex-1 bg-semantic-bg-primary">
+      <KeyboardAvoidingView
+        className="flex-1 pt-6"
+        {...keyboardAvoidingViewProps}
+      >
+        <ProgressBar progress={1} />
+        <ScrollView className="flex-1 px-5" contentContainerStyle={{ flexGrow: 1 }}>
+          <View className="h-10" />
+          <Text className="typo-title2 text-semantic-text-primary">
+            닉네임을 입력해주세요
           </Text>
-          <Text className="typo-label1 text-semantic-text-tertiary">
-            {nickname.length}/16
-          </Text>
-        </View>
-      </ScrollView>
+          <View className="h-6" />
+          <NameField
+            name={nickname}
+            setName={handleChangeNickname}
+            placeholder="닉네임"
+            isError={hasChecked && !isValidNickname}
+          />
+          <View className="h-1.5" />
+          <View className="flex-row justify-end w-full">
+            <Text
+              className={cn(
+                "flex-1 typo-label2",
+                hasChecked
+                  ? isValidNickname
+                    ? "text-semantic-text-success"
+                    : "text-semantic-text-error"
+                  : "text-semantic-text-tertiary",
+              )}
+            >
+              {statusText}
+            </Text>
+            <Text className="typo-label1 text-semantic-text-tertiary">
+              {nickname.length}/16
+            </Text>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
       <BottomActionBar
         buttons={[
           {
@@ -102,7 +104,7 @@ const Step1Form = ({ currentNickname }: Step1FormProps) => {
           },
         ]}
       />
-    </KeyboardAvoidingView>
+    </View>
   );
 };
 

@@ -54,91 +54,93 @@ const CatProfileForm = ({
   const breedOffsetY = useRef<number>(0);
 
   return (
-    <KeyboardAvoidingView
-      className="flex-1 bg-semantic-bg-primary py-6"
-      {...keyboardAvoidingViewProps}
-    >
-      {stepNumber && <ProgressBar progress={stepNumber} />}
-      <ScrollView
-        className="px-5"
-        contentContainerStyle={{ flexGrow: 1 }}
-        ref={scrollViewRef}
-        keyboardShouldPersistTaps="handled"
-        nestedScrollEnabled={true}
+    <View className="flex-1 bg-semantic-bg-primary">
+      <KeyboardAvoidingView
+        className="flex-1 pt-6"
+        {...keyboardAvoidingViewProps}
       >
-        <View className="h-10" />
-        <Text className="typo-title2 text-semantic-text-primary w-full">
-          고양이의 프로필을 완성해 주세요!
-        </Text>
-        <Text className="typo-body4 text-semantic-text-tertiary w-full">
-          여러 마리의 고양이가 있다면 {"\n"}다음 화면에서 {"\'"}더 추가하기
-          {"\'"}를 클릭해주세요.
-        </Text>
-        <View className="h-6" />
-        <View className="items-center">
-          <CatProfileImage
-            imageUrl={imageUri}
-            size="lg"
-            isEditMode
-            handleImageUriChange={(uri) => setImageUri(uri)}
-          />
-        </View>
-        <View className="h-10" />
-        <View className="w-full flex-col gap-10 pb-[66px]">
-          <Controller
-            control={control}
-            name="name"
-            render={({ field }) => (
-              <RegisterCatName
-                name={field.value}
-                onChangeName={field.onChange}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="gender"
-            render={({ field }) => (
-              <RegisterGender
-                gender={field.value}
-                onChangeGender={field.onChange}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="birthDate"
-            render={({ field }) => (
-              <RegisterBirthDate
-                birthDate={field.value}
-                onChangeBirthDate={field.onChange}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="breed"
-            render={({ field }) => (
-              <RegisterBreed
-                breed={field.value}
-                onChangeBreed={field.onChange}
-                onBreedOpen={() => {
-                  setTimeout(() => {
-                    scrollViewRef.current?.scrollTo({
-                      y: breedOffsetY.current + 4 * 46 + 80,
-                      animated: true,
-                    });
-                  }, 50);
-                }}
-                onLayout={(y) => {
-                  breedOffsetY.current = y;
-                }}
-              />
-            )}
-          />
-        </View>
-        <View className="h-[80px]" />
-      </ScrollView>
+        {stepNumber && <ProgressBar progress={stepNumber} />}
+        <ScrollView
+          className="flex-1 px-5"
+          contentContainerStyle={{ flexGrow: 1 }}
+          ref={scrollViewRef}
+          keyboardShouldPersistTaps="handled"
+          nestedScrollEnabled={true}
+        >
+          <View className="h-10" />
+          <Text className="typo-title2 text-semantic-text-primary w-full">
+            고양이의 프로필을 완성해 주세요!
+          </Text>
+          <Text className="typo-body4 text-semantic-text-tertiary w-full">
+            여러 마리의 고양이가 있다면 {"\n"}다음 화면에서 {"\'"}더 추가하기
+            {"\'"}를 클릭해주세요.
+          </Text>
+          <View className="h-6" />
+          <View className="items-center">
+            <CatProfileImage
+              imageUrl={imageUri}
+              size="lg"
+              isEditMode
+              handleImageUriChange={(uri) => setImageUri(uri)}
+            />
+          </View>
+          <View className="h-10" />
+          <View className="w-full flex-col gap-10 pb-[66px]">
+            <Controller
+              control={control}
+              name="name"
+              render={({ field }) => (
+                <RegisterCatName
+                  name={field.value}
+                  onChangeName={field.onChange}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="gender"
+              render={({ field }) => (
+                <RegisterGender
+                  gender={field.value}
+                  onChangeGender={field.onChange}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="birthDate"
+              render={({ field }) => (
+                <RegisterBirthDate
+                  birthDate={field.value}
+                  onChangeBirthDate={field.onChange}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="breed"
+              render={({ field }) => (
+                <RegisterBreed
+                  breed={field.value}
+                  onChangeBreed={field.onChange}
+                  onBreedOpen={() => {
+                    setTimeout(() => {
+                      scrollViewRef.current?.scrollTo({
+                        y: breedOffsetY.current + 4 * 46 + 80,
+                        animated: true,
+                      });
+                    }, 50);
+                  }}
+                  onLayout={(y) => {
+                    breedOffsetY.current = y;
+                  }}
+                />
+              )}
+            />
+          </View>
+          <View className="h-[80px]" />
+        </ScrollView>
+      </KeyboardAvoidingView>
       <BottomActionBar
         buttons={[
           {
@@ -158,7 +160,7 @@ const CatProfileForm = ({
             : []),
         ]}
       />
-    </KeyboardAvoidingView>
+    </View>
   );
 };
 
