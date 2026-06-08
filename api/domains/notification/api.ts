@@ -16,6 +16,7 @@ const NOTI_ENDPOINTS = {
   DETAIL: (id: string) => `${BASE_URL}/${id}`,
   PUSH_TOKEN: `${BASE_URL}/push-token`,
   PUSH_TOKEN_DETAIL: (token: string) => `${BASE_URL}/push-token/${token}`,
+  SETTINGS: `${BASE_URL}/settings`,
   TEST: `${BASE_URL}/test`,
 } as const;
 
@@ -72,30 +73,20 @@ export const testNotification = async (): Promise<TestNotificationResponse> => {
   return data;
 };
 
-let mockNotificationSettings: NotificationSettings = {
-  all: true,
-  likes: true,
-  comments: true,
-  replies: true,
-  newFollowers: true,
-  marketing: true,
-};
-
-const waitMockResponse = () =>
-  new Promise((resolve) => {
-    setTimeout(resolve, 150);
-  });
-
 export const getNotificationSettings =
   async (): Promise<NotificationSettings> => {
-    await waitMockResponse();
-    return { ...mockNotificationSettings };
+    const { data } = await apiClient.get<NotificationSettings>(
+      NOTI_ENDPOINTS.SETTINGS,
+    );
+    return data;
   };
 
 export const updateNotificationSettings = async (
-  settings: NotificationSettings,
+  settings: Partial<NotificationSettings>,
 ): Promise<NotificationSettings> => {
-  await waitMockResponse();
-  mockNotificationSettings = { ...settings };
-  return { ...mockNotificationSettings };
+  const { data } = await apiClient.patch<NotificationSettings>(
+    NOTI_ENDPOINTS.SETTINGS,
+    settings,
+  );
+  return data;
 };

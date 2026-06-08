@@ -75,7 +75,7 @@ export const useRegisterPushTokenMutation = () => {
 export const useUpdateNotificationSettingsMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (settings: NotificationSettings) =>
+    mutationFn: (settings: Partial<NotificationSettings>) =>
       updateNotificationSettings(settings),
     onSuccess: (settings) => {
       queryClient.setQueryData(notificationKeys.settings(), settings);

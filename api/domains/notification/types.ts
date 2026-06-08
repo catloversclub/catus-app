@@ -73,10 +73,10 @@ export interface TestNotificationResponse {
 }
 
 export interface NotificationSettings {
-  all: boolean;
-  likes: boolean;
-  comments: boolean;
-  replies: boolean;
-  newFollowers: boolean;
-  marketing: boolean;
+  allEnabled: boolean;
+  postLikeEnabled: boolean;
+  commentEnabled: boolean;
+  replyEnabled: boolean;
+  followEnabled: boolean;
+  marketingEnabled: boolean;
 }

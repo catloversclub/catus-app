@@ -9,39 +9,42 @@ import { Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 const DEFAULT_SETTINGS: NotificationSettings = {
-  all: true,
-  likes: true,
-  comments: true,
-  replies: true,
-  newFollowers: true,
-  marketing: true,
+  allEnabled: true,
+  postLikeEnabled: true,
+  commentEnabled: true,
+  replyEnabled: true,
+  followEnabled: true,
+  marketingEnabled: true,
 };
 
 const ACTIVITY_ITEMS: {
-  key: keyof Pick<NotificationSettings, "likes" | "comments" | "replies">;
+  key: keyof Pick<
+    NotificationSettings,
+    "postLikeEnabled" | "commentEnabled" | "replyEnabled"
+  >;
   label: string;
 }[] = [
-  { key: "likes", label: "좋아요" },
-  { key: "comments", label: "댓글" },
-  { key: "replies", label: "대댓글" },
+  { key: "postLikeEnabled", label: "좋아요" },
+  { key: "commentEnabled", label: "댓글" },
+  { key: "replyEnabled", label: "대댓글" },
 ];
 
 const FOLLOW_ITEMS: {
-  key: keyof Pick<NotificationSettings, "newFollowers">;
+  key: keyof Pick<NotificationSettings, "followEnabled">;
   label: string;
-}[] = [{ key: "newFollowers", label: "새 팔로워" }];
+}[] = [{ key: "followEnabled", label: "새 팔로워" }];
 
 const MARKETING_ITEMS: {
-  key: keyof Pick<NotificationSettings, "marketing">;
+  key: keyof Pick<NotificationSettings, "marketingEnabled">;
   label: string;
-}[] = [{ key: "marketing", label: "이벤트 및 소식" }];
+}[] = [{ key: "marketingEnabled", label: "이벤트 및 소식" }];
 
-const CHILD_KEYS: (keyof Omit<NotificationSettings, "all">)[] = [
-  "likes",
-  "comments",
-  "replies",
-  "newFollowers",
-  "marketing",
+const CHILD_KEYS: (keyof Omit<NotificationSettings, "allEnabled">)[] = [
+  "postLikeEnabled",
+  "commentEnabled",
+  "replyEnabled",
+  "followEnabled",
+  "marketingEnabled",
 ];
 
 const NotificationSettingsScreen = () => {
@@ -55,24 +58,24 @@ const NotificationSettingsScreen = () => {
 
   const handleAllChange = (value: boolean) => {
     setSettings({
-      all: value,
-      likes: value,
-      comments: value,
-      replies: value,
-      newFollowers: value,
-      marketing: value,
+      allEnabled: value,
+      postLikeEnabled: value,
+      commentEnabled: value,
+      replyEnabled: value,
+      followEnabled: value,
+      marketingEnabled: value,
     });
   };
 
   const handleItemChange = (
-    key: keyof Omit<NotificationSettings, "all">,
+    key: keyof Omit<NotificationSettings, "allEnabled">,
     value: boolean,
   ) => {
     const nextSettings = {
       ...settings,
       [key]: value,
     };
-    nextSettings.all = CHILD_KEYS.every((childKey) =>
+    nextSettings.allEnabled = CHILD_KEYS.every((childKey) =>
       childKey === key ? value : nextSettings[childKey],
     );
     setSettings(nextSettings);
@@ -92,7 +95,7 @@ const NotificationSettingsScreen = () => {
             모든 알림을 켜거나 끌 수 있어요
           </Text>
         </View>
-        <Toggle value={settings.all} onValueChange={handleAllChange} />
+        <Toggle value={settings.allEnabled} onValueChange={handleAllChange} />
       </View>
 
       <SettingsSection title="활동 알림">
