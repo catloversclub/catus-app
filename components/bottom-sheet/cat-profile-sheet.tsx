@@ -5,8 +5,12 @@ import BaseBottomSheet from "@/components/bottom-sheet/base-bottom-sheet";
 import CatProfileImage from "@/components/cat/profile-image";
 import Button from "@/components/common/button";
 import { useColors } from "@/hooks/use-colors";
-import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
-import { RefObject, useEffect, useState } from "react";
+import {
+  BottomSheetFooter,
+  BottomSheetFooterProps,
+  BottomSheetModal,
+} from "@gorhom/bottom-sheet";
+import { RefObject, useCallback, useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -38,6 +42,23 @@ const CatProfileSheet = ({
     });
   }, [cats, onSelectionChange]);
 
+  const renderFooter = useCallback(
+    (props: BottomSheetFooterProps) => (
+      <BottomSheetFooter {...props} bottomInset={bottom}>
+        <View className="px-3 pb-4">
+          <Button
+            button={{
+              label: "확인",
+              onPress: () => bottomSheetRef.current?.dismiss(),
+              size: "lg",
+            }}
+          />
+        </View>
+      </BottomSheetFooter>
+    ),
+    [bottom, bottomSheetRef],
+  );
+
   const toggleCat = (catId: string) => {
     setSelectedCatIds((prev) => {
       const next = prev.includes(catId)
@@ -53,11 +74,9 @@ const CatProfileSheet = ({
     <BaseBottomSheet
       BaseBottomSheetModalRef={bottomSheetRef}
       snapPoints={["50%", "90%"]}
+      footerComponent={renderFooter}
     >
-      <BottomSheetView
-        style={{ paddingBottom: Math.max(bottom, 12) + 24 }}
-        className="flex-1 px-3 gap-[60px]"
-      >
+      <View className="px-3">
         <View>
           {cats.length === 0 ? (
             <View className="items-center justify-center py-8">
@@ -98,15 +117,7 @@ const CatProfileSheet = ({
             ))
           )}
         </View>
-
-        <Button
-          button={{
-            label: "확인",
-            onPress: () => bottomSheetRef.current?.dismiss(),
-            size: "lg",
-          }}
-        />
-      </BottomSheetView>
+      </View>
     </BaseBottomSheet>
   );
 };
