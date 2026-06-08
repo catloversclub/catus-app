@@ -2,7 +2,7 @@ import BottomActionBar from "@/components/layout/bottom-action-bar";
 import ContainedImageFrame, {
   ContainedImageLayout,
 } from "@/components/post-editor/contained-image-frame";
-import EditorHeader from "@/components/post-editor/editor-header";
+import { ScreenHeader } from "@/components/common/screen-header";
 import { cn } from "@/lib/utils";
 import * as ImageManipulator from "expo-image-manipulator";
 import React, { useEffect, useState } from "react";
@@ -198,7 +198,7 @@ const CropTool = ({ uri, onSave, onCancel }: CropToolProps) => {
 
   return (
     <View className="flex-1 bg-gray-990">
-      <EditorHeader title="자르기" onBack={onCancel} />
+      <ScreenHeader title="자르기" onBack={onCancel} variant="editor" />
 
       <View className="flex-1 justify-center px-3 py-3">
         <ContainedImageFrame uri={uri} onImageLayout={setImageLayout}>

@@ -1,6 +1,6 @@
 import BottomActionBar from "@/components/layout/bottom-action-bar";
 import { useContainedImageLayout } from "@/components/post-editor/contained-image-frame";
-import EditorHeader from "@/components/post-editor/editor-header";
+import { ScreenHeader } from "@/components/common/screen-header";
 import { cn } from "@/lib/utils";
 import { Image } from "expo-image";
 import React, { useRef, useState } from "react";
@@ -115,7 +115,7 @@ const TextTool = ({ uri, onSave, onCancel }: TextToolProps) => {
 
   return (
     <View className="flex-1 bg-gray-990">
-      <EditorHeader title="텍스트 입력" onBack={onCancel} />
+      <ScreenHeader title="텍스트 입력" onBack={onCancel} variant="editor" />
 
       <View className="flex-1 justify-center px-3 py-3">
         <View

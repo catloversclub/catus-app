@@ -1,6 +1,6 @@
 import BottomActionBar from "@/components/layout/bottom-action-bar";
 import CropTool from "@/components/post-editor/crop-tool";
-import EditorHeader from "@/components/post-editor/editor-header";
+import { ScreenHeader } from "@/components/common/screen-header";
 import ImagePager from "@/components/post-editor/image-pager";
 import MosaicTool from "@/components/post-editor/mosaic-tool";
 import TextTool from "@/components/post-editor/text-tool";
@@ -63,7 +63,7 @@ const EditorScreen = () => {
       {currentMode === "text" && <TextTool {...editToolProps} />}
       {currentMode === "none" && (
         <View className="flex-1 bg-[#1A1A1A]">
-          <EditorHeader title="이미지 편집" onBack={() => router.back()} />
+          <ScreenHeader title="이미지 편집" onBack={() => router.back()} variant="editor" />
 
           <View className="self-end pr-4">
             <View className="bg-semantic-icon-accent rounded-full size-9 items-center justify-center">

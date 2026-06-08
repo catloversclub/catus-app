@@ -1,6 +1,6 @@
 import BottomActionBar from "@/components/layout/bottom-action-bar";
 import { useContainedImageLayout } from "@/components/post-editor/contained-image-frame";
-import EditorHeader from "@/components/post-editor/editor-header";
+import { ScreenHeader } from "@/components/common/screen-header";
 import { cn } from "@/lib/utils";
 import { BlurView } from "expo-blur";
 import { Image } from "expo-image";
@@ -105,7 +105,7 @@ const MosaicTool = ({ uri, onSave, onCancel }: MosaicToolProps) => {
 
   return (
     <View className="flex-1 bg-gray-990">
-      <EditorHeader title="모자이크" onBack={onCancel} />
+      <ScreenHeader title="모자이크" onBack={onCancel} variant="editor" />
 
       <View className="flex-1 justify-center px-3 py-3">
         <View
