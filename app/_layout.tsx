@@ -11,7 +11,7 @@ import { PortalHost } from "@rn-primitives/portal";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useFonts } from "expo-font";
-import { router, Stack } from "expo-router";
+import { router, Stack, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useMemo, useRef } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -56,6 +56,7 @@ const AppContent = () => {
   const authStatus = useAuthStore((s) => s.status);
   const isThemeLoaded = useThemeStore((s) => s.isLoaded);
   const loadThemeMode = useThemeStore((s) => s.loadMode);
+  const [rootSegment] = useSegments();
 
   useEffect(() => {
     loadThemeMode();
@@ -70,12 +71,15 @@ const AppContent = () => {
     if (!isReady || hasNavigated.current) return;
     hasNavigated.current = true;
     SplashScreen.hideAsync();
-    if (authStatus === "authenticated") {
+
+    if (authStatus === "authenticated" && rootSegment !== "(tabs)") {
       router.replace(ROUTES.TABS.INDEX);
-    } else {
+    }
+
+    if (authStatus === "unauthenticated" && rootSegment !== "(auth)") {
       router.replace(ROUTES.AUTH.INDEX);
     }
-  }, [isReady, authStatus]);
+  }, [authStatus, isReady, rootSegment]);
 
   if (!isReady) return null;
 

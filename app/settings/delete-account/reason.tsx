@@ -1,9 +1,29 @@
+import { useDeleteUserMutation } from "@/api/domains/user/queries";
 import BottomActionBar from "@/components/layout/bottom-action-bar";
+import { ROUTES } from "@/constants/route";
+import { tokenStorage } from "@/lib/token";
+import { useAuthStore } from "@/store/auth/auth-store";
+import { useOidcStore } from "@/store/auth/oidc-store";
 import { router } from "expo-router";
 import { Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 const DeleteAccount = () => {
+  const { mutate: deleteUser, isPending } = useDeleteUserMutation();
+  const setAuthStatus = useAuthStore((s) => s.setStatus);
+  const clearOidc = useOidcStore((s) => s.clearOidc);
+
+  const handleDeleteAccount = () => {
+    deleteUser(undefined, {
+      onSuccess: async () => {
+        await tokenStorage.clearTokens();
+        clearOidc();
+        setAuthStatus("unauthenticated");
+        router.replace(ROUTES.AUTH.INDEX);
+      },
+    });
+  };
+
   return (
     <View className="flex-1 bg-semantic-bg-primary">
       <ScrollView contentContainerClassName="py-6 px-5 gap-10 flex-col">
@@ -15,12 +35,14 @@ const DeleteAccount = () => {
         buttons={[
           {
             label: "탈퇴하기",
-            onPress: () => {},
+            onPress: handleDeleteAccount,
+            isPending,
           },
           {
             label: "계정 유지하기",
             onPress: () => router.push("/settings"),
             variant: "secondary",
+            disabled: isPending,
           },
         ]}
       />
