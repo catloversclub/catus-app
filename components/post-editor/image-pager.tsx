@@ -1,77 +1,69 @@
+import ContainedImageFrame from "@/components/post-editor/contained-image-frame";
+import { CarouselDots } from "@/components/post/carousel-indicator";
 import { useRef, useState } from "react";
-import { Pressable, View, Text, TouchableOpacity } from "react-native";
+import { Pressable, View } from "react-native";
 import PagerView from "react-native-pager-view";
-import { Image } from "expo-image";
 
 interface ImagePagerProps {
   images: string[];
   height?: number;
   onImagePress?: (uri: string, index: number) => void;
-  showEditHint?: boolean;
+  currentPage?: number;
+  onPageChange?: (page: number) => void;
+  showIndicator?: boolean;
+  imageClassName?: string;
 }
 
 const ImagePager = ({
   images,
-  height = 252,
+  height,
   onImagePress,
-  showEditHint = false,
+  currentPage,
+  onPageChange,
+  showIndicator = true,
+  imageClassName,
 }: ImagePagerProps) => {
   const pagerRef = useRef<PagerView>(null);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [internalPage, setInternalPage] = useState(0);
+  const activePage = currentPage ?? internalPage;
 
   if (images.length === 0) return null;
 
   return (
-    <View className="gap-3">
+    <View className={height ? "gap-3" : "flex-1 gap-3"}>
       <PagerView
         ref={pagerRef}
-        style={{ height }}
+        style={height ? { height } : { flex: 1 }}
         initialPage={0}
-        onPageSelected={(e) => setCurrentPage(e.nativeEvent.position)}
+        onPageSelected={(e) => {
+          const nextPage = e.nativeEvent.position;
+          setInternalPage(nextPage);
+          onPageChange?.(nextPage);
+        }}
       >
         {images.map((uri, index) => (
           <Pressable
             key={index}
             onPress={() => onImagePress?.(uri, index)}
             disabled={!onImagePress}
+            className="flex-1"
           >
-            <View className="items-center justify-center relative">
-              <Image
-                source={{ uri }}
-                contentFit="contain"
-                style={{
-                  width: "100%",
-                  height,
-                  borderRadius: 8,
-                }}
-              />
-              {showEditHint && (
-                <View className="absolute bottom-0 right-8 bg-black/50 p-2 rounded">
-                  <Text className="text-white text-xs">터치하여 편집</Text>
-                </View>
-              )}
+            <View className="flex-1 items-center justify-center relative">
+              <ContainedImageFrame uri={uri} imageClassName={imageClassName} />
             </View>
           </Pressable>
         ))}
       </PagerView>
 
-      {images.length > 1 && (
-        <View className="flex-row justify-center items-center gap-1.5">
-          {images.map((_, pageIndex) => (
-            <TouchableOpacity
-              key={pageIndex}
-              className={`w-2.5 h-2.5 rounded-full ${
-                currentPage === pageIndex
-                  ? "bg-light-iconAccent dark:bg-dark-iconAccent w-3 h-3"
-                  : "bg-light-iconMinor dark:bg-dark-iconMinor"
-              }`}
-              onPress={() => pagerRef.current?.setPage(pageIndex)}
-            />
-          ))}
-        </View>
+      {showIndicator && images.length > 1 && (
+        <CarouselDots
+          count={images.length}
+          current={activePage}
+          onDotPress={(pageIndex) => pagerRef.current?.setPage(pageIndex)}
+        />
       )}
     </View>
   );
-}
+};
 
 export default ImagePager;

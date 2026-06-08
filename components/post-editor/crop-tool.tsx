@@ -1,11 +1,11 @@
 import BottomActionBar from "@/components/layout/bottom-action-bar";
+import ContainedImageFrame, {
+  ContainedImageLayout,
+} from "@/components/post-editor/contained-image-frame";
 import EditorHeader from "@/components/post-editor/editor-header";
-import { Image } from "expo-image";
 import * as ImageManipulator from "expo-image-manipulator";
 import React, { useEffect, useState } from "react";
 import {
-  Dimensions,
-  Image as RNImage,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -16,9 +16,6 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from "react-native-reanimated";
-
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const CANVAS_SIZE = SCREEN_WIDTH - 24; // 12px padding each side
 
 const RATIOS = ["자유", "1:1", "3:2", "4:3", "16:9"] as const;
 type Ratio = (typeof RATIOS)[number];
@@ -44,79 +41,122 @@ interface CropToolProps {
 
 const CropTool = ({ uri, onSave, onCancel }: CropToolProps) => {
   const [aspectRatio, setAspectRatio] = useState<Ratio>("자유");
+  const [imageLayout, setImageLayout] = useState<ContainedImageLayout | null>(
+    null,
+  );
 
   const boxX = useSharedValue(0);
   const boxY = useSharedValue(0);
-  const boxWidth = useSharedValue(CANVAS_SIZE);
-  const boxHeight = useSharedValue(CANVAS_SIZE);
+  const boxWidth = useSharedValue(0);
+  const boxHeight = useSharedValue(0);
+  const canvasWidth = useSharedValue(0);
+  const canvasHeight = useSharedValue(0);
 
   useEffect(() => {
-    const ratio = RATIO_MAP[aspectRatio];
-    if (!ratio) {
+    if (!imageLayout) {
       return;
     }
-    const w = CANVAS_SIZE;
+
+    canvasWidth.value = imageLayout.width;
+    canvasHeight.value = imageLayout.height;
+
+    const ratio = RATIO_MAP[aspectRatio];
+    if (!ratio) {
+      boxWidth.value = imageLayout.width;
+      boxHeight.value = imageLayout.height;
+      boxX.value = 0;
+      boxY.value = 0;
+      return;
+    }
+
+    const widthByHeight = imageLayout.height * ratio;
+    const w = Math.min(imageLayout.width, widthByHeight);
     const h = w / ratio;
     boxWidth.value = w;
-    boxHeight.value = Math.min(h, CANVAS_SIZE);
-    boxX.value = 0;
-    boxY.value = (CANVAS_SIZE - boxHeight.value) / 2;
-  }, [aspectRatio, boxHeight, boxWidth, boxX, boxY]);
+    boxHeight.value = h;
+    boxX.value = (imageLayout.width - w) / 2;
+    boxY.value = (imageLayout.height - h) / 2;
+  }, [
+    aspectRatio,
+    boxHeight,
+    boxWidth,
+    boxX,
+    boxY,
+    canvasHeight,
+    canvasWidth,
+    imageLayout,
+  ]);
 
   const moveGesture = Gesture.Pan().onChange((e) => {
+    if (canvasWidth.value <= 0 || canvasHeight.value <= 0) {
+      return;
+    }
+
     const newX = boxX.value + e.changeX;
     const newY = boxY.value + e.changeY;
-    if (newX >= 0 && newX + boxWidth.value <= CANVAS_SIZE) boxX.value = newX;
-    if (newY >= 0 && newY + boxHeight.value <= CANVAS_SIZE) boxY.value = newY;
+    if (newX >= 0 && newX + boxWidth.value <= canvasWidth.value) {
+      boxX.value = newX;
+    }
+    if (newY >= 0 && newY + boxHeight.value <= canvasHeight.value) {
+      boxY.value = newY;
+    }
   });
 
   const resizeGesture = Gesture.Pan().onChange((e) => {
+    if (canvasWidth.value <= 0 || canvasHeight.value <= 0) {
+      return;
+    }
+
     const ratio = RATIO_MAP[aspectRatio];
     if (ratio) {
       const avg = (e.changeX + e.changeY) / 2;
       const newW = Math.max(
         50,
-        Math.min(CANVAS_SIZE - boxX.value, boxWidth.value + avg),
+        Math.min(canvasWidth.value - boxX.value, boxWidth.value + avg),
       );
-      boxWidth.value = newW;
-      boxHeight.value = newW / ratio;
+      const newH = newW / ratio;
+      if (boxY.value + newH <= canvasHeight.value) {
+        boxWidth.value = newW;
+        boxHeight.value = newH;
+      }
     } else {
       const newW = Math.max(50, boxWidth.value + e.changeX);
       const newH = Math.max(50, boxHeight.value + e.changeY);
-      if (boxX.value + newW <= CANVAS_SIZE) boxWidth.value = newW;
-      if (boxY.value + newH <= CANVAS_SIZE) boxHeight.value = newH;
+      if (boxX.value + newW <= canvasWidth.value) boxWidth.value = newW;
+      if (boxY.value + newH <= canvasHeight.value) boxHeight.value = newH;
     }
   });
 
   const handleRotate = () => {
+    if (!imageLayout) {
+      return;
+    }
+
     const prevW = boxWidth.value;
     const prevH = boxHeight.value;
-    boxWidth.value = Math.min(prevH, CANVAS_SIZE);
-    boxHeight.value = Math.min(prevW, CANVAS_SIZE);
-    boxX.value = (CANVAS_SIZE - boxWidth.value) / 2;
-    boxY.value = (CANVAS_SIZE - boxHeight.value) / 2;
+    boxWidth.value = Math.min(prevH, imageLayout.width);
+    boxHeight.value = Math.min(prevW, imageLayout.height);
+    boxX.value = (imageLayout.width - boxWidth.value) / 2;
+    boxY.value = (imageLayout.height - boxHeight.value) / 2;
   };
 
   const handleCrop = async () => {
+    if (!imageLayout) {
+      return;
+    }
+
     try {
-      const { width } = await new Promise<{ width: number; height: number }>(
-        (resolve, reject) =>
-          RNImage.getSize(
-            uri,
-            (w, h) => resolve({ width: w, height: h }),
-            reject,
-          ),
-      );
-      const scale = width / CANVAS_SIZE;
+      const scaleX = imageLayout.naturalWidth / imageLayout.width;
+      const scaleY = imageLayout.naturalHeight / imageLayout.height;
       const result = await ImageManipulator.manipulateAsync(
         uri,
         [
           {
             crop: {
-              originX: Math.round(boxX.value * scale),
-              originY: Math.round(boxY.value * scale),
-              width: Math.round(boxWidth.value * scale),
-              height: Math.round(boxHeight.value * scale),
+              originX: Math.round(boxX.value * scaleX),
+              originY: Math.round(boxY.value * scaleY),
+              width: Math.round(boxWidth.value * scaleX),
+              height: Math.round(boxHeight.value * scaleY),
             },
           },
         ],
@@ -139,91 +179,94 @@ const CropTool = ({ uri, onSave, onCancel }: CropToolProps) => {
     <View className="flex-1 bg-gray-990">
       <EditorHeader title="자르기" onBack={onCancel} />
 
-      {/* Image + crop overlay */}
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <View
-          style={{
-            width: CANVAS_SIZE,
-            height: CANVAS_SIZE,
-            position: "relative",
-          }}
-        >
-          <Image
-            source={{ uri }}
-            style={StyleSheet.absoluteFill}
-            contentFit="contain"
-          />
-          <View
-            style={[
-              StyleSheet.absoluteFill,
-              { backgroundColor: "rgba(0,0,0,0.55)" },
-            ]}
-          />
-          <GestureDetector gesture={moveGesture}>
-            <Animated.View style={[styles.cropBox, boxStyle]}>
-              {/* Grid lines */}
-              <View style={StyleSheet.absoluteFill}>
-                <View style={{ flex: 1, flexDirection: "row" }}>
-                  <View
-                    style={{
-                      flex: 1,
-                      borderRightWidth: StyleSheet.hairlineWidth,
-                      borderRightColor: "rgba(255,255,255,0.4)",
-                    }}
-                  />
-                  <View
-                    style={{
-                      flex: 1,
-                      borderRightWidth: StyleSheet.hairlineWidth,
-                      borderRightColor: "rgba(255,255,255,0.4)",
-                    }}
-                  />
-                  <View style={{ flex: 1 }} />
-                </View>
-              </View>
-              <View style={StyleSheet.absoluteFill}>
-                <View
-                  style={{
-                    flex: 1,
-                    borderBottomWidth: StyleSheet.hairlineWidth,
-                    borderBottomColor: "rgba(255,255,255,0.4)",
-                  }}
-                />
-                <View
-                  style={{
-                    flex: 1,
-                    borderBottomWidth: StyleSheet.hairlineWidth,
-                    borderBottomColor: "rgba(255,255,255,0.4)",
-                  }}
-                />
-                <View style={{ flex: 1 }} />
-              </View>
-              {/* Corner handles */}
-              <View style={[styles.corner, { top: -1, left: -1 }]} />
+      <View className="flex-1 justify-center px-3 py-3">
+        <ContainedImageFrame uri={uri} onImageLayout={setImageLayout}>
+          {(layout) => {
+            return (
               <View
-                style={[
-                  styles.corner,
-                  { top: -1, right: -1, transform: [{ scaleX: -1 }] },
-                ]}
-              />
-              <View
-                style={[
-                  styles.corner,
-                  { bottom: -1, left: -1, transform: [{ scaleY: -1 }] },
-                ]}
-              />
-              {/* Resize handle */}
-              <GestureDetector gesture={resizeGesture}>
+                style={{
+                  position: "absolute",
+                  left: layout.x,
+                  top: layout.y,
+                  width: layout.width,
+                  height: layout.height,
+                }}
+              >
                 <View
                   style={[
-                    styles.corner,
-                    { bottom: -1, right: -1, transform: [{ scale: -1 }] },
+                    StyleSheet.absoluteFill,
+                    { backgroundColor: "rgba(0,0,0,0.55)" },
                   ]}
                 />
-              </GestureDetector>
-            </Animated.View>
-          </GestureDetector>
-        </View>
+                <GestureDetector gesture={moveGesture}>
+                  <Animated.View style={[styles.cropBox, boxStyle]}>
+                    <View style={StyleSheet.absoluteFill}>
+                      <View style={{ flex: 1, flexDirection: "row" }}>
+                        <View
+                          style={{
+                            flex: 1,
+                            borderRightWidth: StyleSheet.hairlineWidth,
+                            borderRightColor: "rgba(255,255,255,0.4)",
+                          }}
+                        />
+                        <View
+                          style={{
+                            flex: 1,
+                            borderRightWidth: StyleSheet.hairlineWidth,
+                            borderRightColor: "rgba(255,255,255,0.4)",
+                          }}
+                        />
+                        <View style={{ flex: 1 }} />
+                      </View>
+                    </View>
+                    <View style={StyleSheet.absoluteFill}>
+                      <View
+                        style={{
+                          flex: 1,
+                          borderBottomWidth: StyleSheet.hairlineWidth,
+                          borderBottomColor: "rgba(255,255,255,0.4)",
+                        }}
+                      />
+                      <View
+                        style={{
+                          flex: 1,
+                          borderBottomWidth: StyleSheet.hairlineWidth,
+                          borderBottomColor: "rgba(255,255,255,0.4)",
+                        }}
+                      />
+                      <View style={{ flex: 1 }} />
+                    </View>
+                    <View style={[styles.corner, { top: -1, left: -1 }]} />
+                    <View
+                      style={[
+                        styles.corner,
+                        { top: -1, right: -1, transform: [{ scaleX: -1 }] },
+                      ]}
+                    />
+                    <View
+                      style={[
+                        styles.corner,
+                        { bottom: -1, left: -1, transform: [{ scaleY: -1 }] },
+                      ]}
+                    />
+                    <GestureDetector gesture={resizeGesture}>
+                      <View
+                        style={[
+                          styles.corner,
+                          {
+                            bottom: -1,
+                            right: -1,
+                            transform: [{ scale: -1 }],
+                          },
+                        ]}
+                      />
+                    </GestureDetector>
+                  </Animated.View>
+                </GestureDetector>
+              </View>
+            );
+          }}
+        </ContainedImageFrame>
       </View>
 
       {/* Bottom panel */}

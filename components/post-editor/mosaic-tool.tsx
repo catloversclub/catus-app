@@ -1,4 +1,5 @@
 import BottomActionBar from "@/components/layout/bottom-action-bar";
+import { useContainedImageLayout } from "@/components/post-editor/contained-image-frame";
 import EditorHeader from "@/components/post-editor/editor-header";
 import { BlurView } from "expo-blur";
 import { Image } from "expo-image";
@@ -67,6 +68,8 @@ const MosaicTool = ({ uri, onSave, onCancel }: MosaicToolProps) => {
   const [selectedType, setSelectedType] = useState<"rect" | "circle">("rect");
   const viewShotRef = useRef<ViewShot>(null);
   const [history, setHistory] = useState<MosaicData[][]>([[]]);
+  const { layout: imageLayout, onLayout: handleCanvasLayout } =
+    useContainedImageLayout(uri);
 
   const handleComplete = async () => {
     if (viewShotRef.current?.capture) {
@@ -80,11 +83,13 @@ const MosaicTool = ({ uri, onSave, onCancel }: MosaicToolProps) => {
   };
 
   const addMosaic = (type: "rect" | "circle") => {
+    const maxX = Math.max((imageLayout?.width ?? 240) - 120, 0);
+    const maxY = Math.max((imageLayout?.height ?? 240) - 120, 0);
     const newItem: MosaicData = {
       id: Date.now(),
       type,
-      x: 60 + Math.random() * 100,
-      y: 60 + Math.random() * 100,
+      x: Math.min(60 + Math.random() * 100, maxX),
+      y: Math.min(60 + Math.random() * 100, maxY),
       size: 80,
     };
     const next = [...mosaics, newItem];
@@ -107,20 +112,36 @@ const MosaicTool = ({ uri, onSave, onCancel }: MosaicToolProps) => {
     <View className="flex-1 bg-gray-990">
       <EditorHeader title="모자이크" onBack={onCancel} />
 
-      {/* Canvas */}
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ViewShot
-          ref={viewShotRef}
-          options={{ format: "jpg", quality: 0.9 }}
-          style={{ width: "100%", aspectRatio: 1 }}
+      <View className="flex-1 justify-center px-3 py-3">
+        <View
+          className="flex-1 w-full items-center justify-center overflow-hidden bg-black rounded-lg"
+          onLayout={handleCanvasLayout}
         >
-          <View style={{ flex: 1, backgroundColor: "#000" }}>
-            <Image source={{ uri }} style={StyleSheet.absoluteFill} contentFit="contain" />
-            {mosaics.map((item) => (
-              <MosaicItem key={item.id} item={item} />
-            ))}
-          </View>
-        </ViewShot>
+          {imageLayout && (
+            <ViewShot
+              ref={viewShotRef}
+              options={{ format: "jpg", quality: 0.9 }}
+              style={{
+                position: "absolute",
+                left: imageLayout.x,
+                top: imageLayout.y,
+                width: imageLayout.width,
+                height: imageLayout.height,
+              }}
+            >
+              <View style={{ flex: 1, backgroundColor: "#000" }}>
+                <Image
+                  source={{ uri }}
+                  style={StyleSheet.absoluteFill}
+                  contentFit="fill"
+                />
+                {mosaics.map((item) => (
+                  <MosaicItem key={item.id} item={item} />
+                ))}
+              </View>
+            </ViewShot>
+          )}
+        </View>
       </View>
 
       {/* Bottom panel */}

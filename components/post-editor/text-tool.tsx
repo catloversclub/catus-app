@@ -1,4 +1,5 @@
 import BottomActionBar from "@/components/layout/bottom-action-bar";
+import { useContainedImageLayout } from "@/components/post-editor/contained-image-frame";
 import EditorHeader from "@/components/post-editor/editor-header";
 import { Image } from "expo-image";
 import React, { useRef, useState } from "react";
@@ -88,6 +89,8 @@ const TextTool = ({ uri, onSave, onCancel }: TextToolProps) => {
   const [showInput, setShowInput] = useState(false);
   const [inputText, setInputText] = useState("");
   const viewShotRef = useRef<ViewShot>(null);
+  const { layout: imageLayout, onLayout: handleCanvasLayout } =
+    useContainedImageLayout(uri);
 
   const handleAddText = () => {
     if (!inputText.trim()) return;
@@ -118,20 +121,36 @@ const TextTool = ({ uri, onSave, onCancel }: TextToolProps) => {
     <View className="flex-1 bg-gray-990">
       <EditorHeader title="텍스트 입력" onBack={onCancel} />
 
-      {/* Canvas */}
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ViewShot
-          ref={viewShotRef}
-          options={{ format: "jpg", quality: 0.9 }}
-          style={{ width: "100%", aspectRatio: 1 }}
+      <View className="flex-1 justify-center px-3 py-3">
+        <View
+          className="flex-1 w-full items-center justify-center overflow-hidden bg-black rounded-lg"
+          onLayout={handleCanvasLayout}
         >
-          <View style={{ flex: 1, backgroundColor: "#000" }}>
-            <Image source={{ uri }} style={StyleSheet.absoluteFill} contentFit="contain" />
-            {texts.map((t) => (
-              <TextItem key={t.id} entry={t} />
-            ))}
-          </View>
-        </ViewShot>
+          {imageLayout && (
+            <ViewShot
+              ref={viewShotRef}
+              options={{ format: "jpg", quality: 0.9 }}
+              style={{
+                position: "absolute",
+                left: imageLayout.x,
+                top: imageLayout.y,
+                width: imageLayout.width,
+                height: imageLayout.height,
+              }}
+            >
+              <View style={{ flex: 1, backgroundColor: "#000" }}>
+                <Image
+                  source={{ uri }}
+                  style={StyleSheet.absoluteFill}
+                  contentFit="fill"
+                />
+                {texts.map((t) => (
+                  <TextItem key={t.id} entry={t} />
+                ))}
+              </View>
+            </ViewShot>
+          )}
+        </View>
       </View>
 
       {/* Bottom panel */}
