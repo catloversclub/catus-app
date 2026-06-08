@@ -1,10 +1,10 @@
 import BottomActionBar from "@/components/layout/bottom-action-bar";
 import ImagePickerGrid from "@/components/media/image-picker-grid";
 import MediaPermissionModals from "@/components/modal/media-permission-modals";
+import { useCameraAction } from "@/hooks/use-camera-action";
+import { useGalleryAssets } from "@/hooks/use-gallery-assets";
 import { useMediaPermissions } from "@/hooks/use-media-permissions";
-import * as ImagePicker from "expo-image-picker";
-import * as MediaLibrary from "expo-media-library";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { usePhotoSelection } from "@/hooks/use-photo-selection";
 import { useWindowDimensions, View } from "react-native";
 
 interface ImagePickerScreenProps {
@@ -30,81 +30,20 @@ const ImagePickerScreen = ({
     isGalleryPermissionDenied,
     isCameraPermissionDenied,
   } = useMediaPermissions();
-  const [assets, setAssets] = useState<MediaLibrary.Asset[]>([]);
-  const [endCursor, setEndCursor] = useState<string | undefined>(undefined);
-  const [hasMore, setHasMore] = useState(true);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [showCameraPermissionModal, setShowCameraPermissionModal] =
-    useState(false);
-  const loadingRef = useRef(false);
-
-  const loadPhotos = useCallback(async (cursor?: string) => {
-    if (loadingRef.current) return;
-    loadingRef.current = true;
-    try {
-      const result = await MediaLibrary.getAssetsAsync({
-        first: 60,
-        mediaType: MediaLibrary.MediaType.photo,
-        after: cursor,
-      });
-      setAssets((prev) =>
-        cursor ? [...prev, ...result.assets] : result.assets,
-      );
-      setEndCursor(result.endCursor);
-      setHasMore(result.hasNextPage);
-    } finally {
-      loadingRef.current = false;
-    }
-  }, []);
-
-  useEffect(() => {
-    if (galleryPermission?.status === "granted") {
-      loadPhotos();
-    }
-  }, [galleryPermission?.status, loadPhotos]);
-
-  const toggleSelection = (assetId: string) => {
-    setSelectedIds((prev) => {
-      if (prev.includes(assetId)) return prev.filter((id) => id !== assetId);
-      if (selectionLimit <= 1) return [assetId];
-      if (prev.length >= selectionLimit) return prev;
-      return [...prev, assetId];
-    });
-  };
-
-  const handleCameraPress = async () => {
-    if (cameraPermission?.status !== "granted") {
-      setShowCameraPermissionModal(true);
-      return;
-    }
-
-    const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ["images"],
-      quality: 1,
-    });
-    if (result.canceled) return;
-    const uri = result.assets[0]?.uri;
-    if (uri) onConfirm([uri]);
-  };
-
-  const handleConfirm = async () => {
-    if (selectedIds.length === 0) return;
-    const selectedAssets = assets.filter((a) => selectedIds.includes(a.id));
-    const infos = await Promise.all(
-      selectedAssets.map((asset) => MediaLibrary.getAssetInfoAsync(asset)),
-    );
-    const uris = infos
-      .map((info) => info.localUri ?? info.uri)
-      .filter(Boolean) as string[];
-    onConfirm(uris);
-  };
-
-  const handleRequestCameraPermission = async () => {
-    const result = await requestCameraPermission();
-    if (result.status === "granted") {
-      setShowCameraPermissionModal(false);
-    }
-  };
+  const { assets, hasMore, endCursor, loadPhotos } = useGalleryAssets(
+    isGalleryPermissionGranted,
+  );
+  const { selectedIds, toggleSelection, handleConfirm } = usePhotoSelection({
+    selectionLimit,
+    assets,
+    onConfirm,
+  });
+  const {
+    showCameraPermissionModal,
+    setShowCameraPermissionModal,
+    handleCameraPress,
+    handleRequestCameraPermission,
+  } = useCameraAction({ cameraPermission, requestCameraPermission, onConfirm });
 
   return (
     <>
