@@ -17,22 +17,42 @@ const YEARS = Array.from(
 const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1);
 const DAYS = Array.from({ length: 31 }, (_, i) => i + 1);
 
+const parseDate = (date: string | null) => {
+  const [year, month, day] = date?.split("T")[0].split("-").map(Number) ?? [];
+  if (year && month && day) {
+    return {
+      year,
+      month,
+      day,
+    };
+  }
+
+  const parsed = new Date();
+  return {
+    year: parsed.getFullYear(),
+    month: parsed.getMonth() + 1,
+    day: parsed.getDate(),
+  };
+};
+
+const formatDateOnly = (year: number, month: number, day: number) => {
+  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+};
+
 const SelectDateSheet = ({
   date,
   onChangeDate,
   SelectDateSheetModalRef,
 }: SelectDateSheetProps) => {
-  const now = date ? new Date(date) : new Date();
-  const [year, setYear] = useState(now.getFullYear());
-  const [month, setMonth] = useState(now.getMonth() + 1);
-  const [day, setDay] = useState(now.getDate());
+  const initialDate = parseDate(date);
+  const [year, setYear] = useState(initialDate.year);
+  const [month, setMonth] = useState(initialDate.month);
+  const [day, setDay] = useState(initialDate.day);
 
   return (
     <BaseBottomSheet
       BaseBottomSheetModalRef={SelectDateSheetModalRef}
-      onDismiss={() =>
-        onChangeDate(new Date(year, month - 1, day).toISOString().split("T")[0])
-      }
+      onDismiss={() => onChangeDate(formatDateOnly(year, month, day))}
     >
       <View className="flex-row justify-center items-center px-5 pb-8">
         <WheelPicker

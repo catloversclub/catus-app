@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import * as Haptics from "expo-haptics";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import {
   FlatList,
   NativeScrollEvent,
@@ -28,19 +28,23 @@ const WheelPicker = ({
   const selectedRef = useRef(selected); // re-render 없이 현재값 추적
 
   useEffect(() => {
-    const index = items.indexOf(selected);
+    const index = items.indexOf(selectedRef.current);
     flatListRef.current?.scrollToIndex({ index, animated: false });
-  }, [items, selected]);
+  }, [items]);
 
-  const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const index = Math.round(e.nativeEvent.contentOffset.y / ITEM_HEIGHT);
-    const value = items[index];
-    if (value !== undefined && value !== selectedRef.current) {
+  const handleScrollEnd = useCallback(
+    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const index = Math.round(e.nativeEvent.contentOffset.y / ITEM_HEIGHT);
+      const value = items[index];
+
+      if (value === undefined || value === selectedRef.current) return;
+
       selectedRef.current = value;
       onChange(value);
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
-  };
+    },
+    [items, onChange],
+  );
 
   return (
     <FlatList
@@ -50,8 +54,8 @@ const WheelPicker = ({
       showsVerticalScrollIndicator={false}
       snapToInterval={ITEM_HEIGHT}
       decelerationRate="fast"
-      onScroll={onScroll}
-      scrollEventThrottle={16} // 60fps
+      onMomentumScrollEnd={handleScrollEnd}
+      onScrollEndDrag={handleScrollEnd}
       style={{ height: ITEM_HEIGHT * 5, flex: 1 }}
       contentContainerStyle={{ paddingVertical: ITEM_HEIGHT * 2 }}
       getItemLayout={(_, index) => ({

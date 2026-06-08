@@ -5,6 +5,11 @@ import { Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 const Step8 = () => {
+  const handleStartPress = () => {
+    router.dismissAll();
+    router.replace(ROUTES.TABS.INDEX);
+  };
+
   return (
     <View className="flex-1 bg-semantic-bg-primary">
       <ScrollView
@@ -19,7 +24,7 @@ const Step8 = () => {
         buttons={[
           {
             label: "시작하기",
-            onPress: () => router.push(ROUTES.TABS.INDEX),
+            onPress: handleStartPress,
           },
         ]}
       />
