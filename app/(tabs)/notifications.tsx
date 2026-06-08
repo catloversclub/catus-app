@@ -7,8 +7,8 @@ import {
 import { useDefaultStackScreenOptions } from "@/hooks/use-default-screen-options";
 import { useLoadMoreScroll } from "@/hooks/use-load-more-scroll";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
+import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
 import { Stack } from "expo-router";
-import { Suspense } from "react";
 import { View } from "react-native";
 
 const NotificationsScreen = () => {
@@ -27,9 +27,9 @@ const NotificationsScreen = () => {
           onScroll={handleScroll}
           scrollEventThrottle={100}
         >
-          <Suspense fallback={<NotificationListSkeleton />}>
+          <SuspenseWithDelay fallback={<NotificationListSkeleton />}>
             <NotificationList loadMoreRef={loadMoreRef} />
-          </Suspense>
+          </SuspenseWithDelay>
         </RefreshableScrollView>
       </View>
     </>

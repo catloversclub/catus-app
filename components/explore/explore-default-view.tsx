@@ -4,8 +4,8 @@ import { RefreshableScrollView } from "@/components/common/logo-refresh-control"
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
 import { Image } from "expo-image";
+import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
 import { Link } from "expo-router";
-import { Suspense } from "react";
 import {
   Pressable,
   Text,
@@ -106,9 +106,9 @@ const ExploreDefaultView = () => {
           오늘의 인기 게시물
         </Text>
         <View className="px-3">
-          <Suspense fallback={<DailyPopularSkeleton />}>
+          <SuspenseWithDelay fallback={<DailyPopularSkeleton />}>
             <DailyPopularGrid />
-          </Suspense>
+          </SuspenseWithDelay>
         </View>
       </View>
     </RefreshableScrollView>

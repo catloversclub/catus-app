@@ -14,8 +14,8 @@ import ProfilePostGrid, {
 import { useColors } from "@/hooks/use-colors";
 import { useLoadMoreScroll } from "@/hooks/use-load-more-scroll";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
+import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
 import { type Href, Stack, useLocalSearchParams } from "expo-router";
-import { Suspense } from "react";
 import { View } from "react-native";
 
 // ─── Profile header ───────────────────────────────────────────
@@ -111,12 +111,12 @@ const UserDetailScreen = () => {
         onScroll={handleScroll}
         scrollEventThrottle={100}
       >
-        <Suspense fallback={<ProfileHeaderSkeleton />}>
+        <SuspenseWithDelay fallback={<ProfileHeaderSkeleton />}>
           <UserDetailProfileHeader userId={id} />
-        </Suspense>
-        <Suspense fallback={<PostGridSkeleton />}>
+        </SuspenseWithDelay>
+        <SuspenseWithDelay fallback={<PostGridSkeleton />}>
           <UserDetailPostGrid userId={id} loadMoreRef={loadMoreRef} />
-        </Suspense>
+        </SuspenseWithDelay>
       </RefreshableScrollView>
     </View>
   );

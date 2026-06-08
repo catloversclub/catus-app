@@ -8,7 +8,8 @@ import { useColors } from "@/hooks/use-colors";
 import { useScrollHeader } from "@/hooks/use-scroll-header";
 import { commonStyles } from "@/styles/common-styles";
 import { Image } from "expo-image";
-import { Suspense, useState } from "react";
+import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
+import { useState } from "react";
 import { View } from "react-native";
 import Animated from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -49,18 +50,18 @@ const HomeScreen = () => {
         tabBarStyle={tabBarStyle}
         onTabChange={setActiveTab}
       >
-        <Suspense fallback={<FeedListSkeleton />}>
+        <SuspenseWithDelay fallback={<FeedListSkeleton />}>
           <FollowingFeedList
             scrollHandler={scrollHandler}
             isActive={activeTab === 0}
           />
-        </Suspense>
-        <Suspense fallback={<FeedListSkeleton />}>
+        </SuspenseWithDelay>
+        <SuspenseWithDelay fallback={<FeedListSkeleton />}>
           <RecommendedFeedList
             scrollHandler={scrollHandler}
             isActive={activeTab === 1}
           />
-        </Suspense>
+        </SuspenseWithDelay>
       </TabPager>
     </SafeAreaView>
   );

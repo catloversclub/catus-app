@@ -16,8 +16,8 @@ import { useColors } from "@/hooks/use-colors";
 import { useLoadMoreScroll } from "@/hooks/use-load-more-scroll";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
 import { formatDate } from "@/lib/utils";
+import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
 import { Stack, useLocalSearchParams } from "expo-router";
-import { Suspense } from "react";
 import { View } from "react-native";
 
 // ─── Profile header ───────────────────────────────────────────
@@ -112,12 +112,12 @@ const CatDetailPage = () => {
         onScroll={handleScroll}
         scrollEventThrottle={100}
       >
-        <Suspense fallback={<ProfileHeaderSkeleton />}>
+        <SuspenseWithDelay fallback={<ProfileHeaderSkeleton />}>
           <CatDetailProfileHeader catId={id} />
-        </Suspense>
-        <Suspense fallback={<PostGridSkeleton />}>
+        </SuspenseWithDelay>
+        <SuspenseWithDelay fallback={<PostGridSkeleton />}>
           <CatDetailPostGrid catId={id} loadMoreRef={loadMoreRef} />
-        </Suspense>
+        </SuspenseWithDelay>
       </RefreshableScrollView>
     </View>
   );

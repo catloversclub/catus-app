@@ -2,8 +2,8 @@ import {
   FollowListSkeleton,
   FollowingList,
 } from "@/components/user/profile/follow-list";
+import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
 import { useLocalSearchParams } from "expo-router";
-import { Suspense } from "react";
 
 const UserFollowingContent = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -11,9 +11,9 @@ const UserFollowingContent = () => {
 };
 
 const UserFollowing = () => (
-  <Suspense fallback={<FollowListSkeleton />}>
+  <SuspenseWithDelay fallback={<FollowListSkeleton />}>
     <UserFollowingContent />
-  </Suspense>
+  </SuspenseWithDelay>
 );
 
 export default UserFollowing;

@@ -2,15 +2,15 @@ import { useMyPostsQuery } from "@/api/domains/post/queries";
 import { useUserProfileQuery } from "@/api/domains/user/queries";
 import UserProfileImage from "@/components/user/profile-image";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
 import { Link } from "expo-router";
-import { Suspense } from "react";
 import { Pressable, Text, View } from "react-native";
 
 const ProfileInfo = () => {
   return (
-    <Suspense fallback={<ProfileInfoSkeleton />}>
+    <SuspenseWithDelay fallback={<ProfileInfoSkeleton />}>
       <ProfileInfoContent />
-    </Suspense>
+    </SuspenseWithDelay>
   );
 };
 

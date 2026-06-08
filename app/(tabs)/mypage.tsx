@@ -13,7 +13,8 @@ import { useDefaultStackScreenOptions } from "@/hooks/use-default-screen-options
 import { useLoadMoreScroll } from "@/hooks/use-load-more-scroll";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
 import { Link, Stack } from "expo-router";
-import { Suspense, useState } from "react";
+import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
+import { useState } from "react";
 import { View } from "react-native";
 
 const Mypage = () => {
@@ -56,16 +57,16 @@ const Mypage = () => {
           onScroll={handleScroll}
           scrollEventThrottle={100}
         >
-          <Suspense fallback={<ProfileHeaderSkeleton />}>
+          <SuspenseWithDelay fallback={<ProfileHeaderSkeleton />}>
             <MyProfileHeaderContent />
-          </Suspense>
-          <Suspense fallback={<PostGridSkeleton />}>
+          </SuspenseWithDelay>
+          <SuspenseWithDelay fallback={<PostGridSkeleton />}>
             <MypagePostGrid
               activeTab={activeTab}
               onTabChange={setActiveTab}
               loadMoreRef={loadMoreRef}
             />
-          </Suspense>
+          </SuspenseWithDelay>
         </RefreshableScrollView>
       </View>
     </>

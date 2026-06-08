@@ -3,7 +3,7 @@ import {
   FollowListSkeleton,
   FollowingList,
 } from "@/components/user/profile/follow-list";
-import { Suspense } from "react";
+import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
 
 const MyFollowingContent = () => {
   const { data: me } = useUserProfileQuery();
@@ -11,9 +11,9 @@ const MyFollowingContent = () => {
 };
 
 const Following = () => (
-  <Suspense fallback={<FollowListSkeleton />}>
+  <SuspenseWithDelay fallback={<FollowListSkeleton />}>
     <MyFollowingContent />
-  </Suspense>
+  </SuspenseWithDelay>
 );
 
 export default Following;

@@ -1,5 +1,6 @@
 import { useLocalSearchParams } from "expo-router";
-import { Suspense, useState } from "react";
+import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
+import { useState } from "react";
 import { View } from "react-native";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 
@@ -34,12 +35,12 @@ const PostDetailScreen = () => {
             onRefresh={onRefresh}
             contentContainerStyle={{ paddingBottom: 16, rowGap: 24 }}
           >
-            <Suspense fallback={<PostDetailCardSkeleton />}>
+            <SuspenseWithDelay fallback={<PostDetailCardSkeleton />}>
               <PostDetailCard postId={id} />
-            </Suspense>
-            <Suspense fallback={<CommentListSkeleton />}>
+            </SuspenseWithDelay>
+            <SuspenseWithDelay fallback={<CommentListSkeleton />}>
               <CommentList postId={id} onReply={setReplyTarget} />
-            </Suspense>
+            </SuspenseWithDelay>
           </RefreshableScrollView>
           <CommentInputBar
             postId={id}

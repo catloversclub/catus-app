@@ -10,8 +10,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
 import { useSearchHistoryStore } from "@/store/explore/search-history-store";
 import { Image } from "expo-image";
+import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
 import { Link } from "expo-router";
-import { Suspense } from "react";
 import type { ReactNode } from "react";
 import {
   ActivityIndicator,
@@ -335,21 +335,21 @@ const ExploreResultsView = ({ query }: ExploreResultsViewProps) => {
       contentContainerClassName="gap-8 pb-8"
     >
       <ResultSection title="게시글">
-        <Suspense fallback={<PostGridSkeleton />}>
+        <SuspenseWithDelay fallback={<PostGridSkeleton />}>
           <SearchPostsHorizontalList query={query} />
-        </Suspense>
+        </SuspenseWithDelay>
       </ResultSection>
 
       <ResultSection title="고양이">
-        <Suspense fallback={<ProfileListSkeleton />}>
+        <SuspenseWithDelay fallback={<ProfileListSkeleton />}>
           <SearchCatsHorizontalList query={query} />
-        </Suspense>
+        </SuspenseWithDelay>
       </ResultSection>
 
       <ResultSection title="집사">
-        <Suspense fallback={<ProfileListSkeleton />}>
+        <SuspenseWithDelay fallback={<ProfileListSkeleton />}>
           <SearchUsersHorizontalList query={query} />
-        </Suspense>
+        </SuspenseWithDelay>
       </ResultSection>
     </RefreshableScrollView>
   );
