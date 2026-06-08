@@ -13,11 +13,12 @@ import IconButton from "@/components/common/icon-button";
 import BottomActionBar from "@/components/layout/bottom-action-bar";
 import CenterModal from "@/components/modal/center-modal";
 import Toggle from "@/components/common/toggle";
-import ImagePager from "@/components/post-editor/image-pager";
+import ImageCarousel from "@/components/common/image-carousel";
 import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
 import { STORAGE_BASE_URL } from "@/constants/api";
 import { useColors } from "@/hooks/use-colors";
 import { useImageUrisParam } from "@/hooks/use-image-uris-param";
+import { useKeyboardAvoidingView } from "@/hooks/use-keyboard-avoiding-view";
 import { useToast } from "@/hooks/use-toast";
 import { useDraftStore } from "@/store/post/draft-store";
 import { useComposeStore } from "@/store/post/compose-store";
@@ -32,6 +33,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const MAX_CAPTION = 300;
@@ -58,10 +60,10 @@ const ComposeScreen = () => {
   );
   const [commentsEnabled, setCommentsEnabled] = useState(true);
   const [sharingEnabled, setSharingEnabled] = useState(false);
-  const [currentPage, setCurrentPage] = useState(0);
   const [showDraftModal, setShowDraftModal] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
+  const { insets } = useKeyboardAvoidingView();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
   const handleCatSelectionChange = useCallback(
@@ -163,22 +165,23 @@ const ComposeScreen = () => {
             </Text>
           </View>
         </SafeAreaView>
+        <KeyboardAvoidingView
+          className="flex-1"
+          behavior="padding"
+          keyboardVerticalOffset={insets.top + 52}
+        >
         <ScrollView
           className="flex-1"
           contentContainerClassName="px-3 pb-8 pt-6 gap-[30px]"
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          <View className="gap-3">
-            {images.length > 0 && (
-              <ImagePager
-                images={images}
-                height={252}
-                currentPage={currentPage}
-                onPageChange={setCurrentPage}
-              />
-            )}
-          </View>
+          {images.length > 0 && (
+            <ImageCarousel
+              images={images.map((uri, i) => ({ id: String(i), url: uri }))}
+              linkable={false}
+            />
+          )}
 
           <View className="gap-3">
             <Text
@@ -302,6 +305,7 @@ const ComposeScreen = () => {
             </View>
           </View>
         </ScrollView>
+        </KeyboardAvoidingView>
 
         <BottomActionBar
           buttons={[
