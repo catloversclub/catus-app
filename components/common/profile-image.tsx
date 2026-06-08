@@ -12,12 +12,15 @@ import { Link } from "expo-router";
 import { useRef, useState } from "react";
 import { ActivityIndicator, Pressable, View } from "react-native";
 
+type ProfileImageSize = keyof typeof PROFILE_SIZE;
+
 interface ProfileImageProps {
   imageUrl: string | null;
-  size: "sm" | "md" | "lg";
+  size: ProfileImageSize;
   href?: string;
   alt?: string;
   isEditMode?: boolean;
+  isPreviewDisabled?: boolean;
   handleImageUriChange?: (uri: string | null) => void;
 }
 
@@ -26,6 +29,7 @@ const ProfileImage = ({
   href,
   alt,
   isEditMode = false,
+  isPreviewDisabled = false,
   size,
   handleImageUriChange,
 }: ProfileImageProps) => {
@@ -119,7 +123,7 @@ const ProfileImage = ({
     );
   }
 
-  if (!isEditMode) {
+  if (!isEditMode && !isPreviewDisabled) {
     return (
       <>
         <Pressable onPress={handlePreviewPress} className="active:opacity-60">
@@ -144,4 +148,5 @@ const ProfileImage = ({
   );
 };
 
+export type { ProfileImageSize };
 export default ProfileImage;

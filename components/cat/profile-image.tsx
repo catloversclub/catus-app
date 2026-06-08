@@ -1,10 +1,13 @@
-import ProfileImage from "@/components/common/profile-image";
+import ProfileImage, {
+  type ProfileImageSize,
+} from "@/components/common/profile-image";
 
 interface CatProfileImageProps {
   imageUrl: string | null;
-  size: "sm" | "md" | "lg";
+  size: ProfileImageSize;
   catId?: string;
   isEditMode?: boolean;
+  isPreviewDisabled?: boolean;
   handleImageUriChange?: (uri: string | null) => void;
 }
 

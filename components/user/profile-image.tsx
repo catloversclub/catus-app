@@ -1,10 +1,13 @@
-import ProfileImage from "@/components/common/profile-image";
+import ProfileImage, {
+  type ProfileImageSize,
+} from "@/components/common/profile-image";
 
 interface UserProfileImageProps {
   imageUrl: string | null;
-  size: "sm" | "md" | "lg";
+  size: ProfileImageSize;
   userId?: string;
   isEditMode?: boolean;
+  isPreviewDisabled?: boolean;
   handleImageUriChange?: (uri: string | null) => void;
 }
 

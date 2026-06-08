@@ -14,6 +14,7 @@ import BottomActionBar from "@/components/layout/bottom-action-bar";
 import CenterModal from "@/components/modal/center-modal";
 import Toggle from "@/components/common/toggle";
 import ImagePager from "@/components/post-editor/image-pager";
+import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
 import { STORAGE_BASE_URL } from "@/constants/api";
 import { useColors } from "@/hooks/use-colors";
 import { useImageUrisParam } from "@/hooks/use-image-uris-param";
@@ -347,10 +348,12 @@ const ComposeScreen = () => {
         </View>
       </CenterModal>
 
-      <CatProfileSheet
-        bottomSheetRef={bottomSheetRef}
-        onSelectionChange={handleCatSelectionChange}
-      />
+      <SuspenseWithDelay fallback={null} delay={0}>
+        <CatProfileSheet
+          bottomSheetRef={bottomSheetRef}
+          onSelectionChange={handleCatSelectionChange}
+        />
+      </SuspenseWithDelay>
     </>
   );
 };

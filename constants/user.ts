@@ -1,6 +1,7 @@
 // constants/user.ts
 const PROFILE_SIZE = {
   sm: 36,
+  base: 54,
   md: 72,
   lg: 106,
 } as const;
