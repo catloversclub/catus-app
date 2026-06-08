@@ -1,38 +1,22 @@
 import { View, TextInput, TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
-import { useLocalSearchParams } from "expo-router";
-import { useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import PagerView from "react-native-pager-view";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import { useImageUrisParam } from "@/hooks/use-image-uris-param";
 
 const CreatePostScreen = () => {
-  const { imageUris } = useLocalSearchParams<{
-    imageUris: string;
-  }>();
   const pagerRef = useRef<PagerView>(null);
-  const [currentPage, setCurrentPage] = useState(0); // 현재 페이지 상태
-
-  // JSON 문자열로 전달된 imageUris를 파싱
-  const images = useMemo(() => {
-    if (!imageUris) return [];
-    try {
-      return JSON.parse(imageUris) as string[];
-    } catch {
-      return [];
-    }
-  }, [imageUris]);
-
-  const pages = images.map((_, index) => index); // 실제 이미지 개수에 맞춤
+  const [currentPage, setCurrentPage] = useState(0);
+  const images = useImageUrisParam();
+  const pages = images.map((_, index) => index);
   const [content, setContent] = useState("");
 
   return (
     <KeyboardAwareScrollView>
       <View className="flex-1 bg-white">
         <PagerView
-          style={{
-            height: 300,
-            paddingHorizontal: 12,
-          }}
+          className="h-[300px] px-3"
           initialPage={0}
           ref={pagerRef}
           onPageSelected={(e) => setCurrentPage(e.nativeEvent.position)}
@@ -44,13 +28,12 @@ const CreatePostScreen = () => {
             >
               <Image
                 source={{ uri }}
-                style={{ width: "100%", height: 300 }}
+                className="w-full h-[300px]"
                 contentFit="contain"
               />
             </View>
           ))}
         </PagerView>
-        {/* 페이지 인디케이터 - PagerView 바깥에 배치 */}
         <View className="mt-[200px] flex-row justify-center items-center">
           {pages.map((pageIndex) => (
             <TouchableOpacity
@@ -64,7 +47,6 @@ const CreatePostScreen = () => {
             />
           ))}
         </View>
-        {/* 내용 입력 */}
         <View className="p-4 mb-10">
           <TextInput
             placeholder="문구를 작성하세요..."
@@ -76,8 +58,6 @@ const CreatePostScreen = () => {
             textAlignVertical="top"
           />
         </View>
-
-        {/* PagerView + 인디케이터 wrapper */}
       </View>
     </KeyboardAwareScrollView>
   );
