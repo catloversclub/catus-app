@@ -1,5 +1,6 @@
-import { useEffect, useRef } from "react";
-import { Animated, Modal, Pressable } from "react-native";
+import { AnimatePresence, MotiView } from "moti";
+import { useEffect, useRef, useState } from "react";
+import { Modal, Pressable } from "react-native";
 
 interface CenterModalProps {
   visible: boolean;
@@ -8,48 +9,60 @@ interface CenterModalProps {
 }
 
 const CenterModal = ({ visible, onClose, children }: CenterModalProps) => {
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const scaleAnim = useRef(new Animated.Value(0.9)).current;
+  const [isMounted, setIsMounted] = useState(visible);
+  const visibleRef = useRef(visible);
 
   useEffect(() => {
+    visibleRef.current = visible;
+
     if (visible) {
-      Animated.parallel([
-        Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-        Animated.spring(scaleAnim, {
-          toValue: 1,
-          useNativeDriver: true,
-        }),
-      ]).start();
-    } else {
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: 150,
-        useNativeDriver: true,
-      }).start();
+      setIsMounted(true);
     }
-  }, [fadeAnim, scaleAnim, visible]);
+  }, [visible]);
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
-    <Modal visible={visible} transparent animationType="none">
-      {/* 딤드 배경 */}
-      <Animated.View
-        style={{ opacity: fadeAnim }}
-        className="flex-1 bg-semantic-dimmed-primary justify-center items-center"
+    <Modal
+      visible={isMounted}
+      transparent
+      animationType="none"
+      onRequestClose={onClose}
+    >
+      <AnimatePresence
+        onExitComplete={() => {
+          if (!visibleRef.current) {
+            setIsMounted(false);
+          }
+        }}
       >
-        <Pressable className="absolute inset-0" onPress={onClose} />
+        {visible ? (
+          <MotiView
+            key="center-modal"
+            from={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ type: "timing", duration: 180 }}
+            exitTransition={{ type: "timing", duration: 150 }}
+            className="flex-1 bg-semantic-dimmed-primary justify-center items-center"
+          >
+            <Pressable className="absolute inset-0" onPress={onClose} />
 
-        {/* 모달 본체 */}
-        <Animated.View
-          style={{ transform: [{ scale: scaleAnim }] }}
-          className="w-4/5"
-        >
-          {children}
-        </Animated.View>
-      </Animated.View>
+            <MotiView
+              from={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.96 }}
+              transition={{ type: "timing", duration: 180 }}
+              exitTransition={{ type: "timing", duration: 150 }}
+              className="w-4/5"
+            >
+              {children}
+            </MotiView>
+          </MotiView>
+        ) : null}
+      </AnimatePresence>
     </Modal>
   );
 };
