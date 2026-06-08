@@ -4,6 +4,8 @@ import { useColors } from "@/hooks/use-colors";
 import { X } from "@/lib/icons";
 import React, { useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
+import { useReanimatedKeyboardAnimation } from "react-native-keyboard-controller";
+import Animated, { useAnimatedStyle } from "react-native-reanimated";
 
 export interface CommentInputRef {
   focus: () => void;
@@ -33,7 +35,13 @@ const CommentInputBar = ({
 }: CommentInputBarProps) => {
   const { colors } = useColors();
   const [text, setText] = useState("");
+  const { progress } = useReanimatedKeyboardAnimation();
   const { mutate: createComment, isPending } = useCreateCommentMutation();
+
+  const targetPadding = paddingBottom ?? 24;
+  const animatedStyle = useAnimatedStyle(() => ({
+    paddingBottom: (1 - progress.value) * targetPadding,
+  }));
 
   const handleSubmit = () => {
     if (!text.trim() || isPending) return;
@@ -54,9 +62,9 @@ const CommentInputBar = ({
   const canSubmit = text.trim().length > 0 && !isPending;
 
   return (
-    <View
+    <Animated.View
       className="border-t border-semantic-border-primary bg-semantic-bg-primary"
-      style={{ paddingBottom: paddingBottom ?? 24 }}
+      style={animatedStyle}
     >
       <View className="flex-row items-end gap-2 px-4 pb-2.5 pt-2.5">
         <View className="min-h-10 flex-1 justify-center rounded bg-semantic-bg-secondary px-3 py-2.5">
@@ -100,7 +108,7 @@ const CommentInputBar = ({
           </Pressable>
         </View>
       )}
-    </View>
+    </Animated.View>
   );
 };
 
