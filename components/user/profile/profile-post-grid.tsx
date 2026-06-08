@@ -1,7 +1,7 @@
 import { Post } from "@/api/domains/post/types";
 import { LoadMoreFooter } from "@/components/common/load-more-footer";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Image } from "expo-image";
+import { SquareImage } from "@/components/ui/square-image";
 import { Link } from "expo-router";
 import {
   FlatList,
@@ -44,22 +44,10 @@ interface PostThumbnailProps {
 }
 
 const PostThumbnail = ({ post, size }: PostThumbnailProps) => {
-  const imageUrl = post.images[0]?.url;
   return (
     <Link href={`/post/${post.id}`} asChild>
       <Pressable style={{ width: size, height: size }}>
-        {imageUrl ? (
-          <Image
-            source={{ uri: imageUrl }}
-            style={{ width: size, height: size }}
-            contentFit="cover"
-          />
-        ) : (
-          <View
-            style={{ width: size, height: size }}
-            className="bg-semantic-bg-secondary"
-          />
-        )}
+        <SquareImage uri={post.images[0]?.url} size={size} />
       </Pressable>
     </Link>
   );

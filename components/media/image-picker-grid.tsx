@@ -1,6 +1,6 @@
 import CameraIcon from "@/assets/icons/camera.svg";
+import { SquareImage } from "@/components/ui/square-image";
 import { useColors } from "@/hooks/use-colors";
-import { Image } from "expo-image";
 import * as MediaLibrary from "expo-media-library";
 import { useMemo } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
@@ -24,11 +24,11 @@ const CameraCell = ({ size, onPress }: CameraCellProps) => {
   return (
     <TouchableOpacity
       onPress={onPress}
-      className="items-center justify-center bg-semantic-bg-secondary"
+      className="items-center justify-center bg-semantic-bg-secondary rounded"
       style={{ width: size, height: size }}
       activeOpacity={0.7}
     >
-      <CameraIcon width={24} height={24} color={colors.icon.secondary} />
+      <CameraIcon width={24} height={24} color={colors.icon.primary} />
     </TouchableOpacity>
   );
 };
@@ -54,11 +54,7 @@ const PhotoCell = ({
       style={{ width: size, height: size }}
       activeOpacity={0.8}
     >
-      <Image
-        source={{ uri: asset.uri }}
-        style={{ width: size, height: size }}
-        contentFit="cover"
-      />
+      <SquareImage uri={asset.uri} size={size} />
       {isSelected && (
         <View className="absolute inset-0 border-2 border-semantic-border-accent" />
       )}
