@@ -1,6 +1,6 @@
 import { Comment } from "@/api/domains/comment/types";
 import { ReplyTarget } from "@/components/comment/input-bar";
-import { UserPostProfileInfo } from "@/components/post/profile-info";
+import CommentProfileInfo from "@/components/comment/profile-info";
 import { Text } from "@/components/ui/text";
 import { Heart, MessageCircle } from "@/lib/icons";
 import { formatRelativeTime } from "@/lib/utils";
@@ -48,16 +48,14 @@ const CommentActions = ({
 };
 
 const ReplyItem = ({ reply }: { reply: Comment }) => (
-  <View className="px-3 pt-3 pb-2 pl-12">
-    <UserPostProfileInfo
+  <View className="px-3 pb-2 pl-12 pt-3">
+    <CommentProfileInfo
       imageUrl={reply.author.profileImageUrl}
       userId={reply.author.id}
       name={reply.author.nickname}
-      subtitle={formatRelativeTime(reply.createdAt)}
+      content={reply.content}
+      createdAtLabel={formatRelativeTime(reply.createdAt)}
     />
-    <Text className="typo-body4 text-semantic-text-primary mt-1 pl-12">
-      {reply.content}
-    </Text>
   </View>
 );
 
@@ -67,11 +65,7 @@ type CommentItemProps = {
   onToggleLike: (comment: Comment) => void;
 };
 
-const CommentItem = ({
-  comment,
-  onReply,
-  onToggleLike,
-}: CommentItemProps) => {
+const CommentItem = ({ comment, onReply, onToggleLike }: CommentItemProps) => {
   const [isRepliesExpanded, setIsRepliesExpanded] = useState(false);
 
   const { id, author, content, isLikedByMe, likeCount, createdAt, replies } =
@@ -86,13 +80,14 @@ const CommentItem = ({
   };
 
   return (
-    <View className="flex-col ">
-      <View className="flex-row items-start justify-between p-3 pb-1">
-        <UserPostProfileInfo
+    <View className="flex-col">
+      <View className="flex-row items-start justify-between p-3 pb-3">
+        <CommentProfileInfo
           imageUrl={author.profileImageUrl}
           userId={author.id}
           name={author.nickname}
-          subtitle={formatRelativeTime(createdAt)}
+          content={content}
+          createdAtLabel={formatRelativeTime(createdAt)}
         />
         <CommentActions
           isLikedByMe={isLikedByMe}
@@ -100,10 +95,6 @@ const CommentItem = ({
           onLike={handleLike}
           onReply={handleReply}
         />
-      </View>
-
-      <View className="px-3 pb-3 pl-[60px]">
-        <Text className="typo-body4 text-semantic-text-primary">{content}</Text>
       </View>
 
       {replies && replies.length > 0 ? (

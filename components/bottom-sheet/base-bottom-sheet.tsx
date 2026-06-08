@@ -5,7 +5,8 @@ import {
   BottomSheetModal,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
-import React, { useCallback } from "react";
+import { usePathname } from "expo-router";
+import React, { useCallback, useEffect, useRef } from "react";
 import { StyleSheet } from "react-native";
 
 const INDICATOR_WIDTH = 120;
@@ -21,6 +22,7 @@ interface BaseBottomSheetProps {
   snapPoints?: (string | number)[];
   footerComponent?: React.FC<BottomSheetFooterProps>;
   stackBehavior?: "push" | "switch" | "replace";
+  dismissOnRouteChange?: boolean;
 }
 
 const BaseBottomSheet = ({
@@ -33,8 +35,11 @@ const BaseBottomSheet = ({
   snapPoints,
   footerComponent,
   stackBehavior = "replace",
+  dismissOnRouteChange = true,
 }: BaseBottomSheetProps) => {
   const { colors } = useColors();
+  const pathname = usePathname();
+  const previousPathnameRef = useRef(pathname);
 
   const renderBackdrop = useCallback(
     (props: React.ComponentProps<typeof BottomSheetBackdrop>) => (
@@ -47,6 +52,19 @@ const BaseBottomSheet = ({
     ),
     [colors.dimmed.primary],
   );
+
+  useEffect(() => {
+    if (!dismissOnRouteChange) {
+      previousPathnameRef.current = pathname;
+      return;
+    }
+
+    if (previousPathnameRef.current !== pathname) {
+      BaseBottomSheetModalRef.current?.dismiss();
+    }
+
+    previousPathnameRef.current = pathname;
+  }, [BaseBottomSheetModalRef, dismissOnRouteChange, pathname]);
 
   return (
     <BottomSheetModal
