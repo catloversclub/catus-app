@@ -3,11 +3,9 @@ import {
   View,
   Text,
   TouchableOpacity,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
   Keyboard,
 } from "react-native";
+import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import {
   BottomSheetFlatList,
   BottomSheetModal,
@@ -75,8 +73,8 @@ const CommentSheet = ({ commentSheetRef, comments }: CommentSheetProps) => {
           style={{ paddingBottom: insets.bottom + 0 }}
         >
           <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={styles.container}
+            behavior="padding"
+            style={{ flex: 1 }}
           >
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
               <View>
@@ -115,29 +113,5 @@ const CommentSheet = ({ commentSheetRef, comments }: CommentSheetProps) => {
     </BottomSheetModal>
   );
 };
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  inner: {
-    padding: 24,
-    flex: 1,
-    justifyContent: "space-around",
-  },
-  header: {
-    fontSize: 36,
-    marginBottom: 48,
-  },
-  textInput: {
-    height: 40,
-    borderColor: "#000000",
-    borderBottomWidth: 1,
-    marginBottom: 36,
-  },
-  btnContainer: {
-    backgroundColor: "white",
-    marginTop: 12,
-  },
-});
 
 export default CommentSheet;

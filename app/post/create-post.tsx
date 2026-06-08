@@ -3,7 +3,7 @@ import { Image } from "expo-image";
 import { useLocalSearchParams } from "expo-router";
 import { useMemo, useRef, useState } from "react";
 import PagerView from "react-native-pager-view";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 const CreatePostScreen = () => {
   const { imageUris } = useLocalSearchParams<{

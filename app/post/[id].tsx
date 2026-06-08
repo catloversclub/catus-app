@@ -1,6 +1,7 @@
 import { useLocalSearchParams } from "expo-router";
 import { Suspense, useState } from "react";
-import { KeyboardAvoidingView, View } from "react-native";
+import { View } from "react-native";
+import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 
 import { commentKeys } from "@/api/domains/comment/queries";
 import { postKeys } from "@/api/domains/post/queries";
@@ -17,20 +18,18 @@ import PostDetailCard, {
 } from "@/components/post/detail-card";
 import { useKeyboardAvoidingView } from "@/hooks/use-keyboard-avoiding-view";
 import { useHeaderHeight } from "@react-navigation/elements";
-import Animated from "react-native-reanimated";
 
 const PostDetailScreen = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [replyTarget, setReplyTarget] = useState<ReplyTarget | null>(null);
   const headerHeight = useHeaderHeight();
-  const { keyboardAvoidingViewProps, containerStyle, insets } =
-    useKeyboardAvoidingView(headerHeight);
+  const { keyboardAvoidingViewProps, insets } = useKeyboardAvoidingView(headerHeight);
   const onRefresh = useRefreshQueries([postKeys.detail(id), commentKeys.byPost(id)]);
 
   return (
     <View style={{ flex: 1 }} className="bg-semantic-bg-primary">
       <KeyboardAvoidingView style={{ flex: 1 }} {...keyboardAvoidingViewProps}>
-        <Animated.View style={[{ flex: 1 }, containerStyle]}>
+        <View style={{ flex: 1 }}>
           <RefreshableScrollView
             onRefresh={onRefresh}
             contentContainerStyle={{ paddingBottom: 16, rowGap: 24 }}
@@ -48,7 +47,7 @@ const PostDetailScreen = () => {
             onClearReply={() => setReplyTarget(null)}
             paddingBottom={insets.bottom}
           />
-        </Animated.View>
+        </View>
       </KeyboardAvoidingView>
     </View>
   );

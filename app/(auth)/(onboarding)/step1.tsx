@@ -9,17 +9,16 @@ import { useUpdateUser } from "@/hooks/user/use-update-user";
 import { cn } from "@/lib/utils";
 import { useOnboardingStore } from "@/store/auth/onboarding-store";
 import { router } from "expo-router";
-import { KeyboardAvoidingView, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import Animated from "react-native-reanimated";
+import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 
 interface Step1FormProps {
   currentNickname?: string;
 }
 
 const Step1Form = ({ currentNickname }: Step1FormProps) => {
-  const { keyboardAvoidingViewProps, containerStyle } =
-    useKeyboardAvoidingView();
+  const { keyboardAvoidingViewProps } = useKeyboardAvoidingView();
   const isEditMode = !!currentNickname;
 
   const {
@@ -92,21 +91,17 @@ const Step1Form = ({ currentNickname }: Step1FormProps) => {
           </Text>
         </View>
       </ScrollView>
-      <Animated.View
-        style={containerStyle}
-      >
-        <BottomActionBar
-          buttons={[
-            {
-              label: hasChecked && isValidNickname ? "다음으로" : "중복 확인",
-              onPress: handlePressNext,
-              disabled:
-                !nickname.trim() || (hasChecked && !isDirty && !isValidNickname),
-              isPending: isPending,
-            },
-          ]}
-        />
-      </Animated.View>
+      <BottomActionBar
+        buttons={[
+          {
+            label: hasChecked && isValidNickname ? "다음으로" : "중복 확인",
+            onPress: handlePressNext,
+            disabled:
+              !nickname.trim() || (hasChecked && !isDirty && !isValidNickname),
+            isPending: isPending,
+          },
+        ]}
+      />
     </KeyboardAvoidingView>
   );
 };

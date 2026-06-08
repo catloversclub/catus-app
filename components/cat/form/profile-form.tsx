@@ -11,9 +11,9 @@ import { useCatStore } from "@/store/cat/cat-store";
 
 import { useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { KeyboardAvoidingView, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import Animated from "react-native-reanimated";
+import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 
 export type CatProfileFormData = Partial<
   Omit<CatProfile, "personalities" | "appearances">
@@ -47,8 +47,7 @@ const CatProfileForm = ({
     },
   });
 
-  const { keyboardAvoidingViewProps, containerStyle } =
-    useKeyboardAvoidingView();
+  const { keyboardAvoidingViewProps } = useKeyboardAvoidingView();
   const scrollViewRef = useRef<ScrollView>(null);
   const breedOffsetY = useRef<number>(0);
 
@@ -138,29 +137,25 @@ const CatProfileForm = ({
         </View>
         <View className="h-[80px]" />
       </ScrollView>
-      <Animated.View
-        style={containerStyle}
-      >
-        <BottomActionBar
-          buttons={[
-            {
-              label: "다음으로",
-              onPress: handleSubmit(onSubmit),
-              disabled: watch("name") === "" || isPending,
-              isPending: isPending,
-            },
-            ...(onSkip
-              ? [
-                  {
-                    label: "건너뛰기",
-                    variant: "ghost" as const,
-                    onPress: onSkip,
-                  },
-                ]
-              : []),
-          ]}
-        />
-      </Animated.View>
+      <BottomActionBar
+        buttons={[
+          {
+            label: "다음으로",
+            onPress: handleSubmit(onSubmit),
+            disabled: watch("name") === "" || isPending,
+            isPending: isPending,
+          },
+          ...(onSkip
+            ? [
+                {
+                  label: "건너뛰기",
+                  variant: "ghost" as const,
+                  onPress: onSkip,
+                },
+              ]
+            : []),
+        ]}
+      />
     </KeyboardAvoidingView>
   );
 };

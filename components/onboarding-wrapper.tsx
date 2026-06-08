@@ -1,8 +1,9 @@
 // components/OnboardingWrapper.tsx
 import React from "react"
-import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform } from "react-native"
+import { View, Text, TouchableOpacity } from "react-native"
 import { useRouter } from "expo-router"
 import { SafeAreaView } from "react-native-safe-area-context"
+import { KeyboardAvoidingView } from "react-native-keyboard-controller"
 import { cn } from "@/lib/utils" // 기존에 쓰시던 tailwind merge 함수
 
 interface Props {
@@ -29,7 +30,7 @@ const OnboardingWrapper = ({
   return (
     <SafeAreaView className="flex-1 bg-semantic-bg-primary">
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior="padding"
         className="flex-1"
       >
         {/* 헤더 & 뒤로가기 */}
