@@ -1,23 +1,12 @@
 import Gradient from "@/components/common/gradient";
-import { useColors } from "@/hooks/use-colors";
-import * as Haptics from "expo-haptics";
-import { Image } from "expo-image";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
+  RefreshControl,
   ScrollViewProps,
 } from "react-native";
-import Animated, {
-  cancelAnimation,
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from "react-native-reanimated";
-
-const THRESHOLD = 80;
+import Animated from "react-native-reanimated";
 
 type Options = {
   onRefresh: () => Promise<unknown> | void;
@@ -25,29 +14,9 @@ type Options = {
 
 const useLogoRefreshControl = ({ onRefresh }: Options) => {
   const [refreshing, setRefreshing] = useState(false);
-  const { scheme } = useColors();
-  const rotation = useSharedValue(0);
-  const overlayOpacity = useSharedValue(0);
-
-  useEffect(() => {
-    if (refreshing) {
-      rotation.value = 0;
-      rotation.value = withRepeat(
-        withTiming(360, { duration: 800, easing: Easing.linear }),
-        -1,
-        false,
-      );
-      overlayOpacity.value = withTiming(1, { duration: 150 });
-    } else {
-      cancelAnimation(rotation);
-      rotation.value = 0;
-      overlayOpacity.value = withTiming(0, { duration: 150 });
-    }
-  }, [refreshing, rotation, overlayOpacity]);
 
   const triggerRefresh = useCallback(async () => {
     if (refreshing) return;
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setRefreshing(true);
     try {
       await onRefresh();
@@ -57,52 +26,17 @@ const useLogoRefreshControl = ({ onRefresh }: Options) => {
   }, [refreshing, onRefresh]);
 
   const onScrollEndDrag = useCallback(
-    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-      if (event.nativeEvent.contentOffset.y < -THRESHOLD) {
-        triggerRefresh();
-      }
+    (_event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      void _event;
     },
-    [triggerRefresh],
+    [],
   );
 
-  const spinStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${rotation.value}deg` }],
-  }));
-
-  const overlayStyle = useAnimatedStyle(() => ({
-    opacity: overlayOpacity.value,
-  }));
-
-  const logoOverlay = (
-    <Animated.View
-      pointerEvents="none"
-      style={[
-        {
-          position: "absolute",
-          top: 8,
-          left: 0,
-          right: 0,
-          alignItems: "center",
-          zIndex: 100,
-        },
-        overlayStyle,
-      ]}
-    >
-      <Animated.View style={spinStyle}>
-        <Image
-          source={
-            scheme === "dark"
-              ? require("@/assets/images/logo/ios-dark.png")
-              : require("@/assets/images/logo/ios-light.png")
-          }
-          style={{ width: 36, height: 36 }}
-          contentFit="contain"
-        />
-      </Animated.View>
-    </Animated.View>
+  const refreshControl = (
+    <RefreshControl refreshing={refreshing} onRefresh={triggerRefresh} />
   );
 
-  return { onScrollEndDrag, logoOverlay, refreshing };
+  return { onScrollEndDrag, logoOverlay: null, refreshControl, refreshing };
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -117,19 +51,17 @@ const RefreshableScrollView = ({
   onScrollEndDrag: onScrollEndDragProp,
   ...props
 }: RefreshableScrollViewProps) => {
-  const { onScrollEndDrag, logoOverlay } = useLogoRefreshControl({ onRefresh });
+  const { refreshControl } = useLogoRefreshControl({ onRefresh });
 
   const handleScrollEndDrag = useCallback(
     (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-      onScrollEndDrag(e);
       onScrollEndDragProp?.(e);
     },
-    [onScrollEndDrag, onScrollEndDragProp],
+    [onScrollEndDragProp],
   );
 
   return (
     <>
-      {logoOverlay}
       <Gradient
         direction="vertical"
         height={10}
@@ -138,6 +70,7 @@ const RefreshableScrollView = ({
       <Animated.ScrollView
         showsVerticalScrollIndicator={false}
         onScrollEndDrag={handleScrollEndDrag}
+        refreshControl={refreshControl}
         {...(props as any)}
         contentContainerStyle={[
           { paddingTop: 10, flexGrow: 1 },

@@ -109,14 +109,13 @@ const FollowerList = ({ userId }: { userId: string }) => {
     useUserFollowersQuery(userId);
   const { colors } = useColors();
   const refreshQueries = useRefreshQueries([userKeys.followers(userId)]);
-  const { onScrollEndDrag, logoOverlay } = useLogoRefreshControl({
+  const { refreshControl } = useLogoRefreshControl({
     onRefresh: refreshQueries,
   });
   const followers = data.pages.flat();
 
   return (
     <View style={{ flex: 1 }}>
-      {logoOverlay}
       <FlatList
         style={{ flex: 1, backgroundColor: colors.bg.primary }}
         contentContainerStyle={{ flexGrow: 1 }}
@@ -141,7 +140,7 @@ const FollowerList = ({ userId }: { userId: string }) => {
           if (hasNextPage && !isFetchingNextPage) fetchNextPage();
         }}
         onEndReachedThreshold={0.5}
-        onScrollEndDrag={onScrollEndDrag}
+        refreshControl={refreshControl}
         ListFooterComponent={
           isFetchingNextPage ? (
             <ActivityIndicator size="small" style={{ marginVertical: 12 }} />
@@ -159,14 +158,13 @@ const FollowingList = ({ userId }: { userId: string }) => {
     useUserFollowingsQuery(userId);
   const { colors } = useColors();
   const refreshQueries = useRefreshQueries([userKeys.followings(userId)]);
-  const { onScrollEndDrag, logoOverlay } = useLogoRefreshControl({
+  const { refreshControl } = useLogoRefreshControl({
     onRefresh: refreshQueries,
   });
   const followings = data.pages.flat();
 
   return (
     <View style={{ flex: 1 }}>
-      {logoOverlay}
       <FlatList
         style={{ flex: 1, backgroundColor: colors.bg.primary }}
         contentContainerStyle={{ flexGrow: 1 }}
@@ -191,7 +189,7 @@ const FollowingList = ({ userId }: { userId: string }) => {
           if (hasNextPage && !isFetchingNextPage) fetchNextPage();
         }}
         onEndReachedThreshold={0.5}
-        onScrollEndDrag={onScrollEndDrag}
+        refreshControl={refreshControl}
         ListFooterComponent={
           isFetchingNextPage ? (
             <ActivityIndicator size="small" style={{ marginVertical: 12 }} />
