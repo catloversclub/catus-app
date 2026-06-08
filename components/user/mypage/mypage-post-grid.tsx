@@ -5,6 +5,10 @@ import {
 } from "@/api/domains/post/queries";
 import TabIconBar from "@/components/layout/tab-icon-bar";
 import ProfilePostGrid from "@/components/user/profile/profile-post-grid";
+import { useTabSwipe } from "@/hooks/use-tab-swipe";
+import { GestureDetector } from "react-native-gesture-handler";
+import { View } from "react-native";
+import Animated from "react-native-reanimated";
 
 const EMPTY_MESSAGES = [
   "게시글이 없어요",
@@ -28,19 +32,34 @@ const MypagePostGrid = ({
   const bookmarkedQuery = useMyBookmarkedPostsQuery();
 
   const queries = [myPostsQuery, likedQuery, bookmarkedQuery];
-  const activeQuery = queries[activeTab];
+
+  const { renderTab, animatedStyle, panGesture, switchTab } = useTabSwipe({
+    tabCount: queries.length,
+    activeTab,
+    onTabChange,
+  });
+
+  const activeQuery = queries[renderTab];
   const posts = activeQuery.data.pages.flat();
 
   return (
-    <ProfilePostGrid
-      tabBar={<TabIconBar activeIndex={activeTab} onChange={onTabChange} />}
-      posts={posts}
-      isFetchingNextPage={activeQuery.isFetchingNextPage}
-      hasNextPage={activeQuery.hasNextPage}
-      fetchNextPage={activeQuery.fetchNextPage}
-      emptyMessage={EMPTY_MESSAGES[activeTab]}
-      loadMoreRef={loadMoreRef}
-    />
+    <View>
+      <TabIconBar activeIndex={activeTab} onChange={switchTab} />
+      <GestureDetector gesture={panGesture}>
+        <View style={{ overflow: "hidden" }}>
+          <Animated.View style={animatedStyle}>
+            <ProfilePostGrid
+              posts={posts}
+              isFetchingNextPage={activeQuery.isFetchingNextPage}
+              hasNextPage={activeQuery.hasNextPage}
+              fetchNextPage={activeQuery.fetchNextPage}
+              emptyMessage={EMPTY_MESSAGES[renderTab]}
+              loadMoreRef={loadMoreRef}
+            />
+          </Animated.View>
+        </View>
+      </GestureDetector>
+    </View>
   );
 };
 
