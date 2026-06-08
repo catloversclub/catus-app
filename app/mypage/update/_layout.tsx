@@ -5,8 +5,8 @@ const MypageLayout = () => {
   const screenOptions = useDefaultStackScreenOptions();
   return (
     <Stack screenOptions={screenOptions}>
-      <Stack.Screen name="update/index" options={{ title: "내 프로필 수정" }} />
-      <Stack.Screen name="update/tag" options={{ title: "관심태그 수정" }} />
+      <Stack.Screen name="index" options={{ title: "내 프로필 수정" }} />
+      <Stack.Screen name="tag" options={{ title: "관심태그 수정" }} />
     </Stack>
   );
 };
