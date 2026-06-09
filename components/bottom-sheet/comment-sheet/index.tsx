@@ -20,7 +20,7 @@ import {
   BottomSheetTextInput,
 } from "@gorhom/bottom-sheet";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { View } from "react-native";
+import { LayoutChangeEvent, View } from "react-native";
 
 interface CommentSheetProps {
   postId: string;
@@ -30,6 +30,7 @@ interface CommentSheetProps {
 const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
   const [replyTarget, setReplyTarget] = useState<ReplyTarget | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [footerHeight, setFooterHeight] = useState(0);
   const inputRef = useRef<CommentInputRef>(null);
   const {
     data: comments = [],
@@ -37,6 +38,10 @@ const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
   } = usePostCommentsNonSuspenseQuery(postId, isOpen);
   const { mutate: likeComment } = useLikeCommentMutation();
   const { mutate: unlikeComment } = useUnlikeCommentMutation();
+
+  const handleFooterLayout = useCallback((event: LayoutChangeEvent) => {
+    setFooterHeight(event.nativeEvent.layout.height);
+  }, []);
 
   const footerComponent = useCallback(
     (props: BottomSheetFooterProps) => (
@@ -47,10 +52,11 @@ const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
           onClearReply={() => setReplyTarget(null)}
           InputComponent={BottomSheetTextInput}
           inputRef={inputRef}
+          onLayout={handleFooterLayout}
         />
       </BottomSheetFooter>
     ),
-    [postId, replyTarget],
+    [handleFooterLayout, postId, replyTarget],
   );
 
   useEffect(() => {
@@ -94,6 +100,18 @@ const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
     [handleToggleLike],
   );
 
+  const listHeaderComponent = useCallback(
+    () => (
+      <View className="flex-row items-center justify-center gap-1 py-3">
+        <Text className="typo-body1 text-semantic-text-tertiary">댓글</Text>
+        <Text className="typo-body2 text-semantic-text-secondary">
+          {comments.length}
+        </Text>
+      </View>
+    ),
+    [comments.length],
+  );
+
   const listEmptyComponent = useCallback(() => {
     if (isPending) {
       return <CommentListSkeleton />;
@@ -117,25 +135,23 @@ const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
       keyboardBlurBehavior="restore"
       snapPoints={["65%", "90%"]}
       footerComponent={footerComponent}
+      withContentContainer={false}
     >
-      <View className="flex-row items-center justify-center gap-1 py-3">
-        <Text className="typo-body1 text-semantic-text-tertiary">댓글</Text>
-        <Text className="typo-body2 text-semantic-text-secondary">
-          {comments.length}
-        </Text>
-      </View>
-
       <BottomSheetFlatList
         data={comments}
         keyExtractor={(item) => item.id}
         renderItem={renderComment}
+        ListHeaderComponent={listHeaderComponent}
         ListEmptyComponent={listEmptyComponent}
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: 80 }}
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingHorizontal: 12,
+          paddingBottom: footerHeight,
+        }}
         initialNumToRender={8}
         maxToRenderPerBatch={6}
         updateCellsBatchingPeriod={50}
         windowSize={5}
-        removeClippedSubviews
         keyboardShouldPersistTaps="always"
       />
     </BaseBottomSheet>

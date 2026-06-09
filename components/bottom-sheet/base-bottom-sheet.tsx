@@ -23,6 +23,7 @@ interface BaseBottomSheetProps {
   footerComponent?: React.FC<BottomSheetFooterProps>;
   stackBehavior?: "push" | "switch" | "replace";
   dismissOnRouteChange?: boolean;
+  withContentContainer?: boolean;
 }
 
 const BaseBottomSheet = ({
@@ -36,6 +37,7 @@ const BaseBottomSheet = ({
   footerComponent,
   stackBehavior = "replace",
   dismissOnRouteChange = true,
+  withContentContainer = true,
 }: BaseBottomSheetProps) => {
   const { colors } = useColors();
   const pathname = usePathname();
@@ -85,9 +87,13 @@ const BaseBottomSheet = ({
       footerComponent={footerComponent}
       stackBehavior={stackBehavior}
     >
-      <BottomSheetView style={styles.contentContainer}>
-        {children}
-      </BottomSheetView>
+      {withContentContainer ? (
+        <BottomSheetView style={styles.contentContainer}>
+          {children}
+        </BottomSheetView>
+      ) : (
+        children
+      )}
     </BottomSheetModal>
   );
 };

@@ -4,7 +4,7 @@ import ActionPressable from "@/components/common/action-pressable";
 import { useColors } from "@/hooks/use-colors";
 import { X } from "@/lib/icons";
 import React, { useState } from "react";
-import { Text, TextInput, View } from "react-native";
+import { LayoutChangeEvent, Text, TextInput, View } from "react-native";
 import { useReanimatedKeyboardAnimation } from "react-native-keyboard-controller";
 import Animated, { useAnimatedStyle } from "react-native-reanimated";
 
@@ -24,6 +24,7 @@ interface CommentInputBarProps {
   InputComponent?: React.ElementType;
   inputRef?: React.Ref<CommentInputRef>;
   paddingBottom?: number;
+  onLayout?: (event: LayoutChangeEvent) => void;
 }
 
 const CommentInputBar = ({
@@ -33,6 +34,7 @@ const CommentInputBar = ({
   InputComponent = TextInput,
   inputRef,
   paddingBottom,
+  onLayout,
 }: CommentInputBarProps) => {
   const { colors } = useColors();
   const [text, setText] = useState("");
@@ -65,50 +67,59 @@ const CommentInputBar = ({
   return (
     <Animated.View
       className="border-t border-semantic-border-primary bg-semantic-bg-primary"
+      onLayout={onLayout}
       style={animatedStyle}
     >
-      <View className="flex-row items-end gap-2 px-4 pb-2.5 pt-2.5">
-        <View className="min-h-10 flex-1 justify-center rounded bg-semantic-bg-secondary px-3 py-2.5">
+      <View className="p-3 pb-6">
+        <View className="relative min-h-[60px] justify-center rounded bg-semantic-bg-secondary pr-[84px]">
           <InputComponent
             ref={inputRef}
             value={text}
             onChangeText={setText}
             placeholder={
               replyTarget
-                ? `@${replyTarget.nickname}에게 답글...`
+                ? `${replyTarget.nickname}에게 답글...`
                 : "댓글을 작성하세요..."
             }
             placeholderTextColor={colors.text.tertiary}
             multiline
             maxLength={500}
-            className="max-h-[100px] p-0 text-[14px] leading-5 text-semantic-text-primary"
+            className="max-h-[100px] text-[14px] leading-5 text-semantic-text-primary"
             style={{
               includeFontPadding: false,
+              paddingHorizontal: 12,
+              paddingVertical: 10,
               textAlignVertical: "center",
             }}
           />
-        </View>
-        <ActionPressable
-          onPress={handleSubmit}
-          disabled={!canSubmit}
-          className="h-9 w-9 items-center justify-center rounded-full"
-          style={{
-            backgroundColor: canSubmit ? colors.icon.accent : colors.icon.minor,
-          }}
-        >
-          <ArrowUpIcon width={20} height={20} color={colors.text.primary} />
-        </ActionPressable>
-      </View>
-      {replyTarget && (
-        <View className="flex-row items-center justify-between px-4 py-1.5">
-          <Text className="typo-label1 text-semantic-text-secondary">
-            @{replyTarget.nickname}에게 답글 남기기
-          </Text>
-          <ActionPressable onPress={onClearReply} className="p-1">
-            <X size={14} className="text-semantic-text-tertiary" />
+          <ActionPressable
+            onPress={handleSubmit}
+            disabled={!canSubmit}
+            className="absolute bottom-2.5 right-3 h-10 w-[60px] items-center justify-center rounded-full"
+            style={{
+              backgroundColor: canSubmit
+                ? colors.icon.accent
+                : colors.button.primary.disabledBg,
+            }}
+          >
+            <ArrowUpIcon
+              width={20}
+              height={20}
+              color={canSubmit ? colors.icon.primary : colors.icon.tertiary}
+            />
           </ActionPressable>
         </View>
-      )}
+        {replyTarget && (
+          <View className="flex-row items-center justify-between mt-1.5">
+            <Text className="typo-label1 text-semantic-text-secondary">
+              {replyTarget.nickname}님께 답글 남기는 중...
+            </Text>
+            <ActionPressable onPress={onClearReply} className="p-1">
+              <X size={14} className="text-semantic-text-tertiary" />
+            </ActionPressable>
+          </View>
+        )}
+      </View>
     </Animated.View>
   );
 };
