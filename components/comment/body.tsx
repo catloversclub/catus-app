@@ -1,7 +1,8 @@
 import { Comment } from "@/api/domains/comment/types";
 import ActionPressable from "@/components/common/action-pressable";
-import ProfileImage from "@/components/common/profile-image";
+
 import { Text } from "@/components/ui/text";
+import ProfileImage from "@/components/user/profile-image";
 import { Heart, MessageCircle, MoreVertical } from "@/lib/icons";
 import { formatRelativeTime } from "@/lib/utils";
 import { type Href } from "expo-router";
@@ -29,8 +30,7 @@ const CommentBody = ({
       <ProfileImage
         imageUrl={author.profileImageUrl}
         size="sm"
-        href={href}
-        alt={`${author.id} profile`}
+        userId={author.id}
       />
       <View className="flex-1">
         <View className="flex-row items-center justify-between">
@@ -45,10 +45,7 @@ const CommentBody = ({
               className="-mr-2 -mt-1 p-2"
               hitSlop={8}
             >
-              <MoreVertical
-                size={16}
-                className="text-semantic-text-tertiary"
-              />
+              <MoreVertical size={16} className="text-semantic-text-tertiary" />
             </ActionPressable>
           )}
         </View>

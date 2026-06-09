@@ -34,6 +34,19 @@ const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
   } = usePostCommentsNonSuspenseQuery(postId, isOpen);
   const { data: me } = useUserProfileNonSuspenseQuery();
   const { handleToggleLike } = useCommentActions(postId);
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+
+  const toggleReplies = useCallback((commentId: string) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(commentId)) {
+        next.delete(commentId);
+      } else {
+        next.add(commentId);
+      }
+      return next;
+    });
+  }, []);
 
   const handleFooterLayout = useCallback((event: LayoutChangeEvent) => {
     setFooterHeight(event.nativeEvent.layout.height);
@@ -68,11 +81,13 @@ const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
         postId={postId}
         comment={item}
         currentUserId={me?.id}
+        isRepliesExpanded={expandedIds.has(item.id)}
+        onToggleReplies={() => toggleReplies(item.id)}
         onReply={(target) => inputRef.current?.setReplyTarget(target)}
         onToggleLike={handleToggleLike}
       />
     ),
-    [handleToggleLike, me?.id, postId],
+    [expandedIds, handleToggleLike, me?.id, postId, toggleReplies],
   );
 
   const listHeaderComponent = useCallback(

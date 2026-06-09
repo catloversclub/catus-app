@@ -8,7 +8,7 @@ import { Text } from "@/components/ui/text";
 import useCommentActions from "@/hooks/comment/use-comment-actions";
 import { useScrollToTop } from "@react-navigation/native";
 import type { ReactElement } from "react";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { RefreshControlProps, StyleProp, View, ViewStyle } from "react-native";
 import Animated, { useAnimatedRef } from "react-native-reanimated";
 
@@ -33,6 +33,19 @@ const CommentList = ({
   const { data: comments } = usePostCommentsQuery(postId);
   const { data: me } = useUserProfileNonSuspenseQuery();
   const { handleToggleLike } = useCommentActions(postId);
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+
+  const toggleReplies = useCallback((commentId: string) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(commentId)) {
+        next.delete(commentId);
+      } else {
+        next.add(commentId);
+      }
+      return next;
+    });
+  }, []);
 
   const renderComment = useCallback(
     ({ item }: { item: Comment }) => (
@@ -40,11 +53,13 @@ const CommentList = ({
         postId={postId}
         comment={item}
         currentUserId={me?.id}
+        isRepliesExpanded={expandedIds.has(item.id)}
+        onToggleReplies={() => toggleReplies(item.id)}
         onReply={onReply}
         onToggleLike={handleToggleLike}
       />
     ),
-    [handleToggleLike, me?.id, onReply, postId],
+    [expandedIds, handleToggleLike, me?.id, onReply, postId, toggleReplies],
   );
 
   const listEmptyComponent = useCallback(

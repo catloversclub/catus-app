@@ -12,6 +12,8 @@ interface CommentItemProps {
   postId: string;
   comment: Comment;
   currentUserId?: string;
+  isRepliesExpanded: boolean;
+  onToggleReplies: () => void;
   onReply?: (target: ReplyTarget) => void;
   onToggleLike: (comment: Comment) => void;
 }
@@ -20,10 +22,11 @@ const CommentItem = ({
   postId,
   comment,
   currentUserId,
+  isRepliesExpanded,
+  onToggleReplies,
   onReply,
   onToggleLike,
 }: CommentItemProps) => {
-  const [isRepliesExpanded, setIsRepliesExpanded] = useState(false);
   const [selectedComment, setSelectedComment] = useState(comment);
   const actionSheetRef = useRef<BottomSheetModal>(null);
 
@@ -58,7 +61,7 @@ const CommentItem = ({
           {!isRepliesExpanded && (
             <ActionPressable
               className="flex-row items-center justify-start gap-1.5 py-1.5 pl-12"
-              onPress={() => setIsRepliesExpanded(true)}
+              onPress={onToggleReplies}
             >
               <View className="h-[1px] w-4 bg-semantic-border-primary" />
               <Text className="typo-label1 text-semantic-text-tertiary">
@@ -81,7 +84,7 @@ const CommentItem = ({
 
               <ActionPressable
                 className="flex-row items-center gap-1.5 py-1.5 pl-12"
-                onPress={() => setIsRepliesExpanded(false)}
+                onPress={onToggleReplies}
               >
                 <View className="h-[1px] w-4 bg-semantic-border-primary" />
                 <Text className="typo-label1 text-semantic-text-tertiary">
