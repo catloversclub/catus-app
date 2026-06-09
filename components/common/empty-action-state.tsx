@@ -6,7 +6,7 @@ interface EmptyActionStateProps {
   title: string;
   description: string;
   onButtonPress: () => void;
-  buttonLabel?: string;
+  buttonLabel: string;
   className?: string;
 }
 
@@ -14,17 +14,17 @@ const EmptyActionState = ({
   title,
   description,
   onButtonPress,
-  buttonLabel = "사진 업로드하기",
+  buttonLabel,
   className,
 }: EmptyActionStateProps) => (
   <View
     className={cn(
-      "flex-1 items-center justify-center bg-semantic-bg-primary px-3 py-20",
+      "flex-1 items-center justify-center bg-semantic-bg-primary py-20",
       className,
     )}
   >
-    <View className="w-full items-center gap-10">
-      <View className="w-full items-center gap-1.5">
+    <View className="w-full items-center gap-6">
+      <View className="w-full items-center">
         <Text className="typo-body2 text-center text-semantic-text-primary">
           {title}
         </Text>
