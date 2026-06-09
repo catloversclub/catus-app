@@ -1,5 +1,6 @@
 import { usePostCommentsQuery } from "@/api/domains/comment/queries";
 import { Comment } from "@/api/domains/comment/types";
+import { useUserProfileNonSuspenseQuery } from "@/api/domains/user/queries";
 import { ReplyTarget } from "@/components/comment/input-bar";
 import CommentItem from "@/components/comment/item";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -30,17 +31,20 @@ const CommentList = ({
   useScrollToTop(listRef);
 
   const { data: comments } = usePostCommentsQuery(postId);
+  const { data: me } = useUserProfileNonSuspenseQuery();
   const { handleToggleLike } = useCommentActions(postId);
 
   const renderComment = useCallback(
     ({ item }: { item: Comment }) => (
       <CommentItem
+        postId={postId}
         comment={item}
+        currentUserId={me?.id}
         onReply={onReply}
         onToggleLike={handleToggleLike}
       />
     ),
-    [handleToggleLike, onReply],
+    [handleToggleLike, me?.id, onReply, postId],
   );
 
   const listEmptyComponent = useCallback(

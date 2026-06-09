@@ -29,6 +29,14 @@ cssInterop(Bookmark, {
     },
   },
 })
+cssInterop(MoreVertical, {
+  className: {
+    target: "style",
+    nativeStyleToProp: {
+      color: true,
+    },
+  },
+})
 cssInterop(X, {
   className: {
     target: "style",

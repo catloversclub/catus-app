@@ -29,6 +29,8 @@ export type CreateCommentResponse = Comment;
 
 export type DeleteCommentResponse = void;
 
+export type ReportCommentResponse = void;
+
 export interface CommentLikeResponse {
   likeCount: number;
 }

@@ -2,6 +2,7 @@ import {
   usePostCommentsNonSuspenseQuery,
 } from "@/api/domains/comment/queries";
 import { Comment } from "@/api/domains/comment/types";
+import { useUserProfileNonSuspenseQuery } from "@/api/domains/user/queries";
 import BaseBottomSheet from "@/components/bottom-sheet/base-bottom-sheet";
 import CommentInputBar, { CommentInputRef } from "@/components/comment/input-bar";
 import CommentItem from "@/components/comment/item";
@@ -31,6 +32,7 @@ const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
     data: comments = [],
     isPending,
   } = usePostCommentsNonSuspenseQuery(postId, isOpen);
+  const { data: me } = useUserProfileNonSuspenseQuery();
   const { handleToggleLike } = useCommentActions(postId);
 
   const handleFooterLayout = useCallback((event: LayoutChangeEvent) => {
@@ -63,12 +65,14 @@ const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
   const renderComment = useCallback(
     ({ item }: { item: Comment }) => (
       <CommentItem
+        postId={postId}
         comment={item}
+        currentUserId={me?.id}
         onReply={(target) => inputRef.current?.setReplyTarget(target)}
         onToggleLike={handleToggleLike}
       />
     ),
-    [handleToggleLike],
+    [handleToggleLike, me?.id, postId],
   );
 
   const listHeaderComponent = useCallback(

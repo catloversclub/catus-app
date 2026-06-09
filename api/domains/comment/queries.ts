@@ -1,6 +1,13 @@
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query"
 
-import { createComment, deleteComment, getPostComments, likeComment, unlikeComment } from "./api"
+import {
+  createComment,
+  deleteComment,
+  getPostComments,
+  likeComment,
+  reportComment,
+  unlikeComment,
+} from "./api"
 import { CreateCommentRequest } from "./types"
 
 export const commentKeys = {
@@ -48,6 +55,12 @@ export const useDeleteCommentMutation = () => {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: commentKeys.byPost(variables.postId) })
     },
+  })
+}
+
+export const useReportCommentMutation = () => {
+  return useMutation({
+    mutationFn: (commentId: string) => reportComment(commentId),
   })
 }
 

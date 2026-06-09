@@ -6,6 +6,7 @@ import {
   CreateCommentResponse,
   DeleteCommentResponse,
   GetPostCommentsResponse,
+  ReportCommentResponse,
 } from "./types";
 
 const BASE_URL = "/comment";
@@ -14,6 +15,7 @@ const COMMENT_ENDPOINTS = {
   BY_POST: (postId: string) => `/post/${postId}${BASE_URL}`,
   DETAIL: (commentId: string) => `${BASE_URL}/${commentId}`,
   LIKE: (commentId: string) => `${BASE_URL}/${commentId}/like`,
+  REPORT: (commentId: string) => `${BASE_URL}/${commentId}/report`,
 } as const;
 
 export const getPostComments = async (
@@ -41,6 +43,15 @@ export const deleteComment = async (
 ): Promise<DeleteCommentResponse> => {
   const { data } = await apiClient.delete<DeleteCommentResponse>(
     COMMENT_ENDPOINTS.DETAIL(commentId),
+  );
+  return data;
+};
+
+export const reportComment = async (
+  commentId: string,
+): Promise<ReportCommentResponse> => {
+  const { data } = await apiClient.post<ReportCommentResponse>(
+    COMMENT_ENDPOINTS.REPORT(commentId),
   );
   return data;
 };

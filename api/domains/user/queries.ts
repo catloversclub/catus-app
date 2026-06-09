@@ -63,6 +63,13 @@ export const useUserProfileQuery = () => {
   });
 };
 
+export const useUserProfileNonSuspenseQuery = () => {
+  return useQuery({
+    queryKey: userKeys.me(),
+    queryFn: getUserProfile,
+  });
+};
+
 export const useUserDetailQuery = (userId: string) => {
   return useSuspenseQuery({
     queryKey: userKeys.detail(userId),

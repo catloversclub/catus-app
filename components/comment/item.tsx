@@ -1,19 +1,31 @@
 import { Comment } from "@/api/domains/comment/types";
+import CommentActionSheet from "@/components/bottom-sheet/comment-action-sheet";
 import CommentBody from "@/components/comment/body";
 import { ReplyTarget } from "@/components/comment/input-bar";
 import ActionPressable from "@/components/common/action-pressable";
 import { Text } from "@/components/ui/text";
-import { memo, useState } from "react";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { memo, useRef, useState } from "react";
 import { View } from "react-native";
 
 interface CommentItemProps {
+  postId: string;
   comment: Comment;
+  currentUserId?: string;
   onReply?: (target: ReplyTarget) => void;
   onToggleLike: (comment: Comment) => void;
 }
 
-const CommentItem = ({ comment, onReply, onToggleLike }: CommentItemProps) => {
+const CommentItem = ({
+  postId,
+  comment,
+  currentUserId,
+  onReply,
+  onToggleLike,
+}: CommentItemProps) => {
   const [isRepliesExpanded, setIsRepliesExpanded] = useState(false);
+  const [selectedComment, setSelectedComment] = useState(comment);
+  const actionSheetRef = useRef<BottomSheetModal>(null);
 
   const { id, author, replies } = comment;
 
@@ -25,6 +37,11 @@ const CommentItem = ({ comment, onReply, onToggleLike }: CommentItemProps) => {
     onReply?.({ id, nickname: author.nickname });
   };
 
+  const openActionSheet = (targetComment: Comment) => {
+    setSelectedComment(targetComment);
+    actionSheetRef.current?.present();
+  };
+
   return (
     <View className="flex-col">
       <View className="flex-row items-start justify-between">
@@ -32,6 +49,7 @@ const CommentItem = ({ comment, onReply, onToggleLike }: CommentItemProps) => {
           comment={comment}
           onLike={handleLike}
           onReply={handleReply}
+          onMorePress={() => openActionSheet(comment)}
         />
       </View>
 
@@ -56,6 +74,7 @@ const CommentItem = ({ comment, onReply, onToggleLike }: CommentItemProps) => {
                   <CommentBody
                     comment={reply}
                     onLike={() => onToggleLike(reply)}
+                    onMorePress={() => openActionSheet(reply)}
                   />
                 </View>
               ))}
@@ -73,6 +92,13 @@ const CommentItem = ({ comment, onReply, onToggleLike }: CommentItemProps) => {
           )}
         </>
       )}
+
+      <CommentActionSheet
+        sheetRef={actionSheetRef}
+        postId={postId}
+        comment={selectedComment}
+        currentUserId={currentUserId}
+      />
     </View>
   );
 };
