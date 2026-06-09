@@ -33,11 +33,12 @@ const ImagePickerScreen = ({
   const { assets, hasMore, endCursor, loadPhotos } = useGalleryAssets(
     isGalleryPermissionGranted,
   );
-  const { selectedIds, toggleSelection, handleConfirm } = usePhotoSelection({
-    selectionLimit,
-    assets,
-    onConfirm,
-  });
+  const { selectedIds, toggleSelection, handleConfirm, isResolving } =
+    usePhotoSelection({
+      selectionLimit,
+      assets,
+      onConfirm,
+    });
   const {
     showCameraPermissionModal,
     setShowCameraPermissionModal,
@@ -64,8 +65,11 @@ const ImagePickerScreen = ({
               buttons={[
                 {
                   label: confirmLabel,
-                  onPress: handleConfirm,
-                  disabled: selectedIds.length === 0,
+                  onPress: () => {
+                    void handleConfirm();
+                  },
+                  disabled: selectedIds.length === 0 || isResolving,
+                  isPending: isResolving,
                 },
               ]}
             />
