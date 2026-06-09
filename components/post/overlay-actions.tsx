@@ -5,6 +5,7 @@ import { View } from "react-native";
 interface PostOverlayActionsProps {
   isLikedByMe: boolean;
   isBookmarkedByMe: boolean;
+  isCommentable: boolean;
   onLike: () => void;
   onCommentPressIn?: () => void;
   onCommentPress: () => void;
@@ -14,6 +15,7 @@ interface PostOverlayActionsProps {
 const PostOverlayActions = ({
   isLikedByMe,
   isBookmarkedByMe,
+  isCommentable,
   onLike,
   onCommentPressIn,
   onCommentPress,
@@ -31,13 +33,15 @@ const PostOverlayActions = ({
           }
         />
       </ActionPressable>
-      <ActionPressable
-        onPressIn={onCommentPressIn}
-        onPress={onCommentPress}
-        className="px-2 py-3"
-      >
-        <MessageCircle size={20} className="text-white" />
-      </ActionPressable>
+      {isCommentable && (
+        <ActionPressable
+          onPressIn={onCommentPressIn}
+          onPress={onCommentPress}
+          className="px-2 py-3"
+        >
+          <MessageCircle size={20} className="text-white" />
+        </ActionPressable>
+      )}
       <ActionPressable onPress={onBookmark} className="px-2 py-3">
         <Bookmark
           size={20}

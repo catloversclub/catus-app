@@ -37,12 +37,14 @@ const usePostActions = (post: Post) => {
   };
 
   const handleCommentPressIn = useCallback(() => {
+    if (!post.isCommentable) return;
     queryClient.prefetchQuery(postCommentsQueryOptions(post.id));
-  }, [post.id, queryClient]);
+  }, [post.id, post.isCommentable, queryClient]);
 
   const handleCommentPress = useCallback(() => {
+    if (!post.isCommentable) return;
     commentSheetRef.current?.present();
-  }, []);
+  }, [post.isCommentable]);
 
   const handleMorePress = useCallback(() => {
     moreSheetRef.current?.present();

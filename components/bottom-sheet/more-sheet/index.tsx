@@ -91,7 +91,7 @@ const MoreSheet = ({ MoreSheetModalRef, post }: MoreSheetProps) => {
             onExpand={() => setReportExpanded(true)}
           />
           <BlockAction post={post} dismiss={dismiss} />
-          <ShareAction post={post} dismiss={dismiss} />
+          {post.isShareable && <ShareAction post={post} dismiss={dismiss} />}
           <VisitProfileAction authorId={post.author.id} dismiss={dismiss} />
         </View>
       )}

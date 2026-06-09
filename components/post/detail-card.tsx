@@ -51,7 +51,9 @@ const PostDetailCard = ({ postId }: { postId: string }) => {
           />
         </ActionPressable>
       </View>
-      <CommentSheet CommentSheetModalRef={commentSheetRef} postId={post.id} />
+      {post.isCommentable && (
+        <CommentSheet CommentSheetModalRef={commentSheetRef} postId={post.id} />
+      )}
       <MoreSheet MoreSheetModalRef={moreSheetRef} post={post} />
     </View>
   );
