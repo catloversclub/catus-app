@@ -4,7 +4,9 @@ import {
 } from "@/api/domains/attribute/queries";
 import { catKeys, useCatByIdQuery } from "@/api/domains/cat/queries";
 import { postKeys, useCatPostsQuery } from "@/api/domains/post/queries";
+import { userKeys } from "@/api/domains/user/queries";
 import MoreIcon from "@/assets/icons/more.svg";
+import CatButlerCard from "@/components/cat/butler-card";
 import { CatProfileHeader } from "@/components/cat/profile-header";
 import IconButton from "@/components/common/icon-button";
 import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
@@ -50,6 +52,7 @@ const CatDetailGrid = ({ catId }: CatDetailGridProps) => {
 
   const refreshQueries = useRefreshQueries([
     catKeys.detail(catId),
+    userKeys.detail(cat.butlerId),
     postKeys.catPosts(catId),
   ]);
   const { refreshControl } = useLogoRefreshControl({
@@ -79,13 +82,16 @@ const CatDetailGrid = ({ catId }: CatDetailGridProps) => {
           </View>
         }
         ListHeaderComponent={
-          <CatProfileHeader
-            imageUrl={cat.profileImageUrl}
-            name={cat.name}
-            subtitle={infoParts.length > 0 ? infoParts.join(" · ") : null}
-            gender={cat.gender}
-            tags={tags}
-          />
+          <>
+            <CatProfileHeader
+              imageUrl={cat.profileImageUrl}
+              name={cat.name}
+              subtitle={infoParts.length > 0 ? infoParts.join(" · ") : null}
+              gender={cat.gender}
+              tags={tags}
+            />
+            <CatButlerCard userId={cat.butlerId} />
+          </>
         }
         scrollEnabled
         refreshControl={refreshControl}
