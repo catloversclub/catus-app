@@ -3,7 +3,7 @@ import AvatarLight from "@/assets/images/avatar/user-light.png";
 import { PROFILE_SIZE } from "@/constants/user";
 import { useColors } from "@/hooks/use-colors";
 import { Image } from "expo-image";
-import { Link } from "expo-router";
+import { Link, type Href } from "expo-router";
 import { memo, ReactNode } from "react";
 import { Pressable, Text, View } from "react-native";
 
@@ -34,7 +34,7 @@ FeedProfileImage.displayName = "FeedProfileImage";
 interface PostProfileInfoBaseProps {
   image: ReactNode;
   name: string;
-  href: string | null;
+  href: Href;
   subtitle?: string;
 }
 
@@ -47,15 +47,11 @@ const PostProfileInfoBase = ({
   <View className="flex-row items-center gap-3">
     {image}
     <View>
-      {href ? (
-        <Link href={href as never} asChild>
-          <Pressable className="active:opacity-60">
-            <Text className="typo-body3 text-semantic-text-primary">{name}</Text>
-          </Pressable>
-        </Link>
-      ) : (
-        <Text className="typo-body3 text-semantic-text-primary">{name}</Text>
-      )}
+      <Link href={href} asChild>
+        <Pressable className="active:opacity-60">
+          <Text className="typo-body3 text-semantic-text-primary">{name}</Text>
+        </Pressable>
+      </Link>
       {subtitle && (
         <Text className="typo-label1 text-semantic-text-secondary">
           {subtitle}
@@ -69,7 +65,7 @@ const PostProfileInfoBase = ({
 
 interface CatPostProfileInfoProps {
   imageUrl: string | null;
-  catId?: string | null;
+  catId: string;
   name: string;
   subtitle?: string;
 }
@@ -79,20 +75,29 @@ const CatPostProfileInfo = ({
   catId,
   name,
   subtitle,
-}: CatPostProfileInfoProps) => (
-  <PostProfileInfoBase
-    image={<FeedProfileImage imageUrl={imageUrl} alt={`${catId ?? "Cat"} profile`} />}
-    name={name}
-    href={catId ? `/cat/${catId}` : null}
-    subtitle={subtitle}
-  />
-);
+}: CatPostProfileInfoProps) => {
+  const href: Href = { pathname: "/cat/[id]", params: { id: catId } };
+
+  return (
+    <PostProfileInfoBase
+      image={
+        <FeedProfileImage
+          imageUrl={imageUrl}
+          alt={`${catId} profile`}
+        />
+      }
+      name={name}
+      href={href}
+      subtitle={subtitle}
+    />
+  );
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface UserPostProfileInfoProps {
   imageUrl: string | null;
-  userId?: string | null;
+  userId: string;
   name: string;
   subtitle?: string;
 }
@@ -102,13 +107,22 @@ const UserPostProfileInfo = ({
   userId,
   name,
   subtitle,
-}: UserPostProfileInfoProps) => (
-  <PostProfileInfoBase
-    image={<FeedProfileImage imageUrl={imageUrl} alt={`${userId ?? "User"} profile`} />}
-    name={name}
-    href={userId ? `/user/${userId}` : null}
-    subtitle={subtitle}
-  />
-);
+}: UserPostProfileInfoProps) => {
+  const href: Href = { pathname: "/user/[id]", params: { id: userId } };
+
+  return (
+    <PostProfileInfoBase
+      image={
+        <FeedProfileImage
+          imageUrl={imageUrl}
+          alt={`${userId} profile`}
+        />
+      }
+      name={name}
+      href={href}
+      subtitle={subtitle}
+    />
+  );
+};
 
 export { CatPostProfileInfo, UserPostProfileInfo };

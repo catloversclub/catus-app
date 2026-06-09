@@ -15,7 +15,7 @@ import { useColors } from "@/hooks/use-colors";
 import { useLoadMoreScroll } from "@/hooks/use-load-more-scroll";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
 import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
-import { type Href, Stack, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 import { View } from "react-native";
 
 // ─── Profile header ───────────────────────────────────────────
@@ -49,12 +49,18 @@ const UserDetailProfileHeader = ({ userId }: { userId: string }) => {
           {
             label: "팔로워",
             value: profile.followerCount,
-            href: `/user/${userId}/follower` as Href,
+            href: {
+              pathname: "/user/[id]/follower",
+              params: { id: userId },
+            },
           },
           {
             label: "팔로잉",
             value: profile.followingCount,
-            href: `/user/${userId}/following` as Href,
+            href: {
+              pathname: "/user/[id]/following",
+              params: { id: userId },
+            },
           },
         ]}
         actions={<OtherProfileActions userId={userId} />}

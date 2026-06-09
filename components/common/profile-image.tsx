@@ -8,7 +8,7 @@ import { PROFILE_SIZE } from "@/constants/user";
 import { useColors } from "@/hooks/use-colors";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Image } from "expo-image";
-import { Link } from "expo-router";
+import { Link, type Href } from "expo-router";
 import { useRef, useState } from "react";
 import { ActivityIndicator, Pressable, View } from "react-native";
 
@@ -17,7 +17,7 @@ type ProfileImageSize = keyof typeof PROFILE_SIZE;
 interface ProfileImageProps {
   imageUrl: string | null;
   size: ProfileImageSize;
-  href?: string;
+  href?: Href;
   alt?: string;
   isEditMode?: boolean;
   isPreviewDisabled?: boolean;
@@ -114,7 +114,7 @@ const ProfileImage = ({
 
   if (href) {
     return (
-      <Link href={href as never} asChild>
+      <Link href={href} asChild>
         <Pressable className="active:opacity-60">
           {imageVisual}
           {selectImageSheet}
