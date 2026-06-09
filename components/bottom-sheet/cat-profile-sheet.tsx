@@ -45,7 +45,7 @@ const CatProfileSheet = ({
   const renderFooter = useCallback(
     (props: BottomSheetFooterProps) => (
       <BottomSheetFooter {...props} bottomInset={bottom}>
-        <View className="px-3 pb-4">
+        <View className="pb-4">
           <Button
             button={{
               label: "확인",
@@ -76,7 +76,7 @@ const CatProfileSheet = ({
       snapPoints={["50%", "90%"]}
       footerComponent={renderFooter}
     >
-      <View className="px-3">
+      <View>
         <View>
           {cats.length === 0 ? (
             <View className="items-center justify-center py-8">

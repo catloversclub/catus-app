@@ -86,7 +86,7 @@ const MoreSheet = ({ MoreSheetModalRef, post }: MoreSheetProps) => {
           onExpand={() => setReportExpanded(true)}
         />
       ) : (
-        <View className="flex-1 flex-col w-full px-3 justify-center pb-16 pt-6">
+        <View className="flex-1 flex-col w-full justify-center pb-16 pt-6">
           <ReportAction
             post={post}
             dismiss={dismiss}

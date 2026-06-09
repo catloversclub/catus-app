@@ -99,7 +99,7 @@ const ReportAction = ({
   };
 
   return (
-    <View className="flex-col px-5 pb-8">
+    <View className="flex-col pb-8">
       <Text className="typo-body1 text-semantic-chips-primary-text text-center pt-4 mb-2">
         {selectedReason}
       </Text>

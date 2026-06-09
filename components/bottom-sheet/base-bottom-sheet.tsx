@@ -69,7 +69,7 @@ const BaseBottomSheet = ({
   return (
     <BottomSheetModal
       backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: colors.bg.secondary }}
+      backgroundStyle={{ backgroundColor: colors.bg.primary }}
       handleIndicatorStyle={{
         width: INDICATOR_WIDTH,
         height: INDICATOR_HEIGHT,
@@ -85,13 +85,9 @@ const BaseBottomSheet = ({
       footerComponent={footerComponent}
       stackBehavior={stackBehavior}
     >
-      {snapPoints ? (
-        children
-      ) : (
-        <BottomSheetView style={styles.contentContainer}>
-          {children}
-        </BottomSheetView>
-      )}
+      <BottomSheetView style={styles.contentContainer}>
+        {children}
+      </BottomSheetView>
     </BottomSheetModal>
   );
 };
@@ -102,5 +98,6 @@ const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
     flexDirection: "column",
+    paddingHorizontal: 12,
   },
 });

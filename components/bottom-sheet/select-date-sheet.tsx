@@ -54,7 +54,7 @@ const SelectDateSheet = ({
       BaseBottomSheetModalRef={SelectDateSheetModalRef}
       onDismiss={() => onChangeDate(formatDateOnly(year, month, day))}
     >
-      <View className="flex-row justify-center items-center px-5 pb-8">
+      <View className="flex-row justify-center items-center pb-8">
         <WheelPicker
           items={YEARS}
           selected={year}
