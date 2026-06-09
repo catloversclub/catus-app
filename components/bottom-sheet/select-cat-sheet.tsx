@@ -6,6 +6,7 @@ import CatProfileImage from "@/components/cat/profile-image";
 import Button from "@/components/common/button";
 import { useColors } from "@/hooks/use-colors";
 import {
+  BottomSheetFlatList,
   BottomSheetFooter,
   BottomSheetFooterProps,
   BottomSheetModal,
@@ -21,85 +22,6 @@ interface SelectCatSheetProps {
   onConfirm?: (catIds: string[]) => void;
 }
 
-interface CatListContentProps {
-  cats: Cat[];
-  selectedCatIds: string[];
-  onToggle: (catId: string, cats: Cat[]) => void;
-  onSync: (cats: Cat[]) => void;
-}
-
-const CatListContent = ({
-  cats,
-  selectedCatIds,
-  onToggle,
-  onSync,
-}: CatListContentProps) => {
-  const { colors } = useColors();
-
-  useEffect(() => {
-    onSync(cats);
-  }, [cats, onSync]);
-
-  if (cats.length === 0) {
-    return (
-      <View className="items-center justify-center py-8">
-        <Text className="text-semantic-text-tertiary typo-body3">
-          등록된 고양이가 없어요.
-        </Text>
-      </View>
-    );
-  }
-
-  return (
-    <>
-      {cats.map((cat) => (
-        <TouchableOpacity
-          key={cat.id}
-          onPress={() => onToggle(cat.id, cats)}
-          className="flex-row items-center justify-between gap-1.5 px-3 py-3.5 rounded"
-        >
-          <View className="flex-row items-center gap-3 flex-1">
-            <CatProfileImage
-              imageUrl={cat.profileImageUrl}
-              size="base"
-              isPreviewDisabled
-            />
-            <Text className="text-semantic-text-secondary text-base font-semibold">
-              {cat.name}
-            </Text>
-          </View>
-          {selectedCatIds.includes(cat.id) ? (
-            <CheckboxFilledIcon
-              width={24}
-              height={24}
-              color={colors.icon.accent}
-            />
-          ) : (
-            <View
-              className="w-5 h-5 rounded-full m-0.5 border-semantic-border-primary"
-              style={{ borderWidth: 1.5 }}
-            />
-          )}
-        </TouchableOpacity>
-      ))}
-    </>
-  );
-};
-
-interface CatFetcherProps {
-  selectedCatIds: string[];
-  onToggle: (catId: string, cats: Cat[]) => void;
-  onSync: (cats: Cat[]) => void;
-}
-
-const UserCatList = ({
-  userId,
-  ...props
-}: CatFetcherProps & { userId: string }) => {
-  const { data: cats } = useUserCatsQuery(userId);
-  return <CatListContent cats={cats} {...props} />;
-};
-
 const SelectCatSheet = ({
   bottomSheetRef,
   userId,
@@ -107,43 +29,35 @@ const SelectCatSheet = ({
   onConfirm,
 }: SelectCatSheetProps) => {
   const { bottom } = useSafeAreaInsets();
+  const { colors } = useColors();
+  const { data: cats } = useUserCatsQuery(userId);
   const [selectedCatIds, setSelectedCatIds] = useState<string[]>([]);
 
-  const handleSync = useCallback(
-    (cats: Cat[]) => {
-      setSelectedCatIds((prev) => {
-        const availableCatIds = new Set(cats.map((cat) => cat.id));
-        const next = prev.filter((catId) => availableCatIds.has(catId));
-
-        if (next.length === prev.length) {
-          return prev;
-        }
-
-        onSelectionChange?.(cats.filter((cat) => next.includes(cat.id)));
-        return next;
-      });
-    },
-    [onSelectionChange],
-  );
+  useEffect(() => {
+    setSelectedCatIds((prev) => {
+      const availableCatIds = new Set(cats.map((cat) => cat.id));
+      const next = prev.filter((catId) => availableCatIds.has(catId));
+      if (next.length === prev.length) return prev;
+      onSelectionChange?.(cats.filter((cat) => next.includes(cat.id)));
+      return next;
+    });
+  }, [cats, onSelectionChange]);
 
   const handleConfirm = () => {
     onConfirm?.(selectedCatIds);
-    if (onConfirm) {
-      setSelectedCatIds([]);
-    }
+    if (onConfirm) setSelectedCatIds([]);
     bottomSheetRef.current?.dismiss();
   };
 
   const renderFooter = useCallback(
     (props: BottomSheetFooterProps) => (
-      <BottomSheetFooter {...props} bottomInset={bottom}>
-        <View className="pb-4 px-4">
+      <BottomSheetFooter {...props}>
+        <View
+          className="px-4 pt-4 bg-semantic-bg-primary"
+          style={{ paddingBottom: bottom + 16 }}
+        >
           <Button
-            button={{
-              label: "확인",
-              onPress: handleConfirm,
-              size: "lg",
-            }}
+            button={{ label: "확인", onPress: handleConfirm, size: "lg" }}
           />
         </View>
       </BottomSheetFooter>
@@ -153,17 +67,49 @@ const SelectCatSheet = ({
   );
 
   const toggleCat = useCallback(
-    (catId: string, cats: Cat[]) => {
+    (catId: string) => {
       setSelectedCatIds((prev) => {
         const next = prev.includes(catId)
           ? prev.filter((id) => id !== catId)
           : [...prev, catId];
-
         onSelectionChange?.(cats.filter((cat) => next.includes(cat.id)));
         return next;
       });
     },
-    [onSelectionChange],
+    [cats, onSelectionChange],
+  );
+
+  const renderItem = useCallback(
+    ({ item }: { item: Cat }) => (
+      <TouchableOpacity
+        onPress={() => toggleCat(item.id)}
+        className="flex-row items-center justify-between gap-1.5 px-3 py-3.5 rounded"
+      >
+        <View className="flex-row items-center gap-3 flex-1">
+          <CatProfileImage
+            imageUrl={item.profileImageUrl}
+            size="base"
+            isPreviewDisabled
+          />
+          <Text className="text-semantic-text-secondary text-base font-semibold">
+            {item.name}
+          </Text>
+        </View>
+        {selectedCatIds.includes(item.id) ? (
+          <CheckboxFilledIcon
+            width={24}
+            height={24}
+            color={colors.icon.accent}
+          />
+        ) : (
+          <View
+            className="w-5 h-5 rounded-full m-0.5 border-semantic-border-primary"
+            style={{ borderWidth: 1.5 }}
+          />
+        )}
+      </TouchableOpacity>
+    ),
+    [toggleCat, selectedCatIds, colors.icon.accent],
   );
 
   return (
@@ -171,15 +117,21 @@ const SelectCatSheet = ({
       BaseBottomSheetModalRef={bottomSheetRef}
       snapPoints={["50%", "90%"]}
       footerComponent={renderFooter}
+      withContentContainer={false}
     >
-      <View>
-        <UserCatList
-          userId={userId}
-          selectedCatIds={selectedCatIds}
-          onToggle={toggleCat}
-          onSync={handleSync}
-        />
-      </View>
+      <BottomSheetFlatList
+        data={cats}
+        keyExtractor={(item) => item.id}
+        renderItem={renderItem}
+        ListEmptyComponent={
+          <View className="items-center justify-center py-8">
+            <Text className="text-semantic-text-tertiary typo-body3">
+              등록된 고양이가 없어요.
+            </Text>
+          </View>
+        }
+        contentContainerStyle={{ flexGrow: 1 }}
+      />
     </BaseBottomSheet>
   );
 };
