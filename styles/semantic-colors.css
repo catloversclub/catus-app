@@ -15,7 +15,7 @@
     /* Icon */
     --semantic-icon-primary: #18181b;
     --semantic-icon-secondary: #6d6d6d;
-    --semantic-icon-tertiary: #a1a1aa;
+    --semantic-icon-tertiary: #aaaaaa;
     --semantic-icon-minor: #d4d4d8;
     --semantic-icon-accent: #facc15;
     --semantic-icon-success: #0284c7;
@@ -78,7 +78,7 @@
       /* Icon */
       --semantic-icon-primary: #fafafa;
       --semantic-icon-secondary: #bfbfbf;
-      --semantic-icon-tertiary: #52525b;
+      --semantic-icon-tertiary: #818181;
       --semantic-icon-minor: #3f3f46;
       --semantic-icon-accent: #facc15;
       --semantic-icon-success: #38bdf8;

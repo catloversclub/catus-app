@@ -7,12 +7,12 @@ import CommentSheet from "@/components/bottom-sheet/comment-sheet";
 import MoreSheet from "@/components/bottom-sheet/more-sheet";
 import ActionPressable from "@/components/common/action-pressable";
 import IconButton from "@/components/common/icon-button";
+import PostCarousel from "@/components/post/carousel";
 import {
   CatPostProfileInfo,
   UserPostProfileInfo,
 } from "@/components/post/profile-info";
 import { Skeleton } from "@/components/ui/skeleton";
-import PostCarousel from "@/components/post/carousel";
 import { useColors } from "@/hooks/use-colors";
 import usePostActions from "@/hooks/use-post-actions";
 import { Bookmark, Heart } from "@/lib/icons";
@@ -68,7 +68,7 @@ const PostDetailCard = ({ postId }: { postId: string }) => {
       <ProfileInfo post={post} onMorePress={handleMorePress} />
       <PostCarousel post={post} linkable={false} />
       <View className="typo-body4">
-        <Text className="text-semantic-text-primary">{post.content}</Text>
+        <Text className="text-semantic-text-primary pt-2">{post.content}</Text>
       </View>
       <View className="flex-row items-center justify-end gap-4">
         <ActionPressable onPress={handleLike}>
@@ -77,7 +77,7 @@ const PostDetailCard = ({ postId }: { postId: string }) => {
             className={
               post.isLikedByMe
                 ? "fill-semantic-icon-error text-semantic-icon-error"
-              : "text-semantic-text-tertiary"
+                : "text-semantic-text-tertiary"
             }
           />
         </ActionPressable>
@@ -87,7 +87,7 @@ const PostDetailCard = ({ postId }: { postId: string }) => {
             className={
               post.isBookmarkedByMe
                 ? "fill-semantic-icon-accent text-semantic-icon-accent"
-              : "text-semantic-text-tertiary"
+                : "text-semantic-text-tertiary"
             }
           />
         </ActionPressable>
@@ -106,7 +106,10 @@ const PostDetailCardSkeleton = () => {
     <View className="flex-col gap-3 px-3">
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-3">
-          <Skeleton className="rounded-full" style={{ width: 36, height: 36 }} />
+          <Skeleton
+            className="rounded-full"
+            style={{ width: 36, height: 36 }}
+          />
           <View style={{ gap: 6 }}>
             <Skeleton className="rounded" style={{ width: 96, height: 14 }} />
             <Skeleton className="rounded" style={{ width: 56, height: 12 }} />
