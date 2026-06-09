@@ -4,9 +4,10 @@ import {
 } from "@/api/domains/attribute/queries";
 import { catKeys, useCatByIdQuery } from "@/api/domains/cat/queries";
 import { postKeys, useCatPostsQuery } from "@/api/domains/post/queries";
-import { userKeys } from "@/api/domains/user/queries";
+import { useUserProfileQuery, userKeys } from "@/api/domains/user/queries";
 import MoreIcon from "@/assets/icons/more.svg";
 import CatButlerCard from "@/components/cat/butler-card";
+import CatProfileActions from "@/components/cat/profile-actions";
 import { CatProfileHeader } from "@/components/cat/profile-header";
 import IconButton from "@/components/common/icon-button";
 import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
@@ -25,6 +26,7 @@ interface CatDetailGridProps {
 
 const CatDetailGrid = ({ catId }: CatDetailGridProps) => {
   const { data: cat } = useCatByIdQuery(catId);
+  const { data: currentUser } = useUserProfileQuery();
   const { data: appearances } = useAppearanceQuery();
   const { data: personalities } = usePersonalityQuery();
   const { colors } = useColors();
@@ -49,6 +51,7 @@ const CatDetailGrid = ({ catId }: CatDetailGridProps) => {
   const infoParts = [formatDate(cat.birthDate), cat.breed].filter(
     Boolean,
   ) as string[];
+  const isMyCat = cat.butlerId === currentUser.id;
 
   const refreshQueries = useRefreshQueries([
     catKeys.detail(catId),
@@ -90,7 +93,11 @@ const CatDetailGrid = ({ catId }: CatDetailGridProps) => {
               gender={cat.gender}
               tags={tags}
             />
-            <CatButlerCard userId={cat.butlerId} />
+            {isMyCat ? (
+              <CatProfileActions catId={cat.id} catName={cat.name} />
+            ) : (
+              <CatButlerCard userId={cat.butlerId} />
+            )}
           </>
         }
         scrollEnabled

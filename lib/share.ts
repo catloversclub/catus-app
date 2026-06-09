@@ -15,4 +15,11 @@ const sharePost = async (postId: string, nickname: string) => {
   });
 };
 
-export { sharePost, shareUser };
+const shareCat = async (catId: string, catName: string) => {
+  await Share.share({
+    url: `${WEBVIEW_URL}/share/cat/${catId}`,
+    message: `${catName}의 프로필을 확인해보세요!`,
+  });
+};
+
+export { shareCat, sharePost, shareUser };
