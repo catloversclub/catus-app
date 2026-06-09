@@ -39,7 +39,7 @@ const FollowButton = ({
   return (
     <Button
       button={button}
-      className={cn("rounded-[8px] px-4 py-0", SIZE_CLASS[size], className)}
+      className={cn("rounded-[4px] py-0", SIZE_CLASS[size], className)}
       textClassName={size === "sm" ? "typo-body4" : undefined}
     />
   );

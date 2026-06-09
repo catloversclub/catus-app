@@ -48,7 +48,7 @@ const Button = ({ button, className, textClassName }: ButtonProps) => {
       onPress={button.onPress}
       disabled={isDisabled}
       className={cn(
-        "rounded items-center",
+        "rounded items-center justify-center",
         CONTAINER_SIZE[button.size],
         isDisabled
           ? "bg-semantic-button-primary-disabledBg"
