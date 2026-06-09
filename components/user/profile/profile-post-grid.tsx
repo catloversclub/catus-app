@@ -1,5 +1,5 @@
 import { Post } from "@/api/domains/post/types";
-import ActionPressable from "@/components/common/action-pressable";
+import ImagePressable from "@/components/common/image-pressable";
 import { LoadMoreFooter } from "@/components/common/load-more-footer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SquareImage } from "@/components/ui/square-image";
@@ -39,9 +39,9 @@ interface PostThumbnailProps {
 
 const PostThumbnail = ({ post, size }: PostThumbnailProps) => {
   return (
-    <ActionPressable href={`/post/${post.id}`} style={{ width: size, height: size }}>
+    <ImagePressable href={`/post/${post.id}`} style={{ width: size, height: size }}>
       <SquareImage uri={post.images[0]?.url} size={size} />
-    </ActionPressable>
+    </ImagePressable>
   );
 };
 

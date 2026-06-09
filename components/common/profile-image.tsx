@@ -2,8 +2,8 @@ import CameraIcon from "@/assets/icons/camera.svg";
 import AvatarDark from "@/assets/images/avatar/user-dark.png";
 import AvatarLight from "@/assets/images/avatar/user-light.png";
 import SelectImageSheet from "@/components/bottom-sheet/select-image-sheet";
-import ActionPressable from "@/components/common/action-pressable";
 import IconButton from "@/components/common/icon-button";
+import ImagePressable from "@/components/common/image-pressable";
 import ProfilePreviewModal from "@/components/common/profile-preview-modal";
 import { PROFILE_SIZE } from "@/constants/user";
 import { useColors } from "@/hooks/use-colors";
@@ -115,19 +115,19 @@ const ProfileImage = ({
 
   if (href) {
     return (
-      <ActionPressable href={href}>
+      <ImagePressable href={href}>
         {imageVisual}
         {selectImageSheet}
-      </ActionPressable>
+      </ImagePressable>
     );
   }
 
   if (!isEditMode && !isPreviewDisabled) {
     return (
       <>
-        <ActionPressable onPress={handlePreviewPress}>
+        <ImagePressable onPress={handlePreviewPress}>
           {imageVisual}
-        </ActionPressable>
+        </ImagePressable>
         {selectImageSheet}
         <ProfilePreviewModal
           visible={previewOrigin !== null}

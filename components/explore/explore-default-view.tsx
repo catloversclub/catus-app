@@ -1,6 +1,6 @@
 import { postKeys, useDailyPopularPostsQuery } from "@/api/domains/post/queries";
 import { Post } from "@/api/domains/post/types";
-import ActionPressable from "@/components/common/action-pressable";
+import ImagePressable from "@/components/common/image-pressable";
 import { RefreshableScrollView } from "@/components/common/logo-refresh-control";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
@@ -40,7 +40,7 @@ const PostGridItem = ({ post }: { post: Post }) => {
   const imageUrl = post.images[0]?.url;
 
   return (
-    <ActionPressable href={`/post/${post.id}`} style={{ width: size, height: size }}>
+    <ImagePressable href={`/post/${post.id}`} style={{ width: size, height: size }}>
       {imageUrl ? (
         <Image
           source={{ uri: imageUrl }}
@@ -53,7 +53,7 @@ const PostGridItem = ({ post }: { post: Post }) => {
           className="bg-semantic-bg-secondary"
         />
       )}
-    </ActionPressable>
+    </ImagePressable>
   );
 }
 

@@ -6,6 +6,7 @@ import {
 } from "@/api/domains/search/queries";
 import { SearchCatItem, SearchUserItem } from "@/api/domains/search/types";
 import ActionPressable from "@/components/common/action-pressable";
+import ImagePressable from "@/components/common/image-pressable";
 import { RefreshableScrollView } from "@/components/common/logo-refresh-control";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
@@ -110,7 +111,7 @@ const PostHorizontalItem = ({ post }: { post: Post }) => {
 
   const imageUrl = post.images[0]?.url;
   return (
-    <ActionPressable
+    <ImagePressable
       href={`/post/${post.id}`}
       className="rounded overflow-hidden"
       style={{ width: size, height: size }}
@@ -127,7 +128,7 @@ const PostHorizontalItem = ({ post }: { post: Post }) => {
           className="bg-semantic-bg-secondary"
         />
       )}
-    </ActionPressable>
+    </ImagePressable>
   );
 };
 
