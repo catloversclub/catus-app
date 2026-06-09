@@ -24,7 +24,7 @@ const CatProfileHeader = ({
   const showGender = gender && gender !== "UNKNOWN";
 
   return (
-    <View className="pt-6">
+    <View className="py-6">
       <View className="flex-col items-center">
         <CatProfileImage imageUrl={imageUrl ?? null} size="lg" />
         <ProfileIdentity name={name} />

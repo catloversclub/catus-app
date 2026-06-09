@@ -26,7 +26,7 @@ const CatButlerCard = ({ userId }: CatButlerCardProps) => {
 
   return (
     <>
-      <View className="mx-5 mt-8 flex-row items-center rounded-[8px] bg-semantic-bg-secondary px-5 py-4">
+      <View className="mx-3 flex-row items-center rounded-[10px] bg-semantic-bg-secondary px-6 py-2">
         <ActionPressable
           href={{ pathname: "/user/[id]", params: { id: userId } }}
           className="flex-1 flex-row items-center gap-3"
@@ -37,18 +37,18 @@ const CatButlerCard = ({ userId }: CatButlerCardProps) => {
             isPreviewDisabled
           />
           <View className="flex-1">
-            <Text className="typo-body4 text-semantic-text-secondary">
+            <Text className="typo-label1 text-semantic-text-secondary">
               집사
             </Text>
             <Text
-              className="typo-title4 text-semantic-text-primary"
+              className="typo-body3 text-semantic-text-secondary"
               numberOfLines={1}
             >
               {profile.nickname}
             </Text>
           </View>
         </ActionPressable>
-        <View className="ml-3 w-[86px]">
+        <View className="ml-3">
           <FollowButton
             userId={userId}
             isFollowing={profile.isFollowing}
@@ -58,12 +58,12 @@ const CatButlerCard = ({ userId }: CatButlerCardProps) => {
         </View>
         <ActionPressable
           href={{ pathname: "/user/[id]", params: { id: userId } }}
-          className="ml-4 p-1"
+          className="pl-3"
           accessibilityLabel={`${profile.nickname} 집사 프로필로 이동`}
         >
           <ChevronRightIcon
-            width={24}
-            height={24}
+            width={16}
+            height={16}
             color={colors.icon.tertiary}
           />
         </ActionPressable>
