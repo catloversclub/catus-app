@@ -88,14 +88,17 @@ const UserDetailPostGrid = ({
   } = useUserPostsQuery(userId);
   const posts = postsData.pages.flat();
 
+  loadMoreRef.current = () => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  };
+
   return (
     <PostGrid
       posts={posts}
       isFetchingNextPage={isFetchingNextPage}
-      hasNextPage={hasNextPage}
-      fetchNextPage={fetchNextPage}
       emptyMessage="아직 작성한 게시글이 없어요"
-      loadMoreRef={loadMoreRef}
     />
   );
 };

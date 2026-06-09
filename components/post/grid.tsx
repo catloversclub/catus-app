@@ -3,7 +3,7 @@ import ImagePressable from "@/components/common/image-pressable";
 import { LoadMoreFooter } from "@/components/common/load-more-footer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SquareImage } from "@/components/ui/square-image";
-import { FlatList, Text, View, useWindowDimensions } from "react-native";
+import { FlatList, RefreshControlProps, Text, View, useWindowDimensions } from "react-native";
 
 type PostRowItem = { type: "row"; posts: Post[] };
 type EmptyItem = { type: "empty"; message: string };
@@ -53,11 +53,10 @@ interface PostGridProps {
   tabBar?: React.ReactElement;
   posts: Post[];
   isFetchingNextPage: boolean;
-  hasNextPage: boolean;
-  fetchNextPage: () => void;
   emptyMessage: string;
-  logoOverlay?: React.ReactNode;
-  loadMoreRef?: React.RefObject<(() => void) | null>;
+  scrollEnabled?: boolean;
+  onEndReached?: () => void;
+  refreshControl?: React.ReactElement<RefreshControlProps>;
 }
 
 const PostGrid = ({
@@ -65,24 +64,14 @@ const PostGrid = ({
   tabBar,
   posts,
   isFetchingNextPage,
-  hasNextPage,
-  fetchNextPage,
   emptyMessage,
-  logoOverlay,
-  loadMoreRef,
+  scrollEnabled = false,
+  onEndReached,
+  refreshControl,
 }: PostGridProps) => {
-  if (loadMoreRef) {
-    loadMoreRef.current = () => {
-      if (hasNextPage && !isFetchingNextPage) {
-        fetchNextPage();
-      }
-    };
-  }
-
   const { width } = useWindowDimensions();
   const size = (width - 24) / 3;
-
-  const hasStickyTabBar = !!tabBar;
+  const hasTabBar = !!tabBar;
 
   const postRows: PostRowItem[] = [];
   for (let i = 0; i < posts.length; i += 3) {
@@ -90,7 +79,7 @@ const PostGrid = ({
   }
 
   const data: ListItem[] = [
-    ...(hasStickyTabBar ? [{ type: "tabBar" as const }] : []),
+    ...(hasTabBar ? [{ type: "tabBar" as const }] : []),
     ...(posts.length === 0
       ? [{ type: "empty" as const, message: emptyMessage }]
       : postRows),
@@ -98,9 +87,7 @@ const PostGrid = ({
   ];
 
   const renderItem = ({ item }: { item: ListItem }) => {
-    if (item.type === "tabBar") {
-      return tabBar ?? null;
-    }
+    if (item.type === "tabBar") return tabBar ?? null;
     if (item.type === "empty") {
       return (
         <View className="py-12 items-center justify-center">
@@ -110,9 +97,7 @@ const PostGrid = ({
         </View>
       );
     }
-    if (item.type === "loader") {
-      return <LoadMoreFooter />;
-    }
+    if (item.type === "loader") return <LoadMoreFooter />;
     return (
       <View style={{ flexDirection: "row", gap: 2 }}>
         {item.posts.map((post) => (
@@ -123,31 +108,30 @@ const PostGrid = ({
   };
 
   return (
-    <View style={{ flex: 1 }}>
-      {logoOverlay}
-      <FlatList
-        style={{ flex: 1 }}
-        contentContainerStyle={{ flexGrow: 1 }}
-        ListHeaderComponent={ListHeaderComponent}
-        data={data}
-        keyExtractor={(item, index) => {
-          if (item.type === "tabBar") return "tabBar";
-          if (item.type === "empty") return "empty";
-          if (item.type === "loader") return "loader";
-          return `row-${index}`;
-        }}
-        renderItem={renderItem}
-        ItemSeparatorComponent={({ leadingItem }) =>
-          hasStickyTabBar &&
-          (leadingItem as ListItem)?.type === "tabBar" ? null : (
-            <View style={{ height: 2 }} />
-          )
-        }
-        scrollEnabled={false}
-      />
-    </View>
+    <FlatList
+      style={{ flex: 1 }}
+      contentContainerStyle={{ flexGrow: 1 }}
+      ListHeaderComponent={ListHeaderComponent}
+      data={data}
+      keyExtractor={(item, index) => {
+        if (item.type === "tabBar") return "tabBar";
+        if (item.type === "empty") return "empty";
+        if (item.type === "loader") return "loader";
+        return `row-${index}`;
+      }}
+      renderItem={renderItem}
+      ItemSeparatorComponent={({ leadingItem }) =>
+        hasTabBar && (leadingItem as ListItem)?.type === "tabBar" ? null : (
+          <View style={{ height: 2 }} />
+        )
+      }
+      scrollEnabled={scrollEnabled}
+      onEndReached={onEndReached}
+      onEndReachedThreshold={0.5}
+      refreshControl={refreshControl}
+    />
   );
 };
 
-export { PostGridSkeleton, PostThumbnail };
+export { PostGridSkeleton };
 export default PostGrid;

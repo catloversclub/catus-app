@@ -5,10 +5,11 @@ import {
 } from "@/api/domains/post/queries";
 import TabIconBar from "@/components/layout/tab-icon-bar";
 import PostGrid from "@/components/post/grid";
-import { useTabSwipe } from "@/hooks/use-tab-swipe";
-import { GestureDetector } from "react-native-gesture-handler";
-import { View } from "react-native";
-import Animated from "react-native-reanimated";
+import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
+import MyProfileHeaderContent from "@/components/user/mypage/my-profile-header-content";
+import { ProfileHeaderSkeleton } from "@/components/user/profile/profile-header";
+import { useState } from "react";
+import { RefreshControl } from "react-native";
 
 const EMPTY_MESSAGES = [
   "게시글이 없어요",
@@ -16,50 +17,42 @@ const EMPTY_MESSAGES = [
   "저장한 게시글이 없어요",
 ];
 
+const ProfileHeader = () => (
+  <SuspenseWithDelay fallback={<ProfileHeaderSkeleton />}>
+    <MyProfileHeaderContent />
+  </SuspenseWithDelay>
+);
+
 interface MypagePostGridProps {
-  activeTab: number;
-  onTabChange: (i: number) => void;
-  loadMoreRef: React.RefObject<(() => void) | null>;
+  refreshing: boolean;
+  onRefresh: () => void;
 }
 
-const MypagePostGrid = ({
-  activeTab,
-  onTabChange,
-  loadMoreRef,
-}: MypagePostGridProps) => {
+const MypagePostGrid = ({ refreshing, onRefresh }: MypagePostGridProps) => {
+  const [activeTab, setActiveTab] = useState(0);
   const myPostsQuery = useMyPostsQuery();
   const likedQuery = useMyLikedPostsQuery();
   const bookmarkedQuery = useMyBookmarkedPostsQuery();
 
   const queries = [myPostsQuery, likedQuery, bookmarkedQuery];
-
-  const { renderTab, animatedStyle, panGesture, switchTab } = useTabSwipe({
-    tabCount: queries.length,
-    activeTab,
-    onTabChange,
-  });
-
-  const activeQuery = queries[renderTab];
+  const activeQuery = queries[activeTab];
   const posts = activeQuery.data.pages.flat();
 
   return (
-    <View>
-      <TabIconBar activeIndex={activeTab} onChange={switchTab} />
-      <GestureDetector gesture={panGesture}>
-        <View style={{ overflow: "hidden" }}>
-          <Animated.View style={animatedStyle}>
-            <PostGrid
-              posts={posts}
-              isFetchingNextPage={activeQuery.isFetchingNextPage}
-              hasNextPage={activeQuery.hasNextPage}
-              fetchNextPage={activeQuery.fetchNextPage}
-              emptyMessage={EMPTY_MESSAGES[renderTab]}
-              loadMoreRef={loadMoreRef}
-            />
-          </Animated.View>
-        </View>
-      </GestureDetector>
-    </View>
+    <PostGrid
+      posts={posts}
+      isFetchingNextPage={activeQuery.isFetchingNextPage}
+      emptyMessage={EMPTY_MESSAGES[activeTab]}
+      ListHeaderComponent={ProfileHeader}
+      tabBar={<TabIconBar activeIndex={activeTab} onChange={setActiveTab} />}
+      scrollEnabled
+      onEndReached={() => {
+        if (activeQuery.hasNextPage && !activeQuery.isFetchingNextPage) {
+          activeQuery.fetchNextPage();
+        }
+      }}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+    />
   );
 };
 

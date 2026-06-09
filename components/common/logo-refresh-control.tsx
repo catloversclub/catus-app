@@ -1,11 +1,6 @@
 import Gradient from "@/components/common/gradient";
 import { useCallback, useState } from "react";
-import {
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  RefreshControl,
-  ScrollViewProps,
-} from "react-native";
+import { RefreshControl, ScrollViewProps } from "react-native";
 import Animated from "react-native-reanimated";
 
 type Options = {
@@ -25,18 +20,11 @@ const useLogoRefreshControl = ({ onRefresh }: Options) => {
     }
   }, [refreshing, onRefresh]);
 
-  const onScrollEndDrag = useCallback(
-    (_event: NativeSyntheticEvent<NativeScrollEvent>) => {
-      void _event;
-    },
-    [],
-  );
-
   const refreshControl = (
     <RefreshControl refreshing={refreshing} onRefresh={triggerRefresh} />
   );
 
-  return { onScrollEndDrag, logoOverlay: null, refreshControl, refreshing };
+  return { refreshControl, refreshing };
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -48,17 +36,9 @@ interface RefreshableScrollViewProps extends ScrollViewProps {
 const RefreshableScrollView = ({
   onRefresh,
   children,
-  onScrollEndDrag: onScrollEndDragProp,
   ...props
 }: RefreshableScrollViewProps) => {
   const { refreshControl } = useLogoRefreshControl({ onRefresh });
-
-  const handleScrollEndDrag = useCallback(
-    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-      onScrollEndDragProp?.(e);
-    },
-    [onScrollEndDragProp],
-  );
 
   return (
     <>
@@ -69,7 +49,6 @@ const RefreshableScrollView = ({
       />
       <Animated.ScrollView
         showsVerticalScrollIndicator={false}
-        onScrollEndDrag={handleScrollEndDrag}
         refreshControl={refreshControl}
         {...(props as any)}
         contentContainerStyle={[
