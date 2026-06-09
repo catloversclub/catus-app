@@ -1,8 +1,9 @@
 import BaseBottomSheet from "@/components/bottom-sheet/base-bottom-sheet";
+import ActionPressable from "@/components/common/action-pressable";
 import { ThemeMode, useThemeStore } from "@/store/theme-store";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import React from "react";
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 interface DisplayModeSheetProps {
   DisplayModeSheetModalRef: React.RefObject<BottomSheetModal | null>;
@@ -28,15 +29,15 @@ const DisplayModeSheet = ({
     <BaseBottomSheet BaseBottomSheetModalRef={DisplayModeSheetModalRef}>
       <View className="flex-1 flex flex-col items-center justify-center pb-16">
         {DISPLAY_MODE_SHEET_ITEMS.map(({ label, mode }) => (
-          <Pressable
+          <ActionPressable
             key={label}
             onPress={() => handleModePress(mode)}
-            className="flex-row gap-1.5 py-[14px] items-center justify-center active:opacity-60"
+            className="flex-row gap-1.5 py-[14px] items-center justify-center"
           >
             <Text className="typo-body1 text-semantic-text-primary">
               {label}
             </Text>
-          </Pressable>
+          </ActionPressable>
         ))}
       </View>
     </BaseBottomSheet>

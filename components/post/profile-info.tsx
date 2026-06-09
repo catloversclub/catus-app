@@ -1,11 +1,12 @@
+import ActionPressable from "@/components/common/action-pressable";
 import AvatarDark from "@/assets/images/avatar/user-dark.png";
 import AvatarLight from "@/assets/images/avatar/user-light.png";
 import { PROFILE_SIZE } from "@/constants/user";
 import { useColors } from "@/hooks/use-colors";
 import { Image } from "expo-image";
-import { Link, type Href } from "expo-router";
+import { type Href } from "expo-router";
 import { memo, ReactNode } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 interface FeedProfileImageProps {
   imageUrl: string | null;
@@ -47,11 +48,9 @@ const PostProfileInfoBase = ({
   <View className="flex-row items-center gap-3">
     {image}
     <View>
-      <Link href={href} asChild>
-        <Pressable className="active:opacity-60">
-          <Text className="typo-body3 text-semantic-text-primary">{name}</Text>
-        </Pressable>
-      </Link>
+      <ActionPressable href={href}>
+        <Text className="typo-body3 text-semantic-text-primary">{name}</Text>
+      </ActionPressable>
       {subtitle && (
         <Text className="typo-label1 text-semantic-text-secondary">
           {subtitle}

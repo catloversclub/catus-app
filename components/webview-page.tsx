@@ -1,7 +1,8 @@
+import ActionPressable from "@/components/common/action-pressable";
 import { RefreshableScrollView } from "@/components/common/logo-refresh-control";
 import { commonStyles } from "@/styles/common-styles";
 import React, { useCallback } from "react";
-import { Linking, Pressable, Text, View } from "react-native";
+import { Linking, Text, View } from "react-native";
 
 interface WebViewPageProps {
   url: string;
@@ -28,14 +29,14 @@ export function WebViewPage({ url, onMessage }: WebViewPageProps) {
           style={commonStyles.webview}
           className="items-center justify-center bg-semantic-bg-primary px-6"
         >
-          <Pressable
+          <ActionPressable
             onPress={openExternal}
-            className="rounded bg-semantic-button-primary-bg px-4 py-3 active:opacity-70"
+            className="rounded bg-semantic-button-primary-bg px-4 py-3"
           >
             <Text className="typo-body3 text-semantic-button-primary-text">
               브라우저에서 열기
             </Text>
-          </Pressable>
+          </ActionPressable>
         </View>
       </RefreshableScrollView>
     </View>

@@ -1,12 +1,13 @@
 import { type Notification } from "@/api/domains/notification/types";
 import DeleteIcon from "@/assets/icons/trash.svg";
+import ActionPressable from "@/components/common/action-pressable";
 import FollowButton from "@/components/user/follow-button";
 import UserProfileImage from "@/components/user/profile-image";
 import { ROUTES } from "@/constants/route";
 import { formatRelativeTime } from "@/lib/utils";
 import { router } from "expo-router";
 import { ReactNode, useRef } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import ReanimatedSwipeable, {
   type SwipeableMethods,
 } from "react-native-gesture-handler/ReanimatedSwipeable";
@@ -126,13 +127,13 @@ const RightActions = ({ progress, drag, onDelete }: RightActionsProps) => {
 
   return (
     <Animated.View style={animatedStyle}>
-      <Pressable
+      <ActionPressable
         onPress={onDelete}
         style={{ flex: 1 }}
         className="items-center justify-center rounded-r-lg bg-semantic-border-error"
       >
         <DeleteIcon width={20} height={20} color="white" />
-      </Pressable>
+      </ActionPressable>
     </Animated.View>
   );
 };
@@ -175,7 +176,7 @@ const NotificationItem = ({ item, onDelete }: NotificationItemProps) => {
       friction={1}
       dragOffsetFromLeftEdge={0}
     >
-      <Pressable
+      <ActionPressable
         onPress={handleContentPress}
         className="flex-row items-start p-3  bg-semantic-bg-primary border-semantic-border-primary"
       >
@@ -199,7 +200,7 @@ const NotificationItem = ({ item, onDelete }: NotificationItemProps) => {
             <FollowButton userId={actorId} isFollowing={false} />
           </>
         )}
-      </Pressable>
+      </ActionPressable>
     </ReanimatedSwipeable>
   );
 };

@@ -2,14 +2,9 @@ import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useCallback, useRef, useState } from "react";
-import {
-  FlatList,
-  Pressable,
-  useWindowDimensions,
-  View,
-  ViewToken,
-} from "react-native";
+import { FlatList, useWindowDimensions, View, ViewToken } from "react-native";
 
+import ActionPressable from "@/components/common/action-pressable";
 import ImageViewerModal from "@/components/common/image-viewer-modal";
 import { CAROUSEL_CONFIG } from "@/constants/config";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -74,7 +69,7 @@ const CarouselItem = ({
   };
 
   return (
-    <Pressable onPress={handlePress}>
+    <ActionPressable onPress={handlePress}>
       <View ref={viewRef}>
         <Image
           source={{ uri: item.url }}
@@ -85,7 +80,7 @@ const CarouselItem = ({
           onLoad={onFirstImageLoad}
         />
       </View>
-    </Pressable>
+    </ActionPressable>
   );
 };
 

@@ -1,7 +1,8 @@
+import ActionPressable from "@/components/common/action-pressable";
 import ContainedImageFrame from "@/components/post-editor/contained-image-frame";
 import { CarouselDots } from "@/components/post/carousel-indicator";
 import { useRef, useState } from "react";
-import { Pressable, View } from "react-native";
+import { View } from "react-native";
 import PagerView from "react-native-pager-view";
 
 interface ImagePagerProps {
@@ -42,7 +43,7 @@ const ImagePager = ({
         }}
       >
         {images.map((uri, index) => (
-          <Pressable
+          <ActionPressable
             key={index}
             onPress={() => onImagePress?.(uri, index)}
             disabled={!onImagePress}
@@ -51,7 +52,7 @@ const ImagePager = ({
             <View className="flex-1 items-center justify-center relative">
               <ContainedImageFrame uri={uri} imageClassName={imageClassName} />
             </View>
-          </Pressable>
+          </ActionPressable>
         ))}
       </PagerView>
 

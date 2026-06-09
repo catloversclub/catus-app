@@ -1,10 +1,11 @@
 import BaseBottomSheet from "@/components/bottom-sheet/base-bottom-sheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 import AlbumIcon from "@/assets/icons/album.svg";
 import CameraIcon from "@/assets/icons/camera.svg";
+import ActionPressable from "@/components/common/action-pressable";
 import ImagePickerModal from "@/components/media/image-picker-modal";
 import MediaPermissionModals from "@/components/modal/media-permission-modals";
 import { useColors } from "@/hooks/use-colors";
@@ -111,16 +112,16 @@ const SelectImageSheet = ({
       >
         <View className="flex-1 flex-col items-center justify-center pb-16">
           {SELECT_IMAGE_SHEET_ITEMS.map(({ Icon, label, action }) => (
-            <Pressable
+            <ActionPressable
               key={label}
               onPress={action}
-              className="flex-row gap-1.5 py-[14px] items-center justify-center active:opacity-60"
+              className="flex-row gap-1.5 py-[14px] items-center justify-center"
             >
               <Icon height={20} width={20} color={colors.icon.secondary} />
               <Text className="typo-body1 text-semantic-text-primary">
                 {label}
               </Text>
-            </Pressable>
+            </ActionPressable>
           ))}
         </View>
       </BaseBottomSheet>

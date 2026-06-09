@@ -1,9 +1,9 @@
 import { useUserProfileQuery } from "@/api/domains/user/queries";
+import ActionPressable from "@/components/common/action-pressable";
 import UserProfileImage from "@/components/user/profile-image";
 import Select from "@/components/common/select";
 import BottomActionBar from "@/components/layout/bottom-action-bar";
 import NameField from "@/components/settings/name-field";
-import { Link } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
@@ -57,15 +57,13 @@ const UpdateTag = () => {
           </Pressable>
         ))}
       </View>
-      <Link href={`/mypage/update/tag`} asChild>
-        <Pressable className="active:opacity-60 w-full">
-          <View className="border border-semantic-border-primary py-2 justify-center items-center rounded">
-            <Text className="typo-body4 text-semantic-text-secondary">
-              태그 편집하기
-            </Text>
-          </View>
-        </Pressable>
-      </Link>
+      <ActionPressable href="/mypage/update/tag" className="w-full">
+        <View className="border border-semantic-border-primary py-2 justify-center items-center rounded">
+          <Text className="typo-body4 text-semantic-text-secondary">
+            태그 편집하기
+          </Text>
+        </View>
+      </ActionPressable>
     </View>
   );
 };

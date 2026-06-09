@@ -1,10 +1,11 @@
 import { useReportPostMutation } from "@/api/domains/post/queries";
 import { Post } from "@/api/domains/post/types";
 import BanIcon from "@/assets/icons/ban.svg";
+import ActionPressable from "@/components/common/action-pressable";
 import Button from "@/components/common/button";
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import { useEffect, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import Toast from "react-native-toast-message";
 
 const REPORT_REASONS = [
@@ -44,13 +45,13 @@ const ReportAction = ({
 
   if (!expanded) {
     return (
-      <Pressable
+      <ActionPressable
         onPress={onExpand}
-        className="flex-row gap-1.5 py-[14px] items-center justify-center active:opacity-60"
+        className="flex-row gap-1.5 py-[14px] items-center justify-center"
       >
         <BanIcon height={20} width={20} />
         <Text className="typo-body1 text-semantic-text-primary">신고하기</Text>
-      </Pressable>
+      </ActionPressable>
     );
   }
 
@@ -61,18 +62,18 @@ const ReportAction = ({
           신고 사유를 선택해주세요
         </Text>
         {REPORT_REASONS.map((reason) => (
-          <Pressable
+          <ActionPressable
             key={reason}
             onPress={() => {
               setSelectedReason(reason);
               setStep("detail");
             }}
-            className="py-[14px] items-center justify-center active:opacity-60"
+            className="py-[14px] items-center justify-center"
           >
             <Text className="typo-body1 text-semantic-chips-primary-text">
               {reason}
             </Text>
-          </Pressable>
+          </ActionPressable>
         ))}
       </View>
     );

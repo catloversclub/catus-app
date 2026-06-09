@@ -5,18 +5,17 @@ import {
   useSearchProfilesQuery,
 } from "@/api/domains/search/queries";
 import { SearchCatItem, SearchUserItem } from "@/api/domains/search/types";
+import ActionPressable from "@/components/common/action-pressable";
 import { RefreshableScrollView } from "@/components/common/logo-refresh-control";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
 import { useSearchHistoryStore } from "@/store/explore/search-history-store";
 import { Image } from "expo-image";
 import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
-import { Link } from "expo-router";
 import type { ReactNode } from "react";
 import {
   ActivityIndicator,
   FlatList,
-  Pressable,
   Text,
   useWindowDimensions,
   View,
@@ -111,25 +110,24 @@ const PostHorizontalItem = ({ post }: { post: Post }) => {
 
   const imageUrl = post.images[0]?.url;
   return (
-    <Link href={`/post/${post.id}`} asChild>
-      <Pressable
-        className="rounded overflow-hidden active:opacity-70"
-        style={{ width: size, height: size }}
-      >
-        {imageUrl ? (
-          <Image
-            source={{ uri: imageUrl }}
-            style={{ width: size, height: size }}
-            contentFit="cover"
-          />
-        ) : (
-          <View
-            style={{ width: size, height: size }}
-            className="bg-semantic-bg-secondary"
-          />
-        )}
-      </Pressable>
-    </Link>
+    <ActionPressable
+      href={`/post/${post.id}`}
+      className="rounded overflow-hidden"
+      style={{ width: size, height: size }}
+    >
+      {imageUrl ? (
+        <Image
+          source={{ uri: imageUrl }}
+          style={{ width: size, height: size }}
+          contentFit="cover"
+        />
+      ) : (
+        <View
+          style={{ width: size, height: size }}
+          className="bg-semantic-bg-secondary"
+        />
+      )}
+    </ActionPressable>
   );
 };
 
@@ -172,51 +170,50 @@ const SearchPostsHorizontalList = ({ query }: { query: string }) => {
 const SearchCatCard = ({ cat }: { cat: SearchCatItem }) => {
   const addViewedCat = useSearchHistoryStore((s) => s.addViewedCat);
   return (
-    <Link href={`/cat/${cat.id}`} asChild>
-      <Pressable
-        onPress={() =>
-          addViewedCat({
-            id: cat.id,
-            name: cat.name,
-            breed: cat.breed ?? undefined,
-            imageUrl: cat.profileImageUrl,
-          })
-        }
-        className="w-[220px] flex-row items-center gap-3 rounded border border-semantic-border-light bg-semantic-bg-primary px-3.5 py-3 active:opacity-70"
-      >
-        <View className="size-[52px] rounded-full bg-semantic-bg-secondary overflow-hidden">
-          {cat.profileImageUrl && (
-            <Image
-              source={{ uri: cat.profileImageUrl }}
-              style={{ width: 52, height: 52 }}
-              contentFit="cover"
-            />
-          )}
-        </View>
-        <View className="flex-1 gap-0.5">
-          <Text
-            className="typo-body3 text-semantic-text-primary"
-            numberOfLines={1}
-          >
-            {cat.name}
-          </Text>
-          {cat.breed && (
-            <Text
-              className="typo-label1 text-semantic-text-tertiary"
-              numberOfLines={1}
-            >
-              {cat.breed}
-            </Text>
-          )}
+    <ActionPressable
+      href={`/cat/${cat.id}`}
+      onPress={() =>
+        addViewedCat({
+          id: cat.id,
+          name: cat.name,
+          breed: cat.breed ?? undefined,
+          imageUrl: cat.profileImageUrl,
+        })
+      }
+      className="w-[220px] flex-row items-center gap-3 rounded border border-semantic-border-light bg-semantic-bg-primary px-3.5 py-3"
+    >
+      <View className="size-[52px] rounded-full bg-semantic-bg-secondary overflow-hidden">
+        {cat.profileImageUrl && (
+          <Image
+            source={{ uri: cat.profileImageUrl }}
+            style={{ width: 52, height: 52 }}
+            contentFit="cover"
+          />
+        )}
+      </View>
+      <View className="flex-1 gap-0.5">
+        <Text
+          className="typo-body3 text-semantic-text-primary"
+          numberOfLines={1}
+        >
+          {cat.name}
+        </Text>
+        {cat.breed && (
           <Text
             className="typo-label1 text-semantic-text-tertiary"
             numberOfLines={1}
           >
-            @{cat.butler.nickname}
+            {cat.breed}
           </Text>
-        </View>
-      </Pressable>
-    </Link>
+        )}
+        <Text
+          className="typo-label1 text-semantic-text-tertiary"
+          numberOfLines={1}
+        >
+          @{cat.butler.nickname}
+        </Text>
+      </View>
+    </ActionPressable>
   );
 };
 
@@ -258,33 +255,34 @@ const SearchCatsHorizontalList = ({ query }: { query: string }) => {
 
 const SearchUserCard = ({ user }: { user: SearchUserItem }) => {
   return (
-    <Link href={`/user/${user.id}`} asChild>
-      <Pressable className="w-[220px] flex-row items-center gap-3 rounded border border-semantic-border-light bg-semantic-bg-primary px-3.5 py-3 active:opacity-70">
-        <View className="size-[52px] rounded-full bg-semantic-bg-secondary overflow-hidden">
-          {user.profileImageUrl && (
-            <Image
-              source={{ uri: user.profileImageUrl }}
-              style={{ width: 52, height: 52 }}
-              contentFit="cover"
-            />
-          )}
-        </View>
-        <View className="flex-1 gap-0.5">
-          <Text
-            className="typo-body3 text-semantic-text-primary"
-            numberOfLines={1}
-          >
-            {user.nickname}
-          </Text>
-          <Text
-            className="typo-label1 text-semantic-text-tertiary"
-            numberOfLines={1}
-          >
-            팔로워 {user.followerCount.toLocaleString()}명
-          </Text>
-        </View>
-      </Pressable>
-    </Link>
+    <ActionPressable
+      href={`/user/${user.id}`}
+      className="w-[220px] flex-row items-center gap-3 rounded border border-semantic-border-light bg-semantic-bg-primary px-3.5 py-3"
+    >
+      <View className="size-[52px] rounded-full bg-semantic-bg-secondary overflow-hidden">
+        {user.profileImageUrl && (
+          <Image
+            source={{ uri: user.profileImageUrl }}
+            style={{ width: 52, height: 52 }}
+            contentFit="cover"
+          />
+        )}
+      </View>
+      <View className="flex-1 gap-0.5">
+        <Text
+          className="typo-body3 text-semantic-text-primary"
+          numberOfLines={1}
+        >
+          {user.nickname}
+        </Text>
+        <Text
+          className="typo-label1 text-semantic-text-tertiary"
+          numberOfLines={1}
+        >
+          팔로워 {user.followerCount.toLocaleString()}명
+        </Text>
+      </View>
+    </ActionPressable>
   );
 };
 

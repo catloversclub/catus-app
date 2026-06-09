@@ -1,11 +1,11 @@
 import { postKeys, useDailyPopularPostsQuery } from "@/api/domains/post/queries";
 import { Post } from "@/api/domains/post/types";
+import ActionPressable from "@/components/common/action-pressable";
 import { RefreshableScrollView } from "@/components/common/logo-refresh-control";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
 import { Image } from "expo-image";
 import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
-import { Link } from "expo-router";
 import { Pressable, Text, useWindowDimensions, View } from "react-native";
 import { useAnimatedScrollHandler } from "react-native-reanimated";
 
@@ -40,22 +40,20 @@ const PostGridItem = ({ post }: { post: Post }) => {
   const imageUrl = post.images[0]?.url;
 
   return (
-    <Link href={`/post/${post.id}`} asChild>
-      <Pressable style={{ width: size, height: size }}>
-        {imageUrl ? (
-          <Image
-            source={{ uri: imageUrl }}
-            style={{ width: size, height: size }}
-            contentFit="cover"
-          />
-        ) : (
-          <View
-            style={{ width: size, height: size }}
-            className="bg-semantic-bg-secondary"
-          />
-        )}
-      </Pressable>
-    </Link>
+    <ActionPressable href={`/post/${post.id}`} style={{ width: size, height: size }}>
+      {imageUrl ? (
+        <Image
+          source={{ uri: imageUrl }}
+          style={{ width: size, height: size }}
+          contentFit="cover"
+        />
+      ) : (
+        <View
+          style={{ width: size, height: size }}
+          className="bg-semantic-bg-secondary"
+        />
+      )}
+    </ActionPressable>
   );
 }
 

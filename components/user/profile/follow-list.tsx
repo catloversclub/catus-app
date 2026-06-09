@@ -5,19 +5,13 @@ import {
   useUserFollowingsQuery,
   userKeys,
 } from "@/api/domains/user/queries";
+import ActionPressable from "@/components/common/action-pressable";
 import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
 import UserProfileImage from "@/components/user/profile-image";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useColors } from "@/hooks/use-colors";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
-import { Link } from "expo-router";
-import {
-  ActivityIndicator,
-  FlatList,
-  Pressable,
-  Text,
-  View,
-} from "react-native";
+import { ActivityIndicator, FlatList, Text, View } from "react-native";
 
 // ─── Skeleton ────────────────────────────────────────────────
 
@@ -65,19 +59,17 @@ const FollowItem = ({
   return (
     <View className="flex-row items-center gap-3 px-4 py-3">
       <UserProfileImage imageUrl={profileImageUrl ?? null} userId={id} size="sm" />
-      <Link href={`/user/${id}`} asChild>
-        <Pressable className="flex-1 active:opacity-70">
-          <Text
-            className="typo-body3 text-semantic-text-primary"
-            numberOfLines={1}
-          >
-            {nickname}
-          </Text>
-        </Pressable>
-      </Link>
-      <Pressable
+      <ActionPressable href={`/user/${id}`} className="flex-1">
+        <Text
+          className="typo-body3 text-semantic-text-primary"
+          numberOfLines={1}
+        >
+          {nickname}
+        </Text>
+      </ActionPressable>
+      <ActionPressable
         onPress={() => (isFollowedByMe ? unfollow(id) : follow(id))}
-        className="px-4 py-1.5 rounded-md border active:opacity-70"
+        className="px-4 py-1.5 rounded-md border"
         style={{
           borderColor: isFollowedByMe
             ? colors.border.primary
@@ -97,7 +89,7 @@ const FollowItem = ({
         >
           {isFollowedByMe ? "팔로잉" : "팔로우"}
         </Text>
-      </Pressable>
+      </ActionPressable>
     </View>
   );
 };

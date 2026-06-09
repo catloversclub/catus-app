@@ -1,5 +1,6 @@
-import { Link, type Href } from "expo-router";
-import { Pressable, Text, View } from "react-native";
+import ActionPressable from "@/components/common/action-pressable";
+import { type Href } from "expo-router";
+import { Text, View } from "react-native";
 
 type ProfileStatItem = {
   label: string;
@@ -15,11 +16,7 @@ const ProfileStat = ({ label, value, href }: ProfileStatItem) => {
     </View>
   );
   if (href) {
-    return (
-      <Link href={href} asChild>
-        <Pressable>{content}</Pressable>
-      </Link>
-    );
+    return <ActionPressable href={href}>{content}</ActionPressable>;
   }
   return content;
 };

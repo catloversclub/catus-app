@@ -1,10 +1,11 @@
 import BlockIcon from "@/assets/icons/block.svg";
 import { useBlockUserMutation } from "@/api/domains/user/queries";
 import { Post } from "@/api/domains/post/types";
+import ActionPressable from "@/components/common/action-pressable";
 import Button from "@/components/common/button";
 import CenterModal from "@/components/modal/center-modal";
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import Toast from "react-native-toast-message";
 
 interface BlockActionProps {
@@ -34,13 +35,13 @@ const BlockAction = ({ post, dismiss }: BlockActionProps) => {
 
   return (
     <>
-      <Pressable
+      <ActionPressable
         onPress={() => setIsModalVisible(true)}
-        className="flex-row gap-1.5 py-[14px] items-center justify-center active:opacity-60"
+        className="flex-row gap-1.5 py-[14px] items-center justify-center"
       >
         <BlockIcon height={20} width={20} />
         <Text className="typo-body1 text-semantic-text-primary">차단하기</Text>
-      </Pressable>
+      </ActionPressable>
 
       <CenterModal
         visible={isModalVisible}

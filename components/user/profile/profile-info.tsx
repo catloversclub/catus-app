@@ -1,10 +1,10 @@
 import { useMyPostsQuery } from "@/api/domains/post/queries";
 import { useUserProfileQuery } from "@/api/domains/user/queries";
+import ActionPressable from "@/components/common/action-pressable";
 import UserProfileImage from "@/components/user/profile-image";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
-import { Link } from "expo-router";
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 const ProfileInfo = () => {
   return (
@@ -66,30 +66,26 @@ const ProfileInfoContent = () => {
             {postCount}
           </Text>
         </View>
-        <Link href={`/user/follower`} asChild>
-          <Pressable>
-            <View className="flex-row gap-1 px-3 py-1.5">
-              <Text className="typo-body4 text-semantic-text-tertiary">
-                팔로워
-              </Text>
-              <Text className="typo-body3 text-semantic-text-secondary">
-                {followerCount}
-              </Text>
-            </View>
-          </Pressable>
-        </Link>
-        <Link href={`/user/following`} asChild>
-          <Pressable>
-            <View className="flex-row gap-1 px-3 py-1.5">
-              <Text className="typo-body4 text-semantic-text-tertiary">
-                팔로잉
-              </Text>
-              <Text className="typo-body3 text-semantic-text-secondary">
-                {followingCount}
-              </Text>
-            </View>
-          </Pressable>
-        </Link>
+        <ActionPressable href="/user/follower">
+          <View className="flex-row gap-1 px-3 py-1.5">
+            <Text className="typo-body4 text-semantic-text-tertiary">
+              팔로워
+            </Text>
+            <Text className="typo-body3 text-semantic-text-secondary">
+              {followerCount}
+            </Text>
+          </View>
+        </ActionPressable>
+        <ActionPressable href="/user/following">
+          <View className="flex-row gap-1 px-3 py-1.5">
+            <Text className="typo-body4 text-semantic-text-tertiary">
+              팔로잉
+            </Text>
+            <Text className="typo-body3 text-semantic-text-secondary">
+              {followingCount}
+            </Text>
+          </View>
+        </ActionPressable>
       </View>
     </View>
   );

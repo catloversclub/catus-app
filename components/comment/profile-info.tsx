@@ -1,7 +1,8 @@
 import ProfileImage from "@/components/common/profile-image";
+import ActionPressable from "@/components/common/action-pressable";
 import { Text } from "@/components/ui/text";
-import { Link, type Href } from "expo-router";
-import { Pressable, View } from "react-native";
+import { type Href } from "expo-router";
+import { View } from "react-native";
 
 interface CommentProfileInfoProps {
   imageUrl: string | null;
@@ -29,13 +30,9 @@ const CommentProfileInfo = ({
         alt={`${userId} profile`}
       />
       <View className="flex-1">
-        <Link href={href} asChild>
-          <Pressable className="self-start active:opacity-60">
-            <Text className="typo-body3 text-semantic-text-primary">
-              {name}
-            </Text>
-          </Pressable>
-        </Link>
+        <ActionPressable href={href} className="self-start">
+          <Text className="typo-body3 text-semantic-text-primary">{name}</Text>
+        </ActionPressable>
         <Text className="typo-body4 mt-1 text-semantic-text-primary">
           {content}
         </Text>

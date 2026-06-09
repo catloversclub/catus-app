@@ -1,9 +1,9 @@
 import { useMyCatsQuery } from "@/api/domains/cat/queries";
 import CatItem from "@/components/cat/cat-item";
+import ActionPressable from "@/components/common/action-pressable";
 import { useColors } from "@/hooks/use-colors";
 import { LinearGradient } from "expo-linear-gradient";
-import { Link } from "expo-router";
-import { Pressable, ScrollView, View } from "react-native";
+import { ScrollView, View } from "react-native";
 
 const CatList = () => {
   const { colors, scheme } = useColors();
@@ -25,11 +25,9 @@ const CatList = () => {
         <View className="w-5" />
         <View className="flex-row gap-2">
           {catData.map((cat) => (
-            <Link href={`/cat/${cat.id}`} key={cat.id} asChild>
-              <Pressable className="active:opacity-60">
-                <CatItem cat={cat} />
-              </Pressable>
-            </Link>
+            <ActionPressable href={`/cat/${cat.id}`} key={cat.id}>
+              <CatItem cat={cat} />
+            </ActionPressable>
           ))}
         </View>
       </ScrollView>

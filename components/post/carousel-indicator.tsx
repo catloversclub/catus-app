@@ -1,4 +1,5 @@
-import { Pressable, Text, View } from "react-native";
+import ActionPressable from "@/components/common/action-pressable";
+import { Text, View } from "react-native";
 
 interface CarouselCounterProps {
   current: number;
@@ -25,7 +26,7 @@ interface CarouselDotsProps {
 const CarouselDots = ({ count, current, onDotPress }: CarouselDotsProps) => (
   <View className="w-full flex-row justify-center gap-1.5">
     {Array.from({ length: count }).map((_, index) => (
-      <Pressable
+      <ActionPressable
         key={index}
         disabled={!onDotPress}
         hitSlop={8}

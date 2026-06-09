@@ -1,12 +1,13 @@
 import { Post } from "@/api/domains/post/types";
 import ShareIcon from "@/assets/icons/share.svg";
 import BaseBottomSheet from "@/components/bottom-sheet/base-bottom-sheet";
+import ActionPressable from "@/components/common/action-pressable";
 import Button from "@/components/common/button";
 import { WEBVIEW_URL } from "@/constants/api";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { Pressable, Share, Text, View } from "react-native";
+import { Share, Text, View } from "react-native";
 import BlockAction from "./block-action";
 import ReportAction from "./report-action";
 
@@ -35,13 +36,13 @@ const ShareAction = ({ post, dismiss }: ShareActionProps) => {
   };
 
   return (
-    <Pressable
+    <ActionPressable
       onPress={handlePress}
-      className="flex-row gap-1.5 py-[14px] items-center justify-center active:opacity-60"
+      className="flex-row gap-1.5 py-[14px] items-center justify-center"
     >
       <ShareIcon height={20} width={20} />
       <Text className="typo-body1 text-semantic-text-primary">공유하기</Text>
-    </Pressable>
+    </ActionPressable>
   );
 };
 

@@ -1,8 +1,9 @@
 import ArrowLeftIcon from "@/assets/icons/arrow-left.svg";
+import ActionPressable from "@/components/common/action-pressable";
 import ImagePickerScreen from "@/components/media/image-picker-screen";
 import { useColors } from "@/hooks/use-colors";
 import { Portal } from "@rn-primitives/portal";
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface ImagePickerModalProps {
@@ -34,12 +35,12 @@ const ImagePickerModal = ({
         style={{ paddingTop: top }}
       >
         <View className="h-14 flex-row items-center justify-center border-b border-semantic-border-primary px-3">
-          <Pressable
+          <ActionPressable
             onPress={onClose}
-            className="absolute left-3 p-2 active:opacity-60"
+            className="absolute left-3 p-2"
           >
             <ArrowLeftIcon width={20} height={20} color={colors.icon.primary} />
-          </Pressable>
+          </ActionPressable>
           <Text className="typo-title3 text-semantic-text-primary">
             {title}
           </Text>

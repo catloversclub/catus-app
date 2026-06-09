@@ -1,11 +1,12 @@
 import { Comment } from "@/api/domains/comment/types";
 import { ReplyTarget } from "@/components/comment/input-bar";
 import CommentProfileInfo from "@/components/comment/profile-info";
+import ActionPressable from "@/components/common/action-pressable";
 import { Text } from "@/components/ui/text";
 import { Heart, MessageCircle } from "@/lib/icons";
 import { formatRelativeTime } from "@/lib/utils";
 import { memo, useState } from "react";
-import { Pressable, View } from "react-native";
+import { View } from "react-native";
 
 interface CommentActionsProps {
   isLikedByMe: boolean;
@@ -22,9 +23,9 @@ const CommentActions = ({
 }: CommentActionsProps) => {
   return (
     <View className="flex-row items-center">
-      <Pressable
+      <ActionPressable
         onPress={onLike}
-        className="items-center gap-0.5 px-2 py-1 active:opacity-60"
+        className="items-center gap-0.5 px-2 py-1"
       >
         <Heart
           size={14}
@@ -39,10 +40,10 @@ const CommentActions = ({
             {likeCount}
           </Text>
         )}
-      </Pressable>
-      <Pressable onPress={onReply} className="px-2 py-1 active:opacity-60">
+      </ActionPressable>
+      <ActionPressable onPress={onReply} className="px-2 py-1">
         <MessageCircle size={14} className="text-semantic-text-tertiary" />
-      </Pressable>
+      </ActionPressable>
     </View>
   );
 };
@@ -100,15 +101,15 @@ const CommentItem = ({ comment, onReply, onToggleLike }: CommentItemProps) => {
       {replies && replies.length > 0 ? (
         <>
           {!isRepliesExpanded && (
-            <Pressable
-              className="flex-row items-center justify-start gap-1.5 py-2 pl-12 active:opacity-60"
+            <ActionPressable
+              className="flex-row items-center justify-start gap-1.5 py-2 pl-12"
               onPress={() => setIsRepliesExpanded(true)}
             >
               <View className="h-[1px] w-4 bg-semantic-border-primary" />
               <Text className="typo-label1 text-semantic-text-tertiary">
                 답글 {replies.length}개 더 보기...
               </Text>
-            </Pressable>
+            </ActionPressable>
           )}
 
           {isRepliesExpanded && (
@@ -117,15 +118,15 @@ const CommentItem = ({ comment, onReply, onToggleLike }: CommentItemProps) => {
                 <ReplyItem key={reply.id} reply={reply} />
               ))}
 
-              <Pressable
-                className="flex-row items-center gap-1.5 pb-4 pl-12 pt-2 active:opacity-60"
+              <ActionPressable
+                className="flex-row items-center gap-1.5 pb-4 pl-12 pt-2"
                 onPress={() => setIsRepliesExpanded(false)}
               >
                 <View className="h-[1px] w-4 bg-semantic-border-primary" />
                 <Text className="typo-label1 text-semantic-text-tertiary">
                   답글 닫기
                 </Text>
-              </Pressable>
+              </ActionPressable>
             </View>
           )}
         </>

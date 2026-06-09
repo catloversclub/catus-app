@@ -1,15 +1,9 @@
 import { Post } from "@/api/domains/post/types";
+import ActionPressable from "@/components/common/action-pressable";
 import { LoadMoreFooter } from "@/components/common/load-more-footer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SquareImage } from "@/components/ui/square-image";
-import { Link } from "expo-router";
-import {
-  FlatList,
-  Pressable,
-  Text,
-  View,
-  useWindowDimensions,
-} from "react-native";
+import { FlatList, Text, View, useWindowDimensions } from "react-native";
 
 type PostRowItem = { type: "row"; posts: Post[] };
 type EmptyItem = { type: "empty"; message: string };
@@ -45,11 +39,9 @@ interface PostThumbnailProps {
 
 const PostThumbnail = ({ post, size }: PostThumbnailProps) => {
   return (
-    <Link href={`/post/${post.id}`} asChild>
-      <Pressable style={{ width: size, height: size }}>
-        <SquareImage uri={post.images[0]?.url} size={size} />
-      </Pressable>
-    </Link>
+    <ActionPressable href={`/post/${post.id}`} style={{ width: size, height: size }}>
+      <SquareImage uri={post.images[0]?.url} size={size} />
+    </ActionPressable>
   );
 };
 

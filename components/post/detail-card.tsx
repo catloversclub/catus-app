@@ -1,10 +1,11 @@
-import { Pressable, Text, useWindowDimensions, View } from "react-native";
+import { Text, useWindowDimensions, View } from "react-native";
 
 import { usePostByIdQuery } from "@/api/domains/post/queries";
 import { Post } from "@/api/domains/post/types";
 import MoreIcon from "@/assets/icons/more.svg";
 import CommentSheet from "@/components/bottom-sheet/comment-sheet";
 import MoreSheet from "@/components/bottom-sheet/more-sheet";
+import ActionPressable from "@/components/common/action-pressable";
 import IconButton from "@/components/common/icon-button";
 import {
   CatPostProfileInfo,
@@ -70,26 +71,26 @@ const PostDetailCard = ({ postId }: { postId: string }) => {
         <Text className="text-semantic-text-primary">{post.content}</Text>
       </View>
       <View className="flex-row items-center justify-end gap-4">
-        <Pressable onPress={handleLike} className="active:opacity-60">
+        <ActionPressable onPress={handleLike}>
           <Heart
             size={20}
             className={
               post.isLikedByMe
                 ? "fill-semantic-icon-error text-semantic-icon-error"
-                : "text-semantic-text-tertiary"
+              : "text-semantic-text-tertiary"
             }
           />
-        </Pressable>
-        <Pressable onPress={handleBookmark} className="active:opacity-60">
+        </ActionPressable>
+        <ActionPressable onPress={handleBookmark}>
           <Bookmark
             size={20}
             className={
               post.isBookmarkedByMe
                 ? "fill-semantic-icon-accent text-semantic-icon-accent"
-                : "text-semantic-text-tertiary"
+              : "text-semantic-text-tertiary"
             }
           />
-        </Pressable>
+        </ActionPressable>
       </View>
       <CommentSheet CommentSheetModalRef={commentSheetRef} postId={post.id} />
       <MoreSheet MoreSheetModalRef={moreSheetRef} post={post} />

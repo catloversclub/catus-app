@@ -1,9 +1,10 @@
 import { useCreateCommentMutation } from "@/api/domains/comment/queries";
 import ArrowUpIcon from "@/assets/icons/arrow-up.svg";
+import ActionPressable from "@/components/common/action-pressable";
 import { useColors } from "@/hooks/use-colors";
 import { X } from "@/lib/icons";
 import React, { useState } from "react";
-import { Pressable, Text, TextInput, View } from "react-native";
+import { Text, TextInput, View } from "react-native";
 import { useReanimatedKeyboardAnimation } from "react-native-keyboard-controller";
 import Animated, { useAnimatedStyle } from "react-native-reanimated";
 
@@ -87,25 +88,25 @@ const CommentInputBar = ({
             }}
           />
         </View>
-        <Pressable
+        <ActionPressable
           onPress={handleSubmit}
           disabled={!canSubmit}
-          className="h-9 w-9 items-center justify-center rounded-full active:opacity-70"
+          className="h-9 w-9 items-center justify-center rounded-full"
           style={{
             backgroundColor: canSubmit ? colors.icon.accent : colors.icon.minor,
           }}
         >
           <ArrowUpIcon width={20} height={20} color={colors.text.primary} />
-        </Pressable>
+        </ActionPressable>
       </View>
       {replyTarget && (
         <View className="flex-row items-center justify-between px-4 py-1.5">
           <Text className="typo-label1 text-semantic-text-secondary">
             @{replyTarget.nickname}에게 답글 남기기
           </Text>
-          <Pressable onPress={onClearReply} className="p-1 active:opacity-60">
+          <ActionPressable onPress={onClearReply} className="p-1">
             <X size={14} className="text-semantic-text-tertiary" />
-          </Pressable>
+          </ActionPressable>
         </View>
       )}
     </Animated.View>

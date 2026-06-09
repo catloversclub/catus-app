@@ -2,15 +2,16 @@ import CameraIcon from "@/assets/icons/camera.svg";
 import AvatarDark from "@/assets/images/avatar/user-dark.png";
 import AvatarLight from "@/assets/images/avatar/user-light.png";
 import SelectImageSheet from "@/components/bottom-sheet/select-image-sheet";
+import ActionPressable from "@/components/common/action-pressable";
 import IconButton from "@/components/common/icon-button";
 import ProfilePreviewModal from "@/components/common/profile-preview-modal";
 import { PROFILE_SIZE } from "@/constants/user";
 import { useColors } from "@/hooks/use-colors";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Image } from "expo-image";
-import { Link, type Href } from "expo-router";
+import { type Href } from "expo-router";
 import { useRef, useState } from "react";
-import { ActivityIndicator, Pressable, View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 
 type ProfileImageSize = keyof typeof PROFILE_SIZE;
 
@@ -114,21 +115,19 @@ const ProfileImage = ({
 
   if (href) {
     return (
-      <Link href={href} asChild>
-        <Pressable className="active:opacity-60">
-          {imageVisual}
-          {selectImageSheet}
-        </Pressable>
-      </Link>
+      <ActionPressable href={href}>
+        {imageVisual}
+        {selectImageSheet}
+      </ActionPressable>
     );
   }
 
   if (!isEditMode && !isPreviewDisabled) {
     return (
       <>
-        <Pressable onPress={handlePreviewPress} className="active:opacity-60">
+        <ActionPressable onPress={handlePreviewPress}>
           {imageVisual}
-        </Pressable>
+        </ActionPressable>
         {selectImageSheet}
         <ProfilePreviewModal
           visible={previewOrigin !== null}
