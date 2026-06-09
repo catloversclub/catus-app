@@ -18,7 +18,7 @@ import { useLoadMoreScroll } from "@/hooks/use-load-more-scroll";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
 import { formatDate } from "@/lib/utils";
 import { Stack, useLocalSearchParams } from "expo-router";
-import { View } from "react-native";
+import { Text, View } from "react-native";
 
 // ─── Profile header ───────────────────────────────────────────
 
@@ -90,7 +90,13 @@ const CatDetailPostGrid = ({ catId, loadMoreRef }: CatDetailPostGridProps) => {
     <PostGrid
       posts={posts}
       isFetchingNextPage={isFetchingNextPage}
-      emptyMessage="아직 작성한 게시글이 없어요"
+      emptyComponent={
+        <View className="py-12 items-center justify-center">
+          <Text className="typo-body1 text-semantic-text-tertiary">
+            아직 작성한 게시글이 없어요
+          </Text>
+        </View>
+      }
     />
   );
 };

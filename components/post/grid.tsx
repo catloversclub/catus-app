@@ -3,13 +3,12 @@ import ImagePressable from "@/components/common/image-pressable";
 import { LoadMoreFooter } from "@/components/common/load-more-footer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SquareImage } from "@/components/ui/square-image";
-import { FlatList, RefreshControlProps, Text, View, useWindowDimensions } from "react-native";
-
-type PostRowItem = { type: "row"; posts: Post[] };
-type EmptyItem = { type: "empty"; message: string };
-type LoaderItem = { type: "loader" };
-type TabBarItem = { type: "tabBar" };
-type ListItem = TabBarItem | PostRowItem | EmptyItem | LoaderItem;
+import {
+  FlatList,
+  RefreshControlProps,
+  View,
+  useWindowDimensions,
+} from "react-native";
 
 const PostGridSkeleton = () => {
   const { width } = useWindowDimensions();
@@ -49,86 +48,72 @@ const PostThumbnail = ({ post, size }: PostThumbnailProps) => {
 };
 
 interface PostGridProps {
-  ListHeaderComponent?: React.ComponentType;
-  tabBar?: React.ReactElement;
+  ListHeaderComponent: React.ReactElement;
   posts: Post[];
   isFetchingNextPage: boolean;
-  emptyMessage: string;
+  emptyComponent: React.ReactElement;
   scrollEnabled?: boolean;
-  onEndReached?: () => void;
   refreshControl?: React.ReactElement<RefreshControlProps>;
+  onEndReached?: () => void;
 }
 
 const PostGrid = ({
   ListHeaderComponent,
-  tabBar,
   posts,
   isFetchingNextPage,
-  emptyMessage,
+  emptyComponent,
   scrollEnabled = false,
-  onEndReached,
   refreshControl,
+  onEndReached,
 }: PostGridProps) => {
   const { width } = useWindowDimensions();
-  const size = (width - 24) / 3;
-  const hasTabBar = !!tabBar;
 
-  const postRows: PostRowItem[] = [];
-  for (let i = 0; i < posts.length; i += 3) {
-    postRows.push({ type: "row", posts: posts.slice(i, i + 3) });
+  const GAP = 6;
+  const NUM_COLS = 3;
+  const PADDING = 24;
+
+  const size = (width - (NUM_COLS - 1) * GAP - PADDING) / NUM_COLS;
+
+  const rows: Post[][] = [];
+  for (let i = 0; i < posts.length; i += NUM_COLS) {
+    rows.push(posts.slice(i, i + NUM_COLS));
   }
 
-  const data: ListItem[] = [
-    ...(hasTabBar ? [{ type: "tabBar" as const }] : []),
-    ...(posts.length === 0
-      ? [{ type: "empty" as const, message: emptyMessage }]
-      : postRows),
-    ...(isFetchingNextPage ? [{ type: "loader" as const }] : []),
-  ];
-
-  const renderItem = ({ item }: { item: ListItem }) => {
-    if (item.type === "tabBar") return tabBar ?? null;
-    if (item.type === "empty") {
-      return (
-        <View className="py-12 items-center justify-center">
-          <Text className="typo-body1 text-semantic-text-tertiary">
-            {item.message}
-          </Text>
-        </View>
-      );
-    }
-    if (item.type === "loader") return <LoadMoreFooter />;
-    return (
-      <View style={{ flexDirection: "row", gap: 2 }}>
-        {item.posts.map((post) => (
-          <PostThumbnail key={post.id} post={post} size={size} />
-        ))}
-      </View>
-    );
-  };
+  const fillerRows = rows.length > 0 ? Math.max(0, NUM_COLS - rows.length) : 0;
+  const fillerHeight = fillerRows * (size + GAP) - GAP;
 
   return (
     <FlatList
       style={{ flex: 1 }}
       contentContainerStyle={{ flexGrow: 1 }}
-      ListHeaderComponent={ListHeaderComponent}
-      data={data}
-      keyExtractor={(item, index) => {
-        if (item.type === "tabBar") return "tabBar";
-        if (item.type === "empty") return "empty";
-        if (item.type === "loader") return "loader";
-        return `row-${index}`;
-      }}
-      renderItem={renderItem}
-      ItemSeparatorComponent={({ leadingItem }) =>
-        hasTabBar && (leadingItem as ListItem)?.type === "tabBar" ? null : (
-          <View style={{ height: 2 }} />
-        )
+      ListHeaderComponent={
+        <View style={{ marginBottom: 16 }}>{ListHeaderComponent}</View>
       }
+      ListEmptyComponent={
+        <View style={{ minHeight: size * NUM_COLS + GAP * (NUM_COLS - 1) }}>
+          {emptyComponent}
+        </View>
+      }
+      ListFooterComponent={
+        <>
+          {isFetchingNextPage && <LoadMoreFooter />}
+          {fillerRows > 0 && <View style={{ height: fillerHeight }} />}
+        </>
+      }
+      data={rows}
+      keyExtractor={(_, index) => `row-${index}`}
+      renderItem={({ item: row }) => (
+        <View className="flex-row px-3" style={{ gap: GAP }}>
+          {row.map((post) => (
+            <PostThumbnail key={post.id} post={post} size={size} />
+          ))}
+        </View>
+      )}
+      ItemSeparatorComponent={() => <View style={{ height: GAP }} />}
       scrollEnabled={scrollEnabled}
+      refreshControl={refreshControl}
       onEndReached={onEndReached}
       onEndReachedThreshold={0.5}
-      refreshControl={refreshControl}
     />
   );
 };
