@@ -58,7 +58,7 @@ const UserDetailGrid = ({ userId }: UserDetailGridProps) => {
         posts={posts}
         isFetchingNextPage={isFetchingNextPage}
         emptyComponent={
-          <View className="py-12 items-center justify-center">
+          <View className="py-20 items-center justify-center">
             <Text className="typo-body1 text-semantic-text-tertiary">
               아직 작성한 게시글이 없어요
             </Text>
@@ -67,30 +67,12 @@ const UserDetailGrid = ({ userId }: UserDetailGridProps) => {
         ListHeaderComponent={
           <>
             <UserProfileHeader
+              userId={userId}
               imageUrl={profile.profileImageUrl}
               name={profile.nickname}
-              stats={[
-                {
-                  label: "게시글",
-                  value: posts.length,
-                },
-                {
-                  label: "팔로워",
-                  value: profile.followerCount,
-                  href: {
-                    pathname: "/user/[id]/follower",
-                    params: { id: userId },
-                  },
-                },
-                {
-                  label: "팔로잉",
-                  value: profile.followingCount,
-                  href: {
-                    pathname: "/user/[id]/following",
-                    params: { id: userId },
-                  },
-                },
-              ]}
+              postsCount={posts.length}
+              followerCount={profile.followerCount}
+              followingCount={profile.followingCount}
               actions={<OtherProfileActions userId={userId} />}
             />
             <UserCatListSection userId={userId} />

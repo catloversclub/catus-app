@@ -13,22 +13,13 @@ const MyProfileHeaderContent = () => {
   return (
     <>
       <UserProfileHeader
+        userId={userData.id}
         imageUrl={userData.profileImageUrl}
         name={userData.nickname}
         subtitle={userData.isLivingWithCat ? "고양이 집사" : "랜선 집사"}
-        stats={[
-          { label: "게시글", value: postCount },
-          {
-            label: "팔로워",
-            value: userData.followerCount,
-            href: "/user/follower" as const,
-          },
-          {
-            label: "팔로잉",
-            value: userData.followingCount,
-            href: "/user/following" as const,
-          },
-        ]}
+        postsCount={postCount}
+        followerCount={userData.followerCount}
+        followingCount={userData.followingCount}
         actions={<ProfileActions />}
       />
       <MyCatListSection />

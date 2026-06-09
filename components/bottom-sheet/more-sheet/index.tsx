@@ -3,11 +3,11 @@ import ShareIcon from "@/assets/icons/share.svg";
 import BaseBottomSheet from "@/components/bottom-sheet/base-bottom-sheet";
 import ActionPressable from "@/components/common/action-pressable";
 import Button from "@/components/common/button";
-import { WEBVIEW_URL } from "@/constants/api";
+import { sharePost } from "@/lib/share";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { Share, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import BlockAction from "./block-action";
 import ReportAction from "./report-action";
 
@@ -28,10 +28,7 @@ interface VisitProfileActionProps {
 
 const ShareAction = ({ post, dismiss }: ShareActionProps) => {
   const handlePress = async () => {
-    await Share.share({
-      url: `${WEBVIEW_URL}/share/post/${post.id}`,
-      message: `${post.author.nickname}님의 게시물을 확인해보세요!`,
-    });
+    await sharePost(post.id, post.author.nickname);
     dismiss();
   };
 

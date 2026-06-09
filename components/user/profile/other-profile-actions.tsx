@@ -6,8 +6,7 @@ import {
 import { ButtonType } from "@/components/common/button";
 import ProfileActionButtons from "@/components/user/profile/profile-action-buttons";
 
-import { WEBVIEW_URL } from "@/constants/api";
-import { Share } from "react-native";
+import { shareUser } from "@/lib/share";
 
 interface OtherProfileActionsProps {
   userId: string;
@@ -31,12 +30,7 @@ const OtherProfileActions = ({ userId }: OtherProfileActionsProps) => {
     }
   };
 
-  const handleShare = async () => {
-    await Share.share({
-      url: `${WEBVIEW_URL}/share/user/${userId}`,
-      message: `@${profile.nickname}님의 프로필을 확인해보세요!`,
-    });
-  };
+  const handleShare = () => shareUser(userId, profile.nickname);
 
   const buttons: ButtonType[] = [
     {

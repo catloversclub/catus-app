@@ -1,35 +1,46 @@
 import { ProfileIdentity } from "@/components/common/profile-identity";
-import {
-  ProfileStat,
-  type ProfileStatItem,
-} from "@/components/common/profile-stat";
+import { ProfileStat } from "@/components/common/profile-stat";
 import { Skeleton } from "@/components/ui/skeleton";
 import UserProfileImage from "@/components/user/profile-image";
 import { View } from "react-native";
 
 interface UserProfileHeaderProps {
+  userId: string;
   imageUrl?: string | null;
   name: string;
   subtitle?: string | null;
-  stats: ProfileStatItem[];
+  postsCount: number;
+  followerCount: number;
+  followingCount: number;
   actions?: React.ReactNode;
 }
 
 const UserProfileHeader = ({
+  userId,
   imageUrl,
   name,
   subtitle,
-  stats,
+  postsCount,
+  followerCount,
+  followingCount,
   actions,
 }: UserProfileHeaderProps) => (
-  <View className="pt-6">
+  <View className="py-6">
     <View className="flex-col items-center">
       <UserProfileImage imageUrl={imageUrl ?? null} size="lg" />
       <ProfileIdentity name={name} subtitle={subtitle} />
       <View className="flex-row mb-6">
-        {stats.map((stat) => (
-          <ProfileStat key={stat.label} {...stat} />
-        ))}
+        <ProfileStat label="게시글" value={postsCount} />
+        <ProfileStat
+          label="팔로워"
+          value={followerCount}
+          href={{ pathname: "/user/[id]/follower", params: { id: userId } }}
+        />
+        <ProfileStat
+          label="팔로잉"
+          value={followingCount}
+          href={{ pathname: "/user/[id]/following", params: { id: userId } }}
+        />
       </View>
     </View>
     {actions}
@@ -37,7 +48,7 @@ const UserProfileHeader = ({
 );
 
 const ProfileHeaderSkeleton = () => (
-  <View className="pt-6 flex-col items-center">
+  <View className="py-6 flex-col items-center">
     <Skeleton className="rounded-full" style={{ width: 80, height: 80 }} />
     <View className="mt-3 mb-1">
       <Skeleton className="rounded" style={{ width: 100, height: 22 }} />

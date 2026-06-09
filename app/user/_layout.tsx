@@ -6,8 +6,6 @@ const UserLayout = () => {
   return (
     <Stack screenOptions={screenOptions}>
       <Stack.Screen name="[id]" options={{ headerShown: false }} />
-      <Stack.Screen name="follower" options={{ title: "팔로워" }} />
-      <Stack.Screen name="following" options={{ title: "팔로잉" }} />
     </Stack>
   );
 };
