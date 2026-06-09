@@ -1,17 +1,19 @@
-import { useMyCatsQuery } from "@/api/domains/cat/queries";
+import { Cat } from "@/api/domains/cat/types";
 import CatItem from "@/components/cat/cat-item";
 import ActionPressable from "@/components/common/action-pressable";
 import { useColors } from "@/hooks/use-colors";
 import { LinearGradient } from "expo-linear-gradient";
 import { ScrollView, View } from "react-native";
 
-const CatList = () => {
+interface CatListProps {
+  cats: Cat[];
+}
+
+const CatList = ({ cats }: CatListProps) => {
   const { colors, scheme } = useColors();
   const bgTransparent =
     scheme === "dark" ? "rgba(24, 24, 27, 0)" : "rgba(255, 255, 255, 0)";
-  const { data: catData } = useMyCatsQuery();
-
-  if (catData.length === 0) {
+  if (cats.length === 0) {
     return null;
   }
 
@@ -24,7 +26,7 @@ const CatList = () => {
       >
         <View className="w-5" />
         <View className="flex-row gap-2">
-          {catData.map((cat) => (
+          {cats.map((cat) => (
             <ActionPressable href={`/cat/${cat.id}`} key={cat.id}>
               <CatItem cat={cat} />
             </ActionPressable>

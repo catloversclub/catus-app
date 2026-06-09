@@ -1,5 +1,6 @@
 import { postKeys, useUserPostsQuery } from "@/api/domains/post/queries";
 import { userKeys, useUserDetailQuery } from "@/api/domains/user/queries";
+import { catKeys } from "@/api/domains/cat/queries";
 import MoreIcon from "@/assets/icons/more.svg";
 import IconButton from "@/components/common/icon-button";
 import { RefreshableScrollView } from "@/components/common/logo-refresh-control";
@@ -11,6 +12,7 @@ import {
 import PostGrid, {
   PostGridSkeleton,
 } from "@/components/post/grid";
+import UserCatListSection from "@/components/user/profile/user-cat-list-section";
 import { useColors } from "@/hooks/use-colors";
 import { useLoadMoreScroll } from "@/hooks/use-load-more-scroll";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
@@ -117,6 +119,7 @@ const UserDetailScreen = () => {
   const refreshQueries = useRefreshQueries([
     userKeys.detail(id),
     postKeys.userPosts(id),
+    catKeys.userList(id),
   ]);
 
   return (
@@ -128,6 +131,9 @@ const UserDetailScreen = () => {
       >
         <SuspenseWithDelay fallback={<ProfileHeaderSkeleton />}>
           <UserDetailProfileHeader userId={id} />
+        </SuspenseWithDelay>
+        <SuspenseWithDelay fallback={null}>
+          <UserCatListSection userId={id} />
         </SuspenseWithDelay>
         <SuspenseWithDelay fallback={<PostGridSkeleton />}>
           <UserDetailPostGrid userId={id} loadMoreRef={loadMoreRef} />

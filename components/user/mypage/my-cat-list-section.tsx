@@ -31,7 +31,7 @@ const MyCatListSection = () => {
       {hasCats ? (
         <View className="flex-row items-center pr-5">
           <View className="flex-1">
-            <CatList />
+            <CatList cats={catData} />
           </View>
           <CatRegistration />
         </View>
