@@ -1,6 +1,7 @@
 import {
   useUserFollowersQuery,
   useUserFollowingsQuery,
+  useUserProfileQuery,
   userKeys,
 } from "@/api/domains/user/queries";
 import ActionPressable from "@/components/common/action-pressable";
@@ -43,6 +44,7 @@ interface FollowItemProps {
   nickname: string;
   profileImageUrl?: string | null;
   isFollowedByMe: boolean;
+  currentUserId: string;
 }
 
 const FollowItem = ({
@@ -50,7 +52,10 @@ const FollowItem = ({
   nickname,
   profileImageUrl,
   isFollowedByMe,
+  currentUserId,
 }: FollowItemProps) => {
+  const isMe = id === currentUserId;
+
   return (
     <View className="flex-row items-center gap-3 px-4 py-3">
       <UserProfileImage imageUrl={profileImageUrl ?? null} userId={id} size="sm" />
@@ -62,7 +67,7 @@ const FollowItem = ({
           {nickname}
         </Text>
       </ActionPressable>
-      <FollowButton userId={id} isFollowing={isFollowedByMe} />
+      {!isMe && <FollowButton userId={id} isFollowing={isFollowedByMe} />}
     </View>
   );
 };
@@ -70,6 +75,7 @@ const FollowItem = ({
 // ─── Follower list ───────────────────────────────────────────
 
 const FollowerList = ({ userId }: { userId: string }) => {
+  const { data: currentUser } = useUserProfileQuery();
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useUserFollowersQuery(userId);
   const { colors } = useColors();
@@ -92,6 +98,7 @@ const FollowerList = ({ userId }: { userId: string }) => {
             nickname={item.nickname}
             profileImageUrl={item.profileImageUrl}
             isFollowedByMe={item.isFollowedByMe}
+            currentUserId={currentUser.id}
           />
         )}
         ListEmptyComponent={
@@ -119,6 +126,7 @@ const FollowerList = ({ userId }: { userId: string }) => {
 // ─── Following list ──────────────────────────────────────────
 
 const FollowingList = ({ userId }: { userId: string }) => {
+  const { data: currentUser } = useUserProfileQuery();
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useUserFollowingsQuery(userId);
   const { colors } = useColors();
@@ -141,6 +149,7 @@ const FollowingList = ({ userId }: { userId: string }) => {
             nickname={item.nickname}
             profileImageUrl={item.profileImageUrl}
             isFollowedByMe={item.isFollowedByMe}
+            currentUserId={currentUser.id}
           />
         )}
         ListEmptyComponent={

@@ -1,6 +1,6 @@
 import { catKeys } from "@/api/domains/cat/queries";
 import { postKeys, useUserPostsQuery } from "@/api/domains/post/queries";
-import { userKeys, useUserDetailQuery } from "@/api/domains/user/queries";
+import { userKeys, useUserDetailQuery, useUserProfileQuery } from "@/api/domains/user/queries";
 import MoreIcon from "@/assets/icons/more.svg";
 import IconButton from "@/components/common/icon-button";
 import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
@@ -23,6 +23,8 @@ interface UserDetailGridProps {
 
 const UserDetailGrid = ({ userId }: UserDetailGridProps) => {
   const { data: profile } = useUserDetailQuery(userId);
+  const { data: me } = useUserProfileQuery();
+  const isMe = me.id === userId;
   const { colors } = useColors();
   const {
     data: postsData,
@@ -73,7 +75,7 @@ const UserDetailGrid = ({ userId }: UserDetailGridProps) => {
               postsCount={posts.length}
               followerCount={profile.followerCount}
               followingCount={profile.followingCount}
-              actions={<OtherProfileActions userId={userId} />}
+              actions={isMe ? null : <OtherProfileActions userId={userId} />}
             />
             <UserCatListSection userId={userId} />
           </>
