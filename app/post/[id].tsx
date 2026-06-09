@@ -6,7 +6,8 @@ import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 
 import { commentKeys } from "@/api/domains/comment/queries";
 import { postKeys } from "@/api/domains/post/queries";
-import { RefreshableScrollView } from "@/components/common/logo-refresh-control";
+import Gradient from "@/components/common/gradient";
+import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
 import CommentInputBar, { CommentInputRef } from "@/components/comment/input-bar";
 import CommentList, { CommentListSkeleton } from "@/components/comment/list";
@@ -26,25 +27,37 @@ const PostDetailScreen = () => {
     postKeys.detail(id),
     commentKeys.byPost(id),
   ]);
+  const { refreshControl } = useLogoRefreshControl({ onRefresh });
 
   return (
     <View className="flex-1 bg-semantic-bg-primary">
       <KeyboardAvoidingView className="flex-1" {...keyboardAvoidingViewProps}>
         <View className="flex-1">
-          <RefreshableScrollView
-            onRefresh={onRefresh}
-            contentContainerClassName="pb-4 gap-y-6"
+          <Gradient
+            direction="vertical"
+            height={10}
+            style={{ position: "absolute", top: 0, left: 0, zIndex: 1 }}
+          />
+          <SuspenseWithDelay
+            fallback={
+              <View className="gap-y-6 px-3 pb-4 pt-2">
+                <PostDetailCardSkeleton />
+                <CommentListSkeleton />
+              </View>
+            }
           >
-            <SuspenseWithDelay fallback={<PostDetailCardSkeleton />}>
-              <PostDetailCard postId={id} />
-            </SuspenseWithDelay>
-            <SuspenseWithDelay fallback={<CommentListSkeleton />}>
-              <CommentList
-                postId={id}
-                onReply={(target) => inputRef.current?.setReplyTarget(target)}
-              />
-            </SuspenseWithDelay>
-          </RefreshableScrollView>
+            <CommentList
+              postId={id}
+              onReply={(target) => inputRef.current?.setReplyTarget(target)}
+              ListHeaderComponent={
+                <View className="mb-6">
+                  <PostDetailCard postId={id} />
+                </View>
+              }
+              contentContainerStyle={{ paddingTop: 10, paddingBottom: 16 }}
+              refreshControl={refreshControl}
+            />
+          </SuspenseWithDelay>
           <CommentInputBar
             postId={id}
             inputRef={inputRef}

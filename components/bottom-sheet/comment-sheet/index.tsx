@@ -1,7 +1,5 @@
 import {
-  useLikeCommentMutation,
   usePostCommentsNonSuspenseQuery,
-  useUnlikeCommentMutation,
 } from "@/api/domains/comment/queries";
 import { Comment } from "@/api/domains/comment/types";
 import BaseBottomSheet from "@/components/bottom-sheet/base-bottom-sheet";
@@ -16,6 +14,7 @@ import {
   BottomSheetModal,
   BottomSheetTextInput,
 } from "@gorhom/bottom-sheet";
+import useCommentActions from "@/hooks/comment/use-comment-actions";
 import React, { useCallback, useRef, useState } from "react";
 import { LayoutChangeEvent, View } from "react-native";
 
@@ -32,8 +31,7 @@ const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
     data: comments = [],
     isPending,
   } = usePostCommentsNonSuspenseQuery(postId, isOpen);
-  const { mutate: likeComment } = useLikeCommentMutation();
-  const { mutate: unlikeComment } = useUnlikeCommentMutation();
+  const { handleToggleLike } = useCommentActions(postId);
 
   const handleFooterLayout = useCallback((event: LayoutChangeEvent) => {
     setFooterHeight(event.nativeEvent.layout.height);
@@ -61,17 +59,6 @@ const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
     setIsOpen(false);
     inputRef.current?.clearReplyTarget();
   }, []);
-
-  const handleToggleLike = useCallback(
-    (comment: Comment) => {
-      if (comment.isLikedByMe) {
-        unlikeComment({ postId, commentId: comment.id });
-      } else {
-        likeComment({ postId, commentId: comment.id });
-      }
-    },
-    [likeComment, postId, unlikeComment],
-  );
 
   const renderComment = useCallback(
     ({ item }: { item: Comment }) => (

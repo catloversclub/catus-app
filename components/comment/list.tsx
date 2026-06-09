@@ -1,58 +1,76 @@
-import {
-  useLikeCommentMutation,
-  usePostCommentsQuery,
-  useUnlikeCommentMutation,
-} from "@/api/domains/comment/queries";
+import { usePostCommentsQuery } from "@/api/domains/comment/queries";
 import { Comment } from "@/api/domains/comment/types";
 import { ReplyTarget } from "@/components/comment/input-bar";
 import CommentItem from "@/components/comment/item";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
+import useCommentActions from "@/hooks/comment/use-comment-actions";
+import { useScrollToTop } from "@react-navigation/native";
+import type { ReactElement } from "react";
 import { useCallback } from "react";
-import { View } from "react-native";
+import { RefreshControlProps, StyleProp, View, ViewStyle } from "react-native";
+import Animated, { useAnimatedRef } from "react-native-reanimated";
 
 interface CommentListProps {
   postId: string;
   onReply?: (target: ReplyTarget) => void;
+  ListHeaderComponent?: ReactElement | null;
+  contentContainerStyle?: StyleProp<ViewStyle>;
+  refreshControl?: ReactElement<RefreshControlProps>;
 }
 
-const CommentList = ({ postId, onReply }: CommentListProps) => {
-  const { data: comments } = usePostCommentsQuery(postId);
-  const { mutate: likeComment } = useLikeCommentMutation();
-  const { mutate: unlikeComment } = useUnlikeCommentMutation();
+const CommentList = ({
+  postId,
+  onReply,
+  ListHeaderComponent,
+  contentContainerStyle,
+  refreshControl,
+}: CommentListProps) => {
+  const listRef = useAnimatedRef<Animated.FlatList<Comment>>();
+  useScrollToTop(listRef);
 
-  const handleToggleLike = useCallback(
-    (comment: Comment) => {
-      if (comment.isLikedByMe) {
-        unlikeComment({ postId, commentId: comment.id });
-      } else {
-        likeComment({ postId, commentId: comment.id });
-      }
-    },
-    [likeComment, postId, unlikeComment],
+  const { data: comments } = usePostCommentsQuery(postId);
+  const { handleToggleLike } = useCommentActions(postId);
+
+  const renderComment = useCallback(
+    ({ item }: { item: Comment }) => (
+      <CommentItem
+        comment={item}
+        onReply={onReply}
+        onToggleLike={handleToggleLike}
+      />
+    ),
+    [handleToggleLike, onReply],
   );
 
-  if (comments.length === 0) {
-    return (
+  const listEmptyComponent = useCallback(
+    () => (
       <View className="items-center justify-center py-20">
         <Text className="typo-body2 text-semantic-text-secondary text-center">
           {"아직 댓글이 없어요!\n첫 댓글을 남겨볼까요?"}
         </Text>
       </View>
-    );
-  }
+    ),
+    [],
+  );
 
   return (
-    <View>
-      {comments.map((comment) => (
-        <CommentItem
-          key={comment.id}
-          comment={comment}
-          onReply={onReply}
-          onToggleLike={handleToggleLike}
-        />
-      ))}
-    </View>
+    <Animated.FlatList
+      ref={listRef}
+      className="flex-1"
+      data={comments}
+      keyExtractor={(item) => item.id}
+      renderItem={renderComment}
+      ListHeaderComponent={ListHeaderComponent}
+      ListEmptyComponent={listEmptyComponent}
+      contentContainerStyle={[{ flexGrow: 1 }, contentContainerStyle]}
+      refreshControl={refreshControl}
+      initialNumToRender={8}
+      maxToRenderPerBatch={6}
+      updateCellsBatchingPeriod={50}
+      windowSize={5}
+      keyboardShouldPersistTaps="always"
+    />
   );
 };
 
