@@ -8,7 +8,7 @@ import {
   ProfileHeaderSkeleton,
   UserProfileHeader,
 } from "@/components/user/profile/profile-header";
-import ProfilePostGrid, {
+import PostGrid, {
   PostGridSkeleton,
 } from "@/components/post/grid";
 import { useColors } from "@/hooks/use-colors";
@@ -89,7 +89,7 @@ const UserDetailPostGrid = ({
   const posts = postsData.pages.flat();
 
   return (
-    <ProfilePostGrid
+    <PostGrid
       posts={posts}
       isFetchingNextPage={isFetchingNextPage}
       hasNextPage={hasNextPage}

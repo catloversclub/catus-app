@@ -4,7 +4,7 @@ import {
   useMyPostsQuery,
 } from "@/api/domains/post/queries";
 import TabIconBar from "@/components/layout/tab-icon-bar";
-import ProfilePostGrid from "@/components/post/grid";
+import PostGrid from "@/components/post/grid";
 import { useTabSwipe } from "@/hooks/use-tab-swipe";
 import { GestureDetector } from "react-native-gesture-handler";
 import { View } from "react-native";
@@ -48,7 +48,7 @@ const MypagePostGrid = ({
       <GestureDetector gesture={panGesture}>
         <View style={{ overflow: "hidden" }}>
           <Animated.View style={animatedStyle}>
-            <ProfilePostGrid
+            <PostGrid
               posts={posts}
               isFetchingNextPage={activeQuery.isFetchingNextPage}
               hasNextPage={activeQuery.hasNextPage}

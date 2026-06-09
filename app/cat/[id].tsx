@@ -10,7 +10,7 @@ import IconButton from "@/components/common/icon-button";
 import { RefreshableScrollView } from "@/components/common/logo-refresh-control";
 import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
 import { ProfileHeaderSkeleton } from "@/components/user/profile/profile-header";
-import ProfilePostGrid, {
+import PostGrid, {
   PostGridSkeleton,
 } from "@/components/post/grid";
 import { useColors } from "@/hooks/use-colors";
@@ -81,7 +81,7 @@ const CatDetailPostGrid = ({ catId, loadMoreRef }: CatDetailPostGridProps) => {
   const posts = postsData.pages.flat();
 
   return (
-    <ProfilePostGrid
+    <PostGrid
       posts={posts}
       isFetchingNextPage={isFetchingNextPage}
       hasNextPage={hasNextPage}

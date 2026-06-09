@@ -39,13 +39,16 @@ interface PostThumbnailProps {
 
 const PostThumbnail = ({ post, size }: PostThumbnailProps) => {
   return (
-    <ImagePressable href={`/post/${post.id}`} style={{ width: size, height: size }}>
+    <ImagePressable
+      href={`/post/${post.id}`}
+      style={{ width: size, height: size }}
+    >
       <SquareImage uri={post.images[0]?.url} size={size} />
     </ImagePressable>
   );
 };
 
-interface ProfilePostGridProps {
+interface PostGridProps {
   ListHeaderComponent?: React.ComponentType;
   tabBar?: React.ReactElement;
   posts: Post[];
@@ -57,7 +60,7 @@ interface ProfilePostGridProps {
   loadMoreRef?: React.RefObject<(() => void) | null>;
 }
 
-const ProfilePostGrid = ({
+const PostGrid = ({
   ListHeaderComponent,
   tabBar,
   posts,
@@ -67,7 +70,7 @@ const ProfilePostGrid = ({
   emptyMessage,
   logoOverlay,
   loadMoreRef,
-}: ProfilePostGridProps) => {
+}: PostGridProps) => {
   if (loadMoreRef) {
     loadMoreRef.current = () => {
       if (hasNextPage && !isFetchingNextPage) {
@@ -77,7 +80,7 @@ const ProfilePostGrid = ({
   }
 
   const { width } = useWindowDimensions();
-  const size = (width - 4) / 3;
+  const size = (width - 24) / 3;
 
   const hasStickyTabBar = !!tabBar;
 
@@ -147,4 +150,4 @@ const ProfilePostGrid = ({
 };
 
 export { PostGridSkeleton, PostThumbnail };
-export default ProfilePostGrid;
+export default PostGrid;
