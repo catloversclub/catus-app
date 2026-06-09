@@ -1,6 +1,7 @@
 import Button from "@/components/common/button";
 import CenterModal from "@/components/modal/center-modal";
 import { useComposeStore } from "@/store/post/compose-store";
+import type { DraftData } from "@/store/post/draft-store";
 import { useDraftStore } from "@/store/post/draft-store";
 import { router } from "expo-router";
 import { Text, View } from "react-native";
@@ -8,22 +9,22 @@ import { Text, View } from "react-native";
 interface DraftModalProps {
   visible: boolean;
   onClose: () => void;
-  images: string[];
+  draft: DraftData;
 }
 
-const DraftModal = ({ visible, onClose, images }: DraftModalProps) => {
+const DraftModal = ({ visible, onClose, draft }: DraftModalProps) => {
   const { saveDraft } = useDraftStore();
-  const { clearImageUris, setImageUris } = useComposeStore();
+  const { clearComposeData, setComposeData } = useComposeStore();
 
   const handleDiscard = () => {
-    clearImageUris();
+    clearComposeData();
     onClose();
     router.back();
   };
 
   const handleSave = () => {
-    saveDraft({ imageUris: images });
-    setImageUris(images);
+    saveDraft(draft);
+    setComposeData(draft);
     onClose();
     router.back();
   };

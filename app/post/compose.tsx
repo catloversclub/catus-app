@@ -15,14 +15,16 @@ import BottomActionBar from "@/components/layout/bottom-action-bar";
 import DraftModal from "@/components/modal/draft-modal";
 import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
 import { STORAGE_BASE_URL } from "@/constants/api";
+import { ROUTES } from "@/constants/route";
 import { useColors } from "@/hooks/use-colors";
 import { useImageUrisParam } from "@/hooks/use-image-uris-param";
 import { useKeyboardAvoidingView } from "@/hooks/use-keyboard-avoiding-view";
 import { useToast } from "@/hooks/use-toast";
 import { useComposeStore } from "@/store/post/compose-store";
+import { useDraftStore } from "@/store/post/draft-store";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Stack, router } from "expo-router";
-import { RefObject, useEffect, useRef, useState } from "react";
+import { RefObject, useEffect, useMemo, useRef, useState } from "react";
 import {
   BackHandler,
   ScrollView,
@@ -116,8 +118,13 @@ const ComposeScreen = () => {
   const toast = useToast();
   const {
     imageUris: storedImageUris,
-    clearImageUris,
+    caption: storedCaption,
+    selectedCats: storedSelectedCats,
+    commentsEnabled: storedCommentsEnabled,
+    sharingEnabled: storedSharingEnabled,
+    clearComposeData,
   } = useComposeStore();
+  const clearDraft = useDraftStore((s) => s.clearDraft);
   const routeImageUris = useImageUrisParam();
   const images = storedImageUris.length > 0 ? storedImageUris : routeImageUris;
 
@@ -125,12 +132,14 @@ const ComposeScreen = () => {
     usePostImageUploadUrlMutation();
   const { mutateAsync: createPost } = useCreatePostMutation();
 
-  const [caption, setCaption] = useState("");
+  const [caption, setCaption] = useState(storedCaption);
   const [selectedCats, setSelectedCats] = useState<Pick<Cat, "id" | "name">[]>(
-    [],
+    storedSelectedCats,
   );
-  const [commentsEnabled, setCommentsEnabled] = useState(true);
-  const [sharingEnabled, setSharingEnabled] = useState(false);
+  const [commentsEnabled, setCommentsEnabled] = useState(
+    storedCommentsEnabled,
+  );
+  const [sharingEnabled, setSharingEnabled] = useState(storedSharingEnabled);
   const [showDraftModal, setShowDraftModal] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -138,6 +147,20 @@ const ComposeScreen = () => {
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
   const canUpload = images.length > 0;
+  const selectedCatIds = useMemo(
+    () => selectedCats.map((cat) => cat.id),
+    [selectedCats],
+  );
+  const draft = useMemo(
+    () => ({
+      imageUris: images,
+      caption,
+      selectedCats,
+      commentsEnabled,
+      sharingEnabled,
+    }),
+    [caption, commentsEnabled, images, selectedCats, sharingEnabled],
+  );
 
   const handleBack = () => setShowDraftModal(true);
 
@@ -165,7 +188,7 @@ const ComposeScreen = () => {
 
       await createPost({
         content: caption.trim() || null,
-        catIds: selectedCats.map((cat) => cat.id),
+        catIds: selectedCatIds,
         isCommentable: commentsEnabled,
         isShareable: sharingEnabled,
         imageUrls: uploads.map(
@@ -173,9 +196,11 @@ const ComposeScreen = () => {
         ),
       });
 
-      clearImageUris();
+      clearComposeData();
+      clearDraft();
       toast.success("게시물이 업로드되었어요");
       router.dismissAll();
+      router.replace(ROUTES.TABS.INDEX);
     } catch {
       toast.error("게시물 업로드 중 오류가 발생했어요");
     } finally {
@@ -288,13 +313,14 @@ const ComposeScreen = () => {
       <DraftModal
         visible={showDraftModal}
         onClose={() => setShowDraftModal(false)}
-        images={images}
+        draft={draft}
       />
 
       <SuspenseWithDelay fallback={null} delay={0}>
         <SelectCatSheet
           bottomSheetRef={bottomSheetRef}
           userId={userProfile.id}
+          initialSelectedCatIds={selectedCatIds}
           onSelectionChange={setSelectedCats}
         />
       </SuspenseWithDelay>

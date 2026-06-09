@@ -1,7 +1,12 @@
 import { create } from "zustand";
+import type { Cat } from "@/api/domains/cat/types";
 
-interface DraftData {
+export interface DraftData {
   imageUris: string[];
+  caption: string;
+  selectedCats: Pick<Cat, "id" | "name">[];
+  commentsEnabled: boolean;
+  sharingEnabled: boolean;
 }
 
 interface DraftStore {

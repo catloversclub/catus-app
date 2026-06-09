@@ -18,6 +18,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 interface SelectCatSheetProps {
   bottomSheetRef: RefObject<BottomSheetModal | null>;
   userId: string;
+  initialSelectedCatIds?: string[];
   onSelectionChange?: (selectedCats: Pick<Cat, "id" | "name">[]) => void;
   onConfirm?: (catIds: string[]) => void;
 }
@@ -25,13 +26,20 @@ interface SelectCatSheetProps {
 const SelectCatSheet = ({
   bottomSheetRef,
   userId,
+  initialSelectedCatIds = [],
   onSelectionChange,
   onConfirm,
 }: SelectCatSheetProps) => {
   const { bottom } = useSafeAreaInsets();
   const { colors } = useColors();
   const { data: cats } = useUserCatsQuery(userId);
-  const [selectedCatIds, setSelectedCatIds] = useState<string[]>([]);
+  const [selectedCatIds, setSelectedCatIds] = useState<string[]>(
+    initialSelectedCatIds,
+  );
+
+  useEffect(() => {
+    setSelectedCatIds(initialSelectedCatIds);
+  }, [initialSelectedCatIds]);
 
   useEffect(() => {
     setSelectedCatIds((prev) => {

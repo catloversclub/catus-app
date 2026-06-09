@@ -7,17 +7,17 @@ import { router, Stack } from "expo-router";
 
 const GalleryScreen = () => {
   const { draft, clearDraft } = useDraftStore();
-  const setComposeImageUris = useComposeStore((s) => s.setImageUris);
+  const { clearComposeData, setComposeData } = useComposeStore();
 
   const handleLoadDraft = () => {
     if (!draft) return;
-    const uris = draft.imageUris;
-    setComposeImageUris(uris);
+    setComposeData(draft);
     clearDraft();
     router.push(ROUTES.POST.COMPOSE);
   };
 
   const handleDismissDraft = () => {
+    clearComposeData();
     clearDraft();
   };
 
