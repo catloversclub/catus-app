@@ -7,7 +7,7 @@ import { RefreshableScrollView } from "@/components/common/logo-refresh-control"
 import MyProfileHeaderContent from "@/components/user/mypage/my-profile-header-content";
 import MypagePostGrid from "@/components/user/mypage/mypage-post-grid";
 import { ProfileHeaderSkeleton } from "@/components/user/profile/profile-header";
-import { PostGridSkeleton } from "@/components/user/profile/profile-post-grid";
+import { PostGridSkeleton } from "@/components/post/grid";
 import { useColors } from "@/hooks/use-colors";
 import { useDefaultStackScreenOptions } from "@/hooks/use-default-screen-options";
 import { useLoadMoreScroll } from "@/hooks/use-load-more-scroll";

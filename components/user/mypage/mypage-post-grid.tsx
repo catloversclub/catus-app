@@ -4,7 +4,7 @@ import {
   useMyPostsQuery,
 } from "@/api/domains/post/queries";
 import TabIconBar from "@/components/layout/tab-icon-bar";
-import ProfilePostGrid from "@/components/user/profile/profile-post-grid";
+import ProfilePostGrid from "@/components/post/grid";
 import { useTabSwipe } from "@/hooks/use-tab-swipe";
 import { GestureDetector } from "react-native-gesture-handler";
 import { View } from "react-native";

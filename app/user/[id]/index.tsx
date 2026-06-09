@@ -10,7 +10,7 @@ import {
 } from "@/components/user/profile/profile-header";
 import ProfilePostGrid, {
   PostGridSkeleton,
-} from "@/components/user/profile/profile-post-grid";
+} from "@/components/post/grid";
 import { useColors } from "@/hooks/use-colors";
 import { useLoadMoreScroll } from "@/hooks/use-load-more-scroll";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
