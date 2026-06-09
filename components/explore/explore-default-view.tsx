@@ -85,7 +85,7 @@ const ExploreDefaultView = ({ scrollHandler }: ExploreDefaultViewProps) => {
   return (
     <RefreshableScrollView
       onRefresh={refreshQueries}
-      onScroll={scrollHandler as any}
+      onScroll={scrollHandler}
       scrollEventThrottle={16}
       className="flex-1"
       contentContainerClassName="gap-6 pb-6"
