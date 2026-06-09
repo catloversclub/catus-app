@@ -4,9 +4,10 @@ import {
   useCreatePostMutation,
   usePostImageUploadUrlMutation,
 } from "@/api/domains/post/queries";
+import { useUserProfileQuery } from "@/api/domains/user/queries";
 import DefaultAvatarCatIcon from "@/assets/icons/default-avatar-cat.svg";
 import PlusIcon from "@/assets/icons/plus.svg";
-import CatProfileSheet from "@/components/bottom-sheet/cat-profile-sheet";
+import SelectCatSheet from "@/components/bottom-sheet/select-cat-sheet";
 import ImageCarousel from "@/components/common/image-carousel";
 import { ScreenHeader } from "@/components/common/screen-header";
 import Toggle from "@/components/common/toggle";
@@ -110,6 +111,7 @@ const CatSelector = ({
 );
 
 const ComposeScreen = () => {
+  const { data: userProfile } = useUserProfileQuery();
   const { colors } = useColors();
   const toast = useToast();
   const {
@@ -290,8 +292,9 @@ const ComposeScreen = () => {
       />
 
       <SuspenseWithDelay fallback={null} delay={0}>
-        <CatProfileSheet
+        <SelectCatSheet
           bottomSheetRef={bottomSheetRef}
+          userId={userProfile.id}
           onSelectionChange={setSelectedCats}
         />
       </SuspenseWithDelay>

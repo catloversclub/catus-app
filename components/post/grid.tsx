@@ -87,7 +87,7 @@ const PostGrid = ({
       style={{ flex: 1 }}
       contentContainerStyle={{ flexGrow: 1 }}
       ListHeaderComponent={
-        <View style={{ marginBottom: 16 }}>{ListHeaderComponent}</View>
+        <View style={{ marginBottom: 24 }}>{ListHeaderComponent}</View>
       }
       ListEmptyComponent={
         <View style={{ minHeight: size * NUM_COLS + GAP * (NUM_COLS - 1) }}>

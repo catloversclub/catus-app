@@ -1,15 +1,12 @@
-import {
-  useFollowUserMutation,
-  useUnfollowUserMutation,
-  useUserDetailQuery,
-} from "@/api/domains/user/queries";
+import { useUserDetailQuery } from "@/api/domains/user/queries";
 import ChevronRightIcon from "@/assets/icons/chevron-right.svg";
 import SelectCatSheet from "@/components/bottom-sheet/select-cat-sheet";
 import ActionPressable from "@/components/common/action-pressable";
-import Button, { ButtonType } from "@/components/common/button";
 import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
+import FollowButton from "@/components/user/follow-button";
 import UserProfileImage from "@/components/user/profile-image";
 import { useColors } from "@/hooks/use-colors";
+import { useUserFollowToggle } from "@/hooks/user/use-user-follow-toggle";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useRef } from "react";
 import { Text, View } from "react-native";
@@ -21,34 +18,11 @@ interface CatButlerCardProps {
 const CatButlerCard = ({ userId }: CatButlerCardProps) => {
   const { data: profile } = useUserDetailQuery(userId);
   const { colors } = useColors();
-  const { mutate: followUser, isPending: isFollowPending } =
-    useFollowUserMutation();
-  const { mutate: unfollowUser, isPending: isUnfollowPending } =
-    useUnfollowUserMutation();
   const selectCatSheetRef = useRef<BottomSheetModal>(null);
-
-  const isPending = isFollowPending || isUnfollowPending;
-
-  const handleFollowToggle = () => {
-    if (profile.isFollowing) {
-      unfollowUser(userId);
-      return;
-    }
-
-    selectCatSheetRef.current?.present();
-  };
-
-  const handleFollow = (catIds: string[]) => {
-    followUser({ userId, catIds });
-  };
-
-  const followButton: ButtonType = {
-    label: profile.isFollowing ? "팔로잉" : "팔로우",
-    onPress: handleFollowToggle,
-    variant: profile.isFollowing ? "secondary" : "primary",
-    size: "md",
-    isPending,
-  };
+  const { followWithCats } = useUserFollowToggle({
+    userId,
+    isFollowing: profile.isFollowing,
+  });
 
   return (
     <>
@@ -75,9 +49,11 @@ const CatButlerCard = ({ userId }: CatButlerCardProps) => {
           </View>
         </ActionPressable>
         <View className="ml-3 w-[86px]">
-          <Button
-            button={followButton}
-            className="h-10 rounded-[8px] px-5"
+          <FollowButton
+            userId={userId}
+            isFollowing={profile.isFollowing}
+            size="md"
+            onFollowStart={() => selectCatSheetRef.current?.present()}
           />
         </View>
         <ActionPressable
@@ -95,7 +71,8 @@ const CatButlerCard = ({ userId }: CatButlerCardProps) => {
       <SuspenseWithDelay fallback={null} delay={0}>
         <SelectCatSheet
           bottomSheetRef={selectCatSheetRef}
-          onConfirm={handleFollow}
+          userId={userId}
+          onConfirm={followWithCats}
         />
       </SuspenseWithDelay>
     </>

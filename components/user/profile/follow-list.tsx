@@ -1,12 +1,11 @@
 import {
-  useFollowUserMutation,
-  useUnfollowUserMutation,
   useUserFollowersQuery,
   useUserFollowingsQuery,
   userKeys,
 } from "@/api/domains/user/queries";
 import ActionPressable from "@/components/common/action-pressable";
 import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
+import FollowButton from "@/components/user/follow-button";
 import UserProfileImage from "@/components/user/profile-image";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useColors } from "@/hooks/use-colors";
@@ -52,10 +51,6 @@ const FollowItem = ({
   profileImageUrl,
   isFollowedByMe,
 }: FollowItemProps) => {
-  const { colors } = useColors();
-  const { mutate: follow } = useFollowUserMutation();
-  const { mutate: unfollow } = useUnfollowUserMutation();
-
   return (
     <View className="flex-row items-center gap-3 px-4 py-3">
       <UserProfileImage imageUrl={profileImageUrl ?? null} userId={id} size="sm" />
@@ -67,29 +62,7 @@ const FollowItem = ({
           {nickname}
         </Text>
       </ActionPressable>
-      <ActionPressable
-        onPress={() => (isFollowedByMe ? unfollow(id) : follow(id))}
-        className="px-4 py-1.5 rounded-md border"
-        style={{
-          borderColor: isFollowedByMe
-            ? colors.border.primary
-            : colors.border.accent,
-          backgroundColor: isFollowedByMe
-            ? "transparent"
-            : colors.button.primary.bg,
-        }}
-      >
-        <Text
-          className="typo-body4"
-          style={{
-            color: isFollowedByMe
-              ? colors.text.secondary
-              : colors.button.primary.text,
-          }}
-        >
-          {isFollowedByMe ? "팔로잉" : "팔로우"}
-        </Text>
-      </ActionPressable>
+      <FollowButton userId={id} isFollowing={isFollowedByMe} />
     </View>
   );
 };

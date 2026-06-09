@@ -41,14 +41,12 @@ const CatProfileHeader = ({
             {showGender && <GenderIcon gender={gender!} />}
           </View>
         )}
-        {hasTags ? (
-          <View className="flex-row flex-wrap justify-center gap-3 px-5 mb-6">
+        {hasTags && (
+          <View className="flex-row flex-wrap justify-center gap-3 px-5">
             {tags!.map((tag) => (
               <Chip key={tag} label={tag} />
             ))}
           </View>
-        ) : (
-          <View className="mb-6" />
         )}
       </View>
     </View>

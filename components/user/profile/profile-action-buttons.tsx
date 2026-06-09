@@ -7,7 +7,7 @@ interface ProfileActionButtonsProps {
 }
 
 const ProfileActionButtons = ({ buttons }: ProfileActionButtonsProps) => (
-  <View className="flex-row gap-1.5 w-full mb-[26px] px-5">
+  <View className="flex-row gap-1.5 w-full px-5">
     {buttons.map((button) => (
       <View key={button.label} className="flex-1">
         <Button button={button} />

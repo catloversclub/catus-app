@@ -1,12 +1,12 @@
-import {
-  useFollowUserMutation,
-  useUnfollowUserMutation,
-  useUserDetailQuery,
-} from "@/api/domains/user/queries";
+import { useUserDetailQuery } from "@/api/domains/user/queries";
+import SelectCatSheet from "@/components/bottom-sheet/select-cat-sheet";
 import { ButtonType } from "@/components/common/button";
 import ProfileActionButtons from "@/components/user/profile/profile-action-buttons";
-
+import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
+import { useUserFollowToggle } from "@/hooks/user/use-user-follow-toggle";
 import { shareUser } from "@/lib/share";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { useRef } from "react";
 
 interface OtherProfileActionsProps {
   userId: string;
@@ -14,29 +14,20 @@ interface OtherProfileActionsProps {
 
 const OtherProfileActions = ({ userId }: OtherProfileActionsProps) => {
   const { data: profile } = useUserDetailQuery(userId);
-  const { mutate: followUser, isPending: isFollowPending } =
-    useFollowUserMutation();
-  const { mutate: unfollowUser, isPending: isUnfollowPending } =
-    useUnfollowUserMutation();
-
-  const isFollowing = profile.isFollowing;
-  const isPending = isFollowPending || isUnfollowPending;
-
-  const handleFollowToggle = () => {
-    if (isFollowing) {
-      unfollowUser(userId);
-    } else {
-      followUser(userId);
-    }
-  };
+  const selectCatSheetRef = useRef<BottomSheetModal>(null);
+  const { followWithCats, toggleFollow, isPending } = useUserFollowToggle({
+    userId,
+    isFollowing: profile.isFollowing,
+    onFollowStart: () => selectCatSheetRef.current?.present(),
+  });
 
   const handleShare = () => shareUser(userId, profile.nickname);
 
   const buttons: ButtonType[] = [
     {
-      label: isFollowing ? "팔로잉" : "팔로우",
-      onPress: handleFollowToggle,
-      variant: isFollowing ? "secondary" : "primary",
+      label: profile.isFollowing ? "팔로잉" : "팔로우",
+      onPress: toggleFollow,
+      variant: profile.isFollowing ? "secondary" : "primary",
       size: "md",
       isPending,
     },
@@ -48,7 +39,18 @@ const OtherProfileActions = ({ userId }: OtherProfileActionsProps) => {
     },
   ];
 
-  return <ProfileActionButtons buttons={buttons} />;
+  return (
+    <>
+      <ProfileActionButtons buttons={buttons} />
+      <SuspenseWithDelay fallback={null} delay={0}>
+        <SelectCatSheet
+          bottomSheetRef={selectCatSheetRef}
+          userId={userId}
+          onConfirm={followWithCats}
+        />
+      </SuspenseWithDelay>
+    </>
+  );
 };
 
 export default OtherProfileActions;
