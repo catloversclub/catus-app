@@ -2,6 +2,7 @@ import AppsIcon from "@/assets/icons/apps.svg";
 import BookmarkIcon from "@/assets/icons/bookmark.svg";
 import HeartOutlineIcon from "@/assets/icons/heart-outline.svg";
 import { useColors } from "@/hooks/use-colors";
+import { useState } from "react";
 import { TouchableOpacity, View, useWindowDimensions } from "react-native";
 
 const TAB_ICONS = [AppsIcon, HeartOutlineIcon, BookmarkIcon] as const;
@@ -14,10 +15,14 @@ interface TabIconBarProps {
 const TabIconBar = ({ activeIndex, onChange }: TabIconBarProps) => {
   const { colors } = useColors();
   const { width } = useWindowDimensions();
-  const tabWidth = width / TAB_ICONS.length;
+  const [barWidth, setBarWidth] = useState(width);
+  const tabWidth = barWidth / TAB_ICONS.length;
 
   return (
-    <View className="bg-semantic-bg-primary">
+    <View
+      className="bg-semantic-bg-primary"
+      onLayout={(e) => setBarWidth(e.nativeEvent.layout.width)}
+    >
       <View style={{ height: 46, flexDirection: "row" }}>
         {TAB_ICONS.map((Icon, index) => (
           <TouchableOpacity
@@ -48,7 +53,6 @@ const TabIconBar = ({ activeIndex, onChange }: TabIconBarProps) => {
           }}
         />
       </View>
-      <View className="h-px bg-semantic-border-primary" />
     </View>
   );
 };
