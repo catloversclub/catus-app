@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from "expo-router";
 import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
-import { useState } from "react";
+import { useRef } from "react";
 import { View } from "react-native";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 
@@ -8,12 +8,8 @@ import { commentKeys } from "@/api/domains/comment/queries";
 import { postKeys } from "@/api/domains/post/queries";
 import { RefreshableScrollView } from "@/components/common/logo-refresh-control";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
-import CommentInputBar, {
-  ReplyTarget,
-} from "@/components/comment/input-bar";
-import CommentList, {
-  CommentListSkeleton,
-} from "@/components/comment/list";
+import CommentInputBar, { CommentInputRef } from "@/components/comment/input-bar";
+import CommentList, { CommentListSkeleton } from "@/components/comment/list";
 import PostDetailCard, {
   PostDetailCardSkeleton,
 } from "@/components/post/detail-card";
@@ -22,10 +18,14 @@ import { useHeaderHeight } from "@react-navigation/elements";
 
 const PostDetailScreen = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const [replyTarget, setReplyTarget] = useState<ReplyTarget | null>(null);
+  const inputRef = useRef<CommentInputRef>(null);
   const headerHeight = useHeaderHeight();
-  const { keyboardAvoidingViewProps, insets } = useKeyboardAvoidingView(headerHeight);
-  const onRefresh = useRefreshQueries([postKeys.detail(id), commentKeys.byPost(id)]);
+  const { keyboardAvoidingViewProps, insets } =
+    useKeyboardAvoidingView(headerHeight);
+  const onRefresh = useRefreshQueries([
+    postKeys.detail(id),
+    commentKeys.byPost(id),
+  ]);
 
   return (
     <View className="flex-1 bg-semantic-bg-primary">
@@ -39,13 +39,15 @@ const PostDetailScreen = () => {
               <PostDetailCard postId={id} />
             </SuspenseWithDelay>
             <SuspenseWithDelay fallback={<CommentListSkeleton />}>
-              <CommentList postId={id} onReply={setReplyTarget} />
+              <CommentList
+                postId={id}
+                onReply={(target) => inputRef.current?.setReplyTarget(target)}
+              />
             </SuspenseWithDelay>
           </RefreshableScrollView>
           <CommentInputBar
             postId={id}
-            replyTarget={replyTarget}
-            onClearReply={() => setReplyTarget(null)}
+            inputRef={inputRef}
             paddingBottom={insets.bottom}
           />
         </View>

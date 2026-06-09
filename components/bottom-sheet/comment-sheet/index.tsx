@@ -5,10 +5,7 @@ import {
 } from "@/api/domains/comment/queries";
 import { Comment } from "@/api/domains/comment/types";
 import BaseBottomSheet from "@/components/bottom-sheet/base-bottom-sheet";
-import CommentInputBar, {
-  CommentInputRef,
-  ReplyTarget,
-} from "@/components/comment/input-bar";
+import CommentInputBar, { CommentInputRef } from "@/components/comment/input-bar";
 import CommentItem from "@/components/comment/item";
 import { CommentListSkeleton } from "@/components/comment/list";
 import { Text } from "@/components/ui/text";
@@ -19,7 +16,7 @@ import {
   BottomSheetModal,
   BottomSheetTextInput,
 } from "@gorhom/bottom-sheet";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { LayoutChangeEvent, View } from "react-native";
 
 interface CommentSheetProps {
@@ -28,7 +25,6 @@ interface CommentSheetProps {
 }
 
 const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
-  const [replyTarget, setReplyTarget] = useState<ReplyTarget | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [footerHeight, setFooterHeight] = useState(0);
   const inputRef = useRef<CommentInputRef>(null);
@@ -48,26 +44,14 @@ const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
       <BottomSheetFooter {...props}>
         <CommentInputBar
           postId={postId}
-          replyTarget={replyTarget}
-          onClearReply={() => setReplyTarget(null)}
           InputComponent={BottomSheetTextInput}
           inputRef={inputRef}
           onLayout={handleFooterLayout}
         />
       </BottomSheetFooter>
     ),
-    [handleFooterLayout, postId, replyTarget],
+    [handleFooterLayout, postId],
   );
-
-  useEffect(() => {
-    if (!replyTarget) return;
-
-    const frameId = requestAnimationFrame(() => {
-      inputRef.current?.focus();
-    });
-
-    return () => cancelAnimationFrame(frameId);
-  }, [replyTarget]);
 
   const handleChange = useCallback((index: number) => {
     setIsOpen(index >= 0);
@@ -75,7 +59,7 @@ const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
 
   const handleDismiss = useCallback(() => {
     setIsOpen(false);
-    setReplyTarget(null);
+    inputRef.current?.clearReplyTarget();
   }, []);
 
   const handleToggleLike = useCallback(
@@ -93,7 +77,7 @@ const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
     ({ item }: { item: Comment }) => (
       <CommentItem
         comment={item}
-        onReply={(target) => setReplyTarget(target)}
+        onReply={(target) => inputRef.current?.setReplyTarget(target)}
         onToggleLike={handleToggleLike}
       />
     ),
