@@ -12,7 +12,7 @@ const ProfileActions = () => {
   const handleShare = async () => {
     await Share.share({
       url: `${WEBVIEW_URL}/share/user/${userData.id}`,
-      message: `@${userData.nickname}님의 프로필을 확인해보세요!`,
+      message: `${userData.nickname}님의 프로필을 확인해보세요!`,
     });
   };
 

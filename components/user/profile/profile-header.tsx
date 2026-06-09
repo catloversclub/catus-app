@@ -1,10 +1,10 @@
-import UserProfileImage from "@/components/user/profile-image";
 import { ProfileIdentity } from "@/components/common/profile-identity";
 import {
   ProfileStat,
   type ProfileStatItem,
 } from "@/components/common/profile-stat";
 import { Skeleton } from "@/components/ui/skeleton";
+import UserProfileImage from "@/components/user/profile-image";
 import { View } from "react-native";
 
 interface UserProfileHeaderProps {
@@ -55,4 +55,4 @@ const ProfileHeaderSkeleton = () => (
   </View>
 );
 
-export { UserProfileHeader, ProfileHeaderSkeleton };
+export { ProfileHeaderSkeleton, UserProfileHeader };

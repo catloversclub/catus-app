@@ -21,5 +21,5 @@ const ProfileStat = ({ label, value, href }: ProfileStatItem) => {
   return content;
 };
 
-export type { ProfileStatItem };
 export { ProfileStat };
+export type { ProfileStatItem };
