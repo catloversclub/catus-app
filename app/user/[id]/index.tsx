@@ -1,32 +1,46 @@
+import { catKeys } from "@/api/domains/cat/queries";
 import { postKeys, useUserPostsQuery } from "@/api/domains/post/queries";
 import { userKeys, useUserDetailQuery } from "@/api/domains/user/queries";
-import { catKeys } from "@/api/domains/cat/queries";
 import MoreIcon from "@/assets/icons/more.svg";
 import IconButton from "@/components/common/icon-button";
-import { RefreshableScrollView } from "@/components/common/logo-refresh-control";
+import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
+import PostGrid, { PostGridSkeleton } from "@/components/post/grid";
+import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
 import OtherProfileActions from "@/components/user/profile/other-profile-actions";
 import {
   ProfileHeaderSkeleton,
   UserProfileHeader,
 } from "@/components/user/profile/profile-header";
-import PostGrid, {
-  PostGridSkeleton,
-} from "@/components/post/grid";
 import UserCatListSection from "@/components/user/profile/user-cat-list-section";
 import { useColors } from "@/hooks/use-colors";
-import { useLoadMoreScroll } from "@/hooks/use-load-more-scroll";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
-import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { Text, View } from "react-native";
 
-// ─── Profile header ───────────────────────────────────────────
+interface UserDetailGridProps {
+  userId: string;
+}
 
-const UserDetailProfileHeader = ({ userId }: { userId: string }) => {
+const UserDetailGrid = ({ userId }: UserDetailGridProps) => {
   const { data: profile } = useUserDetailQuery(userId);
-  const { data: postsData } = useUserPostsQuery(userId);
   const { colors } = useColors();
+  const {
+    data: postsData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useUserPostsQuery(userId);
+
   const posts = postsData.pages.flat();
+
+  const refreshQueries = useRefreshQueries([
+    userKeys.detail(userId),
+    postKeys.userPosts(userId),
+    catKeys.userList(userId),
+  ]);
+  const { refreshControl } = useLogoRefreshControl({
+    onRefresh: refreshQueries,
+  });
 
   return (
     <>
@@ -40,105 +54,75 @@ const UserDetailProfileHeader = ({ userId }: { userId: string }) => {
           ),
         }}
       />
-      <UserProfileHeader
-        imageUrl={profile.profileImageUrl}
-        name={profile.nickname}
-        stats={[
-          {
-            label: "게시글",
-            value: posts.length,
-          },
-          {
-            label: "팔로워",
-            value: profile.followerCount,
-            href: {
-              pathname: "/user/[id]/follower",
-              params: { id: userId },
-            },
-          },
-          {
-            label: "팔로잉",
-            value: profile.followingCount,
-            href: {
-              pathname: "/user/[id]/following",
-              params: { id: userId },
-            },
-          },
-        ]}
-        actions={<OtherProfileActions userId={userId} />}
+      <PostGrid
+        posts={posts}
+        isFetchingNextPage={isFetchingNextPage}
+        emptyComponent={
+          <View className="py-12 items-center justify-center">
+            <Text className="typo-body1 text-semantic-text-tertiary">
+              아직 작성한 게시글이 없어요
+            </Text>
+          </View>
+        }
+        ListHeaderComponent={
+          <>
+            <UserProfileHeader
+              imageUrl={profile.profileImageUrl}
+              name={profile.nickname}
+              stats={[
+                {
+                  label: "게시글",
+                  value: posts.length,
+                },
+                {
+                  label: "팔로워",
+                  value: profile.followerCount,
+                  href: {
+                    pathname: "/user/[id]/follower",
+                    params: { id: userId },
+                  },
+                },
+                {
+                  label: "팔로잉",
+                  value: profile.followingCount,
+                  href: {
+                    pathname: "/user/[id]/following",
+                    params: { id: userId },
+                  },
+                },
+              ]}
+              actions={<OtherProfileActions userId={userId} />}
+            />
+            <UserCatListSection userId={userId} />
+          </>
+        }
+        scrollEnabled
+        refreshControl={refreshControl}
+        onEndReached={() => {
+          if (hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+          }
+        }}
       />
     </>
   );
 };
 
-// ─── Post grid ────────────────────────────────────────────────
-
-interface UserDetailPostGridProps {
-  userId: string;
-  loadMoreRef: React.RefObject<(() => void) | null>;
-}
-
-const UserDetailPostGrid = ({
-  userId,
-  loadMoreRef,
-}: UserDetailPostGridProps) => {
-  const {
-    data: postsData,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useUserPostsQuery(userId);
-  const posts = postsData.pages.flat();
-
-  loadMoreRef.current = () => {
-    if (hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
-    }
-  };
-
-  return (
-    <PostGrid
-      posts={posts}
-      isFetchingNextPage={isFetchingNextPage}
-      emptyComponent={
-        <View className="py-12 items-center justify-center">
-          <Text className="typo-body1 text-semantic-text-tertiary">
-            아직 작성한 게시글이 없어요
-          </Text>
-        </View>
-      }
-    />
-  );
-};
-
-// ─── Page ─────────────────────────────────────────────────────
-
 const UserDetailScreen = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { handleScroll, loadMoreRef } = useLoadMoreScroll();
-  const refreshQueries = useRefreshQueries([
-    userKeys.detail(id),
-    postKeys.userPosts(id),
-    catKeys.userList(id),
-  ]);
 
   return (
     <View className="flex-1 bg-semantic-bg-primary">
-      <RefreshableScrollView
-        onRefresh={refreshQueries}
-        onScroll={handleScroll}
-        scrollEventThrottle={100}
+      <SuspenseWithDelay
+        fallback={
+          <>
+            <ProfileHeaderSkeleton />
+            <PostGridSkeleton />
+          </>
+        }
       >
-        <SuspenseWithDelay fallback={<ProfileHeaderSkeleton />}>
-          <UserDetailProfileHeader userId={id} />
-        </SuspenseWithDelay>
-        <SuspenseWithDelay fallback={null}>
-          <UserCatListSection userId={id} />
-        </SuspenseWithDelay>
-        <SuspenseWithDelay fallback={<PostGridSkeleton />}>
-          <UserDetailPostGrid userId={id} loadMoreRef={loadMoreRef} />
-        </SuspenseWithDelay>
-      </RefreshableScrollView>
+        <UserDetailGrid userId={id} />
+      </SuspenseWithDelay>
     </View>
   );
 };

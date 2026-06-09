@@ -7,26 +7,33 @@ import { postKeys, useCatPostsQuery } from "@/api/domains/post/queries";
 import MoreIcon from "@/assets/icons/more.svg";
 import { CatProfileHeader } from "@/components/cat/profile-header";
 import IconButton from "@/components/common/icon-button";
-import { RefreshableScrollView } from "@/components/common/logo-refresh-control";
+import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
+import PostGrid, { PostGridSkeleton } from "@/components/post/grid";
 import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
 import { ProfileHeaderSkeleton } from "@/components/user/profile/profile-header";
-import PostGrid, {
-  PostGridSkeleton,
-} from "@/components/post/grid";
 import { useColors } from "@/hooks/use-colors";
-import { useLoadMoreScroll } from "@/hooks/use-load-more-scroll";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
 import { formatDate } from "@/lib/utils";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { Text, View } from "react-native";
 
-// ─── Profile header ───────────────────────────────────────────
+interface CatDetailGridProps {
+  catId: string;
+}
 
-const CatDetailProfileHeader = ({ catId }: { catId: string }) => {
+const CatDetailGrid = ({ catId }: CatDetailGridProps) => {
   const { data: cat } = useCatByIdQuery(catId);
   const { data: appearances } = useAppearanceQuery();
   const { data: personalities } = usePersonalityQuery();
   const { colors } = useColors();
+  const {
+    data: postsData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useCatPostsQuery(catId);
+
+  const posts = postsData.pages.flat();
 
   const tags = [
     ...personalities
@@ -41,6 +48,14 @@ const CatDetailProfileHeader = ({ catId }: { catId: string }) => {
     Boolean,
   ) as string[];
 
+  const refreshQueries = useRefreshQueries([
+    catKeys.detail(catId),
+    postKeys.catPosts(catId),
+  ]);
+  const { refreshControl } = useLogoRefreshControl({
+    onRefresh: refreshQueries,
+  });
+
   return (
     <>
       <Stack.Screen
@@ -53,78 +68,52 @@ const CatDetailProfileHeader = ({ catId }: { catId: string }) => {
           ),
         }}
       />
-      <CatProfileHeader
-        imageUrl={cat.profileImageUrl}
-        name={cat.name}
-        subtitle={infoParts.length > 0 ? infoParts.join(" · ") : null}
-        gender={cat.gender}
-        tags={tags}
+      <PostGrid
+        posts={posts}
+        isFetchingNextPage={isFetchingNextPage}
+        emptyComponent={
+          <View className="py-12 items-center justify-center">
+            <Text className="typo-body1 text-semantic-text-tertiary">
+              아직 작성한 게시글이 없어요
+            </Text>
+          </View>
+        }
+        ListHeaderComponent={
+          <CatProfileHeader
+            imageUrl={cat.profileImageUrl}
+            name={cat.name}
+            subtitle={infoParts.length > 0 ? infoParts.join(" · ") : null}
+            gender={cat.gender}
+            tags={tags}
+          />
+        }
+        scrollEnabled
+        refreshControl={refreshControl}
+        onEndReached={() => {
+          if (hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+          }
+        }}
       />
     </>
   );
 };
 
-// ─── Post grid ────────────────────────────────────────────────
-
-interface CatDetailPostGridProps {
-  catId: string;
-  loadMoreRef: React.RefObject<(() => void) | null>;
-}
-
-const CatDetailPostGrid = ({ catId, loadMoreRef }: CatDetailPostGridProps) => {
-  const {
-    data: postsData,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useCatPostsQuery(catId);
-  const posts = postsData.pages.flat();
-
-  loadMoreRef.current = () => {
-    if (hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
-    }
-  };
-
-  return (
-    <PostGrid
-      posts={posts}
-      isFetchingNextPage={isFetchingNextPage}
-      emptyComponent={
-        <View className="py-12 items-center justify-center">
-          <Text className="typo-body1 text-semantic-text-tertiary">
-            아직 작성한 게시글이 없어요
-          </Text>
-        </View>
-      }
-    />
-  );
-};
-
-// ─── Page ─────────────────────────────────────────────────────
-
 const CatDetailPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { handleScroll, loadMoreRef } = useLoadMoreScroll();
-  const refreshQueries = useRefreshQueries([
-    catKeys.detail(id),
-    postKeys.catPosts(id),
-  ]);
 
   return (
     <View className="flex-1 bg-semantic-bg-primary">
-      <RefreshableScrollView
-        onRefresh={refreshQueries}
-        onScroll={handleScroll}
-        scrollEventThrottle={100}
+      <SuspenseWithDelay
+        fallback={
+          <>
+            <ProfileHeaderSkeleton />
+            <PostGridSkeleton />
+          </>
+        }
       >
-        <SuspenseWithDelay fallback={<ProfileHeaderSkeleton />}>
-          <CatDetailProfileHeader catId={id} />
-        </SuspenseWithDelay>
-        <SuspenseWithDelay fallback={<PostGridSkeleton />}>
-          <CatDetailPostGrid catId={id} loadMoreRef={loadMoreRef} />
-        </SuspenseWithDelay>
-      </RefreshableScrollView>
+        <CatDetailGrid catId={id} />
+      </SuspenseWithDelay>
     </View>
   );
 };
