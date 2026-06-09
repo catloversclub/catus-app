@@ -27,6 +27,7 @@ import {
   unlikePost,
   updatePost,
 } from "./api";
+import { useUserProfileQuery } from "@/api/domains/user/queries";
 import { CreatePostRequest, Post, UpdatePostRequest } from "./types";
 
 export const postKeys = {
@@ -177,13 +178,18 @@ export const useRecommendedFeedQuery = () => {
 
 export const useCreatePostMutation = () => {
   const queryClient = useQueryClient();
+  const { data: userProfile } = useUserProfileQuery();
 
   return useMutation({
     mutationFn: (payload: CreatePostRequest) => createPost(payload),
-    onSuccess: () => {
+    onSuccess: (post) => {
       queryClient.invalidateQueries({ queryKey: postKeys.myPosts() });
       queryClient.invalidateQueries({ queryKey: postKeys.followingFeed() });
       queryClient.invalidateQueries({ queryKey: postKeys.recommendedFeed() });
+      queryClient.invalidateQueries({ queryKey: postKeys.userPosts(userProfile.id) });
+      post.cats.forEach((cat) => {
+        queryClient.invalidateQueries({ queryKey: postKeys.catPosts(cat.id) });
+      });
     },
   });
 };
@@ -199,13 +205,27 @@ export const useUpdatePostMutation = () => {
       postId: string;
       payload: UpdatePostRequest;
     }) => updatePost(postId, payload),
-    onSuccess: (_, variables) => {
+    onSuccess: (post, variables) => {
+      const previousPost = queryClient.getQueryData<Post>(
+        postKeys.detail(variables.postId),
+      );
+
       queryClient.invalidateQueries({
         queryKey: postKeys.detail(variables.postId),
       });
       queryClient.invalidateQueries({ queryKey: postKeys.myPosts() });
       queryClient.invalidateQueries({ queryKey: postKeys.followingFeed() });
       queryClient.invalidateQueries({ queryKey: postKeys.recommendedFeed() });
+
+      const catIds = new Set([
+        ...post.cats.map((cat) => cat.id),
+        ...(previousPost?.cats.map((cat) => cat.id) ?? []),
+        ...(variables.payload.catIds ?? []),
+      ]);
+
+      catIds.forEach((catId) => {
+        queryClient.invalidateQueries({ queryKey: postKeys.catPosts(catId) });
+      });
     },
   });
 };
