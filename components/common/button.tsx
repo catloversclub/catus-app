@@ -34,9 +34,11 @@ export type ButtonType = {
 };
 interface ButtonProps {
   button: ButtonType;
+  className?: string;
+  textClassName?: string;
 }
 
-const Button = ({ button }: ButtonProps) => {
+const Button = ({ button, className, textClassName }: ButtonProps) => {
   const { colors } = useColors();
   const variant = button.variant ?? "primary";
   const isDisabled = button.disabled || button.isPending;
@@ -51,6 +53,7 @@ const Button = ({ button }: ButtonProps) => {
         isDisabled
           ? "bg-semantic-button-primary-disabledBg"
           : CONTAINER_VARIANT[variant],
+        className,
       )}
     >
       {button.isPending ? (
@@ -62,6 +65,7 @@ const Button = ({ button }: ButtonProps) => {
             isDisabled
               ? "text-semantic-button-primary-disabledText"
               : TEXT_VARIANT[variant],
+            textClassName,
           )}
         >
           {button.label}
