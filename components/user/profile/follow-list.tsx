@@ -79,7 +79,10 @@ const FollowerList = ({ userId }: { userId: string }) => {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useUserFollowersQuery(userId);
   const { colors } = useColors();
-  const refreshQueries = useRefreshQueries([userKeys.followers(userId)]);
+  const refreshQueries = useRefreshQueries([
+    userKeys.me(),
+    userKeys.followers(userId),
+  ]);
   const { refreshControl } = useLogoRefreshControl({
     onRefresh: refreshQueries,
   });
@@ -130,7 +133,10 @@ const FollowingList = ({ userId }: { userId: string }) => {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useUserFollowingsQuery(userId);
   const { colors } = useColors();
-  const refreshQueries = useRefreshQueries([userKeys.followings(userId)]);
+  const refreshQueries = useRefreshQueries([
+    userKeys.me(),
+    userKeys.followings(userId),
+  ]);
   const { refreshControl } = useLogoRefreshControl({
     onRefresh: refreshQueries,
   });

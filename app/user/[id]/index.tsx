@@ -36,6 +36,7 @@ const UserDetailGrid = ({ userId }: UserDetailGridProps) => {
   const posts = postsData.pages.flat();
 
   const refreshQueries = useRefreshQueries([
+    userKeys.me(),
     userKeys.detail(userId),
     postKeys.userPosts(userId),
     catKeys.userList(userId),

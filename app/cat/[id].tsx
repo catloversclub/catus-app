@@ -1,4 +1,5 @@
 import {
+  attributeKeys,
   useAppearanceQuery,
   usePersonalityQuery,
 } from "@/api/domains/attribute/queries";
@@ -55,8 +56,12 @@ const CatDetailGrid = ({ catId }: CatDetailGridProps) => {
 
   const refreshQueries = useRefreshQueries([
     catKeys.detail(catId),
+    userKeys.me(),
     userKeys.detail(cat.butlerId),
+    catKeys.userList(cat.butlerId),
     postKeys.catPosts(catId),
+    attributeKeys.appearance(),
+    attributeKeys.personality(),
   ]);
   const { refreshControl } = useLogoRefreshControl({
     onRefresh: refreshQueries,

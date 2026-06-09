@@ -9,8 +9,7 @@ const useRefreshQueries = (queryKeys: QueryKey[]) => {
       Promise.all(
         queryKeys.map((key) => queryClient.invalidateQueries({ queryKey: key })),
       ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [queryClient],
+    [queryClient, queryKeys],
   );
 };
 

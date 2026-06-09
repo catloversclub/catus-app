@@ -6,6 +6,7 @@ import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 
 import { commentKeys } from "@/api/domains/comment/queries";
 import { postKeys } from "@/api/domains/post/queries";
+import { userKeys } from "@/api/domains/user/queries";
 import Gradient from "@/components/common/gradient";
 import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
@@ -24,6 +25,7 @@ const PostDetailScreen = () => {
   const { keyboardAvoidingViewProps, insets } =
     useKeyboardAvoidingView(headerHeight);
   const onRefresh = useRefreshQueries([
+    userKeys.me(),
     postKeys.detail(id),
     commentKeys.byPost(id),
   ]);
