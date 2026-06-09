@@ -1,127 +1,53 @@
+import { Post } from "@/api/domains/post/types";
+import MoreIcon from "@/assets/icons/more.svg";
+import ProfileImage from "@/components/cat/profile-image";
 import ActionPressable from "@/components/common/action-pressable";
-import AvatarDark from "@/assets/images/avatar/user-dark.png";
-import AvatarLight from "@/assets/images/avatar/user-light.png";
-import { PROFILE_SIZE } from "@/constants/user";
+import IconButton from "@/components/common/icon-button";
 import { useColors } from "@/hooks/use-colors";
-import { Image } from "expo-image";
+import { formatRelativeTime } from "@/lib/utils";
 import { type Href } from "expo-router";
-import { memo, ReactNode } from "react";
 import { Text, View } from "react-native";
 
-interface FeedProfileImageProps {
-  imageUrl: string | null;
-  alt: string;
+interface PostProfileHeaderProps {
+  post: Post;
+  onMorePress: () => void;
 }
 
-const FeedProfileImage = memo(({ imageUrl, alt }: FeedProfileImageProps) => {
-  const { scheme } = useColors();
-  const defaultAvatar = scheme === "dark" ? AvatarDark : AvatarLight;
-  const size = PROFILE_SIZE.sm;
+const PostProfileHeader = ({ post, onMorePress }: PostProfileHeaderProps) => {
+  const { colors } = useColors();
+  const primaryCat = post.cats[0];
+
+  if (!primaryCat) return null;
+
+  const catHref: Href = {
+    pathname: "/cat/[id]",
+    params: { id: primaryCat.id },
+  };
 
   return (
-    <Image
-      source={imageUrl ? { uri: imageUrl } : defaultAvatar}
-      placeholder={defaultAvatar}
-      style={{ width: size, height: size, borderRadius: size }}
-      contentFit="cover"
-      cachePolicy="memory-disk"
-      alt={alt}
-    />
-  );
-});
-
-FeedProfileImage.displayName = "FeedProfileImage";
-
-interface PostProfileInfoBaseProps {
-  image: ReactNode;
-  name: string;
-  href: Href;
-  subtitle?: string;
-}
-
-const PostProfileInfoBase = ({
-  image,
-  name,
-  href,
-  subtitle,
-}: PostProfileInfoBaseProps) => (
-  <View className="flex-row items-center gap-3">
-    {image}
-    <View>
-      <ActionPressable href={href}>
-        <Text className="typo-body3 text-semantic-text-primary">{name}</Text>
-      </ActionPressable>
-      {subtitle && (
-        <Text className="typo-label1 text-semantic-text-secondary">
-          {subtitle}
-        </Text>
-      )}
+    <View className="flex-row items-center justify-between">
+      <View className="flex-row items-center gap-3">
+        <ProfileImage
+          imageUrl={primaryCat.profileImageUrl}
+          size="sm"
+          catId={primaryCat.id}
+        />
+        <View>
+          <ActionPressable href={catHref}>
+            <Text className="typo-body3 text-semantic-text-primary">
+              {primaryCat.name}
+            </Text>
+          </ActionPressable>
+          <Text className="typo-label1 text-semantic-text-secondary">
+            {formatRelativeTime(post.createdAt)}
+          </Text>
+        </View>
+      </View>
+      <IconButton onPress={onMorePress}>
+        <MoreIcon color={colors.icon.primary} />
+      </IconButton>
     </View>
-  </View>
-);
-
-// ─────────────────────────────────────────────────────────────────────────────
-
-interface CatPostProfileInfoProps {
-  imageUrl: string | null;
-  catId: string;
-  name: string;
-  subtitle?: string;
-}
-
-const CatPostProfileInfo = ({
-  imageUrl,
-  catId,
-  name,
-  subtitle,
-}: CatPostProfileInfoProps) => {
-  const href: Href = { pathname: "/cat/[id]", params: { id: catId } };
-
-  return (
-    <PostProfileInfoBase
-      image={
-        <FeedProfileImage
-          imageUrl={imageUrl}
-          alt={`${catId} profile`}
-        />
-      }
-      name={name}
-      href={href}
-      subtitle={subtitle}
-    />
   );
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-
-interface UserPostProfileInfoProps {
-  imageUrl: string | null;
-  userId: string;
-  name: string;
-  subtitle?: string;
-}
-
-const UserPostProfileInfo = ({
-  imageUrl,
-  userId,
-  name,
-  subtitle,
-}: UserPostProfileInfoProps) => {
-  const href: Href = { pathname: "/user/[id]", params: { id: userId } };
-
-  return (
-    <PostProfileInfoBase
-      image={
-        <FeedProfileImage
-          imageUrl={imageUrl}
-          alt={`${userId} profile`}
-        />
-      }
-      name={name}
-      href={href}
-      subtitle={subtitle}
-    />
-  );
-};
-
-export { CatPostProfileInfo, UserPostProfileInfo };
+export { PostProfileHeader };

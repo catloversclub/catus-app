@@ -1,56 +1,15 @@
 import { Text, useWindowDimensions, View } from "react-native";
 
 import { usePostByIdQuery } from "@/api/domains/post/queries";
-import { Post } from "@/api/domains/post/types";
-import MoreIcon from "@/assets/icons/more.svg";
 import CommentSheet from "@/components/bottom-sheet/comment-sheet";
 import MoreSheet from "@/components/bottom-sheet/more-sheet";
 import ActionPressable from "@/components/common/action-pressable";
-import IconButton from "@/components/common/icon-button";
 import PostCarousel from "@/components/post/carousel";
-import {
-  CatPostProfileInfo,
-  UserPostProfileInfo,
-} from "@/components/post/profile-info";
+import { PostProfileHeader } from "@/components/post/profile-info";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useColors } from "@/hooks/use-colors";
 import usePostActions from "@/hooks/use-post-actions";
 import { Bookmark, Heart } from "@/lib/icons";
-import { formatRelativeTime } from "@/lib/utils";
 import { Stack } from "expo-router";
-
-interface ProfileInfoProps {
-  post: Post;
-  onMorePress: () => void;
-}
-
-const ProfileInfo = ({ post, onMorePress }: ProfileInfoProps) => {
-  const { colors } = useColors();
-  const primaryCat = post.cats[0];
-
-  return (
-    <View className="flex-row items-center justify-between">
-      {primaryCat ? (
-        <CatPostProfileInfo
-          imageUrl={primaryCat.profileImageUrl}
-          catId={primaryCat.id}
-          name={primaryCat.name}
-          subtitle={formatRelativeTime(post.createdAt)}
-        />
-      ) : (
-        <UserPostProfileInfo
-          imageUrl={post.author.profileImageUrl}
-          userId={post.author.id}
-          name={post.author.nickname}
-          subtitle={formatRelativeTime(post.createdAt)}
-        />
-      )}
-      <IconButton onPress={onMorePress}>
-        <MoreIcon color={colors.icon.primary} />
-      </IconButton>
-    </View>
-  );
-};
 
 const PostDetailCard = ({ postId }: { postId: string }) => {
   const { data: post } = usePostByIdQuery(postId);
@@ -65,7 +24,7 @@ const PostDetailCard = ({ postId }: { postId: string }) => {
   return (
     <View className="flex-col gap-3 px-3">
       <Stack.Screen options={{ title: `${post.author.nickname}의 게시물` }} />
-      <ProfileInfo post={post} onMorePress={handleMorePress} />
+      <PostProfileHeader post={post} onMorePress={handleMorePress} />
       <PostCarousel post={post} linkable={false} />
       <View className="typo-body4">
         <Text className="text-semantic-text-primary pt-2">{post.content}</Text>

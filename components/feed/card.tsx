@@ -1,53 +1,13 @@
 import { useWindowDimensions, View } from "react-native";
 
 import { Post } from "@/api/domains/post/types";
-import MoreIcon from "@/assets/icons/more.svg";
 import CommentSheet from "@/components/bottom-sheet/comment-sheet";
 import MoreSheet from "@/components/bottom-sheet/more-sheet";
-import IconButton from "@/components/common/icon-button";
 import PostCarousel from "@/components/post/carousel";
 import PostOverlayActions from "@/components/post/overlay-actions";
-import {
-  CatPostProfileInfo,
-  UserPostProfileInfo,
-} from "@/components/post/profile-info";
+import { PostProfileHeader } from "@/components/post/profile-info";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useColors } from "@/hooks/use-colors";
 import usePostActions from "@/hooks/use-post-actions";
-import { formatRelativeTime } from "@/lib/utils";
-
-interface ProfileInfoProps {
-  post: Post;
-  onMorePress: () => void;
-}
-
-const ProfileInfo = ({ post, onMorePress }: ProfileInfoProps) => {
-  const { colors } = useColors();
-  const primaryCat = post.cats[0];
-
-  return (
-    <View className="flex-row items-center justify-between">
-      {primaryCat ? (
-        <CatPostProfileInfo
-          imageUrl={primaryCat.profileImageUrl}
-          catId={primaryCat.id}
-          name={primaryCat.name}
-          subtitle={formatRelativeTime(post.createdAt)}
-        />
-      ) : (
-        <UserPostProfileInfo
-          imageUrl={post.author.profileImageUrl}
-          userId={post.author.id}
-          name={post.author.nickname}
-          subtitle={formatRelativeTime(post.createdAt)}
-        />
-      )}
-      <IconButton onPress={onMorePress}>
-        <MoreIcon color={colors.icon.primary} />
-      </IconButton>
-    </View>
-  );
-};
 
 const FeedCard = ({ post }: { post: Post }) => {
   const {
@@ -74,7 +34,7 @@ const FeedCard = ({ post }: { post: Post }) => {
   return (
     <View className="mb-5 flex-col gap-3 px-3">
       <PostCarousel post={post} overlay={overlay} />
-      <ProfileInfo post={post} onMorePress={handleMorePress} />
+      <PostProfileHeader post={post} onMorePress={handleMorePress} />
       <CommentSheet CommentSheetModalRef={commentSheetRef} postId={post.id} />
       <MoreSheet MoreSheetModalRef={moreSheetRef} post={post} />
     </View>
