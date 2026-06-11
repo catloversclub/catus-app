@@ -5,16 +5,13 @@ import { useColors } from "@/hooks/use-colors";
 import { useSearchHistoryStore } from "@/store/explore/search-history-store";
 import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
-import Animated, { useAnimatedScrollHandler } from "react-native-reanimated";
 import ViewedCatItem from "./viewed-cat-item";
 
 interface ExploreIdleViewProps {
-  scrollHandler: ReturnType<typeof useAnimatedScrollHandler>;
   onSearchPress: (text: string) => void;
 }
 
 const ExploreIdleView = ({
-  scrollHandler,
   onSearchPress,
 }: ExploreIdleViewProps) => {
   const { colors } = useColors();
@@ -40,17 +37,9 @@ const ExploreIdleView = ({
   if (!hasSearches && !hasCats) return null;
 
   return (
-    <Animated.ScrollView
-      className="flex-1"
-      contentContainerClassName="px-3 pt-6 pb-8 gap-6"
-      showsVerticalScrollIndicator={false}
-      keyboardShouldPersistTaps="handled"
-      keyboardDismissMode="on-drag"
-      onScroll={scrollHandler}
-      scrollEventThrottle={16}
-    >
+    <>
       {hasSearches && (
-        <View className="gap-3">
+        <View className="px-3 gap-3">
           <View className="flex-row items-center justify-between">
             <Text className="typo-title3 text-semantic-text-primary">
               최근 검색어
@@ -105,7 +94,7 @@ const ExploreIdleView = ({
       )}
 
       {hasCats && (
-        <View className="gap-3">
+        <View className="px-3 gap-3">
           <Text className="typo-title3 text-semantic-text-primary">
             내가 찾아본 고양이들
           </Text>
@@ -130,7 +119,7 @@ const ExploreIdleView = ({
           )}
         </View>
       )}
-    </Animated.ScrollView>
+    </>
   );
 };
 

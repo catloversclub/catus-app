@@ -1,14 +1,7 @@
-import { postKeys, useDailyPopularPostsQuery } from "@/api/domains/post/queries";
-import { RefreshableScrollView } from "@/components/common/logo-refresh-control";
+import { useDailyPopularPostsQuery } from "@/api/domains/post/queries";
 import PostGrid, { PostGridSkeleton } from "@/components/post/grid";
 import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
-import { useRefreshQueries } from "@/hooks/use-refresh-queries";
 import { Pressable, Text, View } from "react-native";
-import { useAnimatedScrollHandler } from "react-native-reanimated";
-
-interface ExploreDefaultViewProps {
-  scrollHandler: ReturnType<typeof useAnimatedScrollHandler>;
-}
 
 const DailyPopularGrid = () => {
   const { data: posts } = useDailyPopularPostsQuery();
@@ -26,17 +19,10 @@ const DailyPopularGrid = () => {
   );
 };
 
-const ExploreDefaultView = ({ scrollHandler }: ExploreDefaultViewProps) => {
-  const refreshQueries = useRefreshQueries([postKeys.dailyPopular()]);
+const ExploreDefaultView = () => {
   return (
-    <RefreshableScrollView
-      onRefresh={refreshQueries}
-      onScroll={scrollHandler}
-      scrollEventThrottle={16}
-      className="flex-1"
-      contentContainerClassName="gap-6 pb-6"
-    >
-      <View className="px-3 pt-6 gap-6">
+    <>
+      <View className="px-3 gap-6">
         <Pressable className="px-3 py-4 rounded gap-0.5 border border-[#C2E9FF] bg-[#EBF8FF]">
           <Text className="typo-title3 text-semantic-text-primary">
             천하제일 내 고양이 자랑대회
@@ -55,7 +41,7 @@ const ExploreDefaultView = ({ scrollHandler }: ExploreDefaultViewProps) => {
           <DailyPopularGrid />
         </SuspenseWithDelay>
       </View>
-    </RefreshableScrollView>
+    </>
   );
 };
 

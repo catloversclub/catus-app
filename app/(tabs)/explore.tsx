@@ -1,6 +1,10 @@
+import { postKeys } from "@/api/domains/post/queries";
+import { searchKeys } from "@/api/domains/search/queries";
 import AlertIcon from "@/assets/icons/alert.svg";
 import ArrowLeftIcon from "@/assets/icons/arrow-left.svg";
+import Gradient from "@/components/common/gradient";
 import IconButton from "@/components/common/icon-button";
+import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
 import SearchInput from "@/components/common/search-input";
 import ExploreDefaultView from "@/components/explore/explore-default-view";
 import ExploreIdleView from "@/components/explore/explore-idle-view";
@@ -8,10 +12,10 @@ import ExploreResultsView from "@/components/explore/explore-results-view";
 import ExploreTypingView from "@/components/explore/explore-typing-view";
 import { useColors } from "@/hooks/use-colors";
 import { useDefaultStackScreenOptions } from "@/hooks/use-default-screen-options";
-import { useExploreScrollHeader } from "@/hooks/use-explore-scroll-header";
+import { useRefreshQueries } from "@/hooks/use-refresh-queries";
 import { useSearchHistoryStore } from "@/store/explore/search-history-store";
 import { Stack } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { Keyboard, Text, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { runOnJS } from "react-native-reanimated";
@@ -22,30 +26,29 @@ const ExploreScreen = () => {
   const { colors } = useColors();
   const defaultOptions = useDefaultStackScreenOptions();
   const addSearch = useSearchHistoryStore((s) => s.addSearch);
-  const { scrollHandler, searchInputStyle, resetToVisible } =
-    useExploreScrollHeader();
+  const refreshDefault = useRefreshQueries([postKeys.dailyPopular()]);
 
   const [mode, setMode] = useState<ExploreMode>("default");
   const [query, setQuery] = useState("");
   const [submittedQuery, setSubmittedQuery] = useState("");
   const [showEmptyToast, setShowEmptyToast] = useState(false);
+  const refreshResults = useRefreshQueries([
+    searchKeys.results("post", submittedQuery),
+    searchKeys.results("profile", submittedQuery),
+  ]);
 
   const isSearchMode = mode !== "default";
 
-  useEffect(() => {
-    resetToVisible();
-  }, [mode, resetToVisible]);
-
-  const handleFocus = () => {
+  const handleFocus = useCallback(() => {
     if (mode === "default") setMode("idle");
-  };
+  }, [mode]);
 
-  const handleQueryChange = (text: string) => {
+  const handleQueryChange = useCallback((text: string) => {
     setQuery(text);
     setMode(text.length > 0 ? "typing" : "idle");
-  };
+  }, []);
 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     if (!query.trim()) {
       setShowEmptyToast(true);
       setTimeout(() => setShowEmptyToast(false), 2000);
@@ -55,22 +58,22 @@ const ExploreScreen = () => {
     setSubmittedQuery(query);
     setMode("results");
     Keyboard.dismiss();
-  };
+  }, [addSearch, query]);
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     setQuery("");
     setSubmittedQuery("");
     setMode("default");
     Keyboard.dismiss();
-  };
+  }, []);
 
-  const handleSuggestionPress = (text: string) => {
+  const handleSuggestionPress = useCallback((text: string) => {
     addSearch(text);
     setQuery(text);
     setSubmittedQuery(text);
     setMode("results");
     Keyboard.dismiss();
-  };
+  }, [addSearch]);
 
   const edgeCancelGesture = Gesture.Pan()
     .activeOffsetX(12)
@@ -81,28 +84,37 @@ const ExploreScreen = () => {
       }
     });
 
+  const renderSearchInput = useCallback(
+    () => (
+      <View className="px-3 mt-3">
+        <SearchInput
+          value={query}
+          onValueChange={handleQueryChange}
+          onFocus={handleFocus}
+          onSubmitEditing={handleSubmit}
+          placeholder="어떤 고양이를 좋아하세요?"
+        />
+      </View>
+    ),
+    [handleFocus, handleQueryChange, handleSubmit, query],
+  );
+
+  const handleRefresh = useCallback(() => {
+    if (mode === "default") return refreshDefault();
+    if (mode === "results") return refreshResults();
+  }, [mode, refreshDefault, refreshResults]);
+  const { refreshControl } = useLogoRefreshControl({ onRefresh: handleRefresh });
+
   const renderContent = () => {
     switch (mode) {
       case "default":
-        return <ExploreDefaultView scrollHandler={scrollHandler} />;
+        return <ExploreDefaultView />;
       case "idle":
-        return (
-          <ExploreIdleView
-            scrollHandler={scrollHandler}
-            onSearchPress={handleSuggestionPress}
-          />
-        );
+        return <ExploreIdleView onSearchPress={handleSuggestionPress} />;
       case "typing":
-        return (
-          <ExploreTypingView query={query} onPress={handleSuggestionPress} />
-        );
+        return <ExploreTypingView query={query} onPress={handleSuggestionPress} />;
       case "results":
-        return (
-          <ExploreResultsView
-            query={submittedQuery}
-            scrollHandler={scrollHandler}
-          />
-        );
+        return <ExploreResultsView query={submittedQuery} />;
     }
   };
 
@@ -112,34 +124,40 @@ const ExploreScreen = () => {
         options={{
           ...defaultOptions,
           title: "탐색",
-          headerLeft: isSearchMode
-            ? () => (
-                <IconButton onPress={handleCancel} className="p-2 pl-3">
-                  <ArrowLeftIcon
-                    width={20}
-                    height={20}
-                    color={colors.icon.primary}
-                  />
-                </IconButton>
-              )
-            : undefined,
+          headerLeft: () => (
+            <IconButton
+              onPress={handleCancel}
+              disabled={!isSearchMode}
+              className={isSearchMode ? "p-2 pl-3" : "p-2 pl-3 opacity-0"}
+            >
+              <ArrowLeftIcon
+                width={20}
+                height={20}
+                color={colors.icon.primary}
+              />
+            </IconButton>
+          ),
         }}
       />
 
       <View className="flex-1 bg-semantic-bg-primary">
-        <Animated.View style={searchInputStyle}>
-          <View className="px-3 mt-3">
-            <SearchInput
-              value={query}
-              onValueChange={handleQueryChange}
-              onFocus={handleFocus}
-              onSubmitEditing={handleSubmit}
-              placeholder="어떤 고양이를 좋아하세요?"
-            />
-          </View>
-        </Animated.View>
-
-        <View className="flex-1">{renderContent()}</View>
+        <Gradient
+          direction="vertical"
+          height={10}
+          style={{ position: "absolute", top: 0, left: 0, zIndex: 1 }}
+        />
+        <Animated.ScrollView
+          refreshControl={refreshControl}
+          showsVerticalScrollIndicator={false}
+          scrollEventThrottle={16}
+          className="flex-1"
+          contentContainerStyle={{ paddingTop: 10, flexGrow: 1 }}
+          contentContainerClassName="pb-8 gap-6"
+          keyboardShouldPersistTaps="handled"
+        >
+          {renderSearchInput()}
+          {renderContent()}
+        </Animated.ScrollView>
 
         {showEmptyToast && (
           <View className="absolute bottom-4 left-3 right-3 flex-row items-center gap-1.5 px-2.5 py-3 rounded bg-semantic-bg-secondary border border-semantic-border-primary">

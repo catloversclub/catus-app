@@ -1,15 +1,12 @@
 import { Post } from "@/api/domains/post/types";
 import {
-  searchKeys,
   useSearchPostsQuery,
   useSearchProfilesQuery,
 } from "@/api/domains/search/queries";
 import { SearchCatItem, SearchUserItem } from "@/api/domains/search/types";
 import ActionPressable from "@/components/common/action-pressable";
 import ImagePressable from "@/components/common/image-pressable";
-import { RefreshableScrollView } from "@/components/common/logo-refresh-control";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useRefreshQueries } from "@/hooks/use-refresh-queries";
 import { useSearchHistoryStore } from "@/store/explore/search-history-store";
 import { Image } from "expo-image";
 import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
@@ -21,11 +18,9 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import { useAnimatedScrollHandler } from "react-native-reanimated";
 
 interface ExploreResultsViewProps {
   query: string;
-  scrollHandler: ReturnType<typeof useAnimatedScrollHandler>;
 }
 
 // ─── Skeletons ───────────────────────────────────────────────
@@ -323,20 +318,9 @@ const SearchUsersHorizontalList = ({ query }: { query: string }) => {
 
 // ─── Results view ─────────────────────────────────────────────
 
-const ExploreResultsView = ({ query, scrollHandler }: ExploreResultsViewProps) => {
-  const refreshQueries = useRefreshQueries([
-    searchKeys.results("post", query),
-    searchKeys.results("profile", query),
-  ]);
-
+const ExploreResultsView = ({ query }: ExploreResultsViewProps) => {
   return (
-    <RefreshableScrollView
-      onRefresh={refreshQueries}
-      onScroll={scrollHandler}
-      scrollEventThrottle={16}
-      className="flex-1"
-      contentContainerClassName="gap-8 pb-8"
-    >
+    <>
       <ResultSection title="게시글">
         <SuspenseWithDelay fallback={<PostGridSkeleton />}>
           <SearchPostsHorizontalList query={query} />
@@ -354,7 +338,7 @@ const ExploreResultsView = ({ query, scrollHandler }: ExploreResultsViewProps) =
           <SearchUsersHorizontalList query={query} />
         </SuspenseWithDelay>
       </ResultSection>
-    </RefreshableScrollView>
+    </>
   );
 };
 

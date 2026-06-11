@@ -69,7 +69,10 @@ const Divider = () => (
   <View className="h-px mx-7 bg-semantic-border-primary" />
 );
 
-const ExploreTypingView = ({ query, onPress }: ExploreTypingViewProps) => {
+const ExploreTypingView = ({
+  query,
+  onPress,
+}: ExploreTypingViewProps) => {
   const { data, isFetching } = useSearchAutocompleteQuery(
     query,
     query.trim().length > 0,
