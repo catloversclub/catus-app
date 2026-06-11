@@ -6,9 +6,12 @@ import { FlatList, useWindowDimensions, View, ViewToken } from "react-native";
 
 import ImagePressable from "@/components/common/image-pressable";
 import ImageViewerModal from "@/components/common/image-viewer-modal";
-import { CAROUSEL_CONFIG } from "@/constants/config";
+import {
+  CarouselCounter,
+  CarouselDots,
+} from "@/components/post/carousel-indicator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CarouselCounter, CarouselDots } from "@/components/post/carousel-indicator";
+import { CAROUSEL_CONFIG } from "@/constants/config";
 
 const aspectRatioCache = new Map<string, number>();
 
@@ -29,6 +32,7 @@ export interface ImageCarouselProps {
   catName?: string;
   postId?: string;
   overlay?: React.ReactNode;
+  dotsPlacement?: "below" | "overlay-bottom";
   linkable?: boolean;
   onFirstImageReady?: () => void;
 }
@@ -89,6 +93,7 @@ const ImageCarousel = ({
   catName = "",
   postId = "",
   overlay,
+  dotsPlacement = "below",
   linkable = true,
   onFirstImageReady,
 }: ImageCarouselProps) => {
@@ -134,7 +139,13 @@ const ImageCarousel = ({
             />
           </View>
         )}
-        <Skeleton style={{ width: carouselWidth, height: carouselWidth, borderRadius: 6 }} />
+        <Skeleton
+          style={{
+            width: carouselWidth,
+            height: carouselWidth,
+            borderRadius: 6,
+          }}
+        />
       </>
     );
   }
@@ -160,10 +171,14 @@ const ImageCarousel = ({
               linkable={linkable}
               postId={postId}
               onOpenViewer={(url, origin) => setViewerState({ url, origin })}
-              onFirstImageLoad={index === 0 ? () => {
-                setShowGradient(true);
-                onFirstImageReady?.();
-              } : undefined}
+              onFirstImageLoad={
+                index === 0
+                  ? () => {
+                      setShowGradient(true);
+                      onFirstImageReady?.();
+                    }
+                  : undefined
+              }
             />
           )}
         />
@@ -186,10 +201,19 @@ const ImageCarousel = ({
           <CarouselCounter current={current} total={images.length} />
         )}
 
+        {images.length > 1 && dotsPlacement === "overlay-bottom" && (
+          <View
+            className="absolute bottom-3 left-0 right-0 items-center"
+            pointerEvents="none"
+          >
+            <CarouselDots count={images.length} current={current} />
+          </View>
+        )}
+
         {overlay}
       </View>
 
-      {images.length > 1 && (
+      {images.length > 1 && dotsPlacement === "below" && (
         <CarouselDots count={images.length} current={current} />
       )}
 

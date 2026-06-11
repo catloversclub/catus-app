@@ -3,16 +3,26 @@ import { Pressable, Text, View } from "react-native";
 interface ChipProps {
   label: string;
   selected?: boolean;
+  translucent?: boolean;
   onPress?: () => void;
 }
 
-const Chip = ({ label, selected = false, onPress }: ChipProps) => {
-  const bgClass = selected
-    ? "bg-semantic-chips-primary-selectedBg"
-    : "bg-semantic-chips-primary-bg";
-  const textClass = selected
-    ? "text-semantic-chips-primary-selectedText"
-    : "text-semantic-chips-primary-text";
+const Chip = ({
+  label,
+  selected = false,
+  translucent = false,
+  onPress,
+}: ChipProps) => {
+  const bgClass = translucent
+    ? "bg-[rgba(27,27,27,0.28)]"
+    : selected
+      ? "bg-semantic-chips-primary-selectedBg"
+      : "bg-semantic-chips-primary-bg";
+  const textClass = translucent
+    ? "text-white"
+    : selected
+      ? "text-semantic-chips-primary-selectedText"
+      : "text-semantic-chips-primary-text";
 
   if (!onPress) {
     return (

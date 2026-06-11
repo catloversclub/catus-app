@@ -1,11 +1,15 @@
 import { Post } from "@/api/domains/post/types";
-import ImageCarousel, { CarouselImage, ImageCarouselProps } from "@/components/common/image-carousel";
+import ImageCarousel, {
+  CarouselImage,
+  ImageCarouselProps,
+} from "@/components/common/image-carousel";
 
 export type { CarouselImage };
 
 interface PostCarouselProps {
   post: Post;
   overlay?: ImageCarouselProps["overlay"];
+  dotsPlacement?: ImageCarouselProps["dotsPlacement"];
   linkable?: ImageCarouselProps["linkable"];
   onFirstImageReady?: ImageCarouselProps["onFirstImageReady"];
 }
