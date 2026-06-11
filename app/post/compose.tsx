@@ -3,6 +3,7 @@ import { uploadImage } from "@/api/domains/common/api";
 import {
   useCreatePostMutation,
   usePostImageUploadUrlMutation,
+  useUpdatePostMutation,
 } from "@/api/domains/post/queries";
 import { useUserProfileQuery } from "@/api/domains/user/queries";
 import DefaultAvatarCatIcon from "@/assets/icons/default-avatar-cat.svg";
@@ -23,8 +24,15 @@ import { useToast } from "@/hooks/use-toast";
 import { useComposeStore } from "@/store/post/compose-store";
 import { useDraftStore } from "@/store/post/draft-store";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { Stack, router } from "expo-router";
-import { RefObject, useEffect, useMemo, useRef, useState } from "react";
+import { Stack, router, useLocalSearchParams } from "expo-router";
+import {
+  RefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   BackHandler,
   ScrollView,
@@ -113,6 +121,7 @@ const CatSelector = ({
 );
 
 const ComposeScreen = () => {
+  const { postId } = useLocalSearchParams<{ postId?: string }>();
   const { data: userProfile } = useUserProfileQuery();
   const { colors } = useColors();
   const toast = useToast();
@@ -131,6 +140,7 @@ const ComposeScreen = () => {
   const { mutateAsync: getPostImageUploadUrl } =
     usePostImageUploadUrlMutation();
   const { mutateAsync: createPost } = useCreatePostMutation();
+  const { mutateAsync: updatePost } = useUpdatePostMutation();
 
   const [caption, setCaption] = useState(storedCaption);
   const [selectedCats, setSelectedCats] = useState<Pick<Cat, "id" | "name">[]>(
@@ -146,6 +156,7 @@ const ComposeScreen = () => {
   const { insets } = useKeyboardAvoidingView();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
+  const isEditMode = !!postId;
   const canUpload = images.length > 0;
   const selectedCatIds = useMemo(
     () => selectedCats.map((cat) => cat.id),
@@ -162,7 +173,15 @@ const ComposeScreen = () => {
     [caption, commentsEnabled, images, selectedCats, sharingEnabled],
   );
 
-  const handleBack = () => setShowDraftModal(true);
+  const handleBack = useCallback(() => {
+    if (isEditMode) {
+      clearComposeData();
+      router.back();
+      return;
+    }
+
+    setShowDraftModal(true);
+  }, [clearComposeData, isEditMode]);
 
   useEffect(() => {
     const subscription = BackHandler.addEventListener(
@@ -173,11 +192,29 @@ const ComposeScreen = () => {
       },
     );
     return () => subscription.remove();
-  }, []);
+  }, [handleBack]);
 
-  const handleUpload = async () => {
+  const handleSubmit = async () => {
     setIsUploading(true);
     try {
+      if (postId) {
+        await updatePost({
+          postId,
+          payload: {
+            content: caption.trim() || null,
+            catIds: selectedCatIds,
+            isCommentable: commentsEnabled,
+            isShareable: sharingEnabled,
+            imageUrls: images,
+          },
+        });
+
+        clearComposeData();
+        toast.success("게시물을 수정했어요");
+        router.back();
+        return;
+      }
+
       const { uploads } = await getPostImageUploadUrl(images.length);
 
       await Promise.all(
@@ -202,7 +239,11 @@ const ComposeScreen = () => {
       router.dismissAll();
       router.replace(ROUTES.TABS.INDEX);
     } catch {
-      toast.error("게시물 업로드 중 오류가 발생했어요");
+      toast.error(
+        isEditMode
+          ? "게시물 수정 중 오류가 발생했어요"
+          : "게시물 업로드 중 오류가 발생했어요",
+      );
     } finally {
       setIsUploading(false);
     }
@@ -212,7 +253,10 @@ const ComposeScreen = () => {
     <>
       <Stack.Screen options={{ headerShown: false, gestureEnabled: false }} />
       <View className="flex-1 bg-semantic-bg-primary">
-        <ScreenHeader title="새 게시물" onBack={handleBack} />
+        <ScreenHeader
+          title={isEditMode ? "게시물 수정" : "새 게시물"}
+          onBack={handleBack}
+        />
         <KeyboardAvoidingView
           className="flex-1"
           behavior="padding"
@@ -301,8 +345,8 @@ const ComposeScreen = () => {
         <BottomActionBar
           buttons={[
             {
-              label: "업로드",
-              onPress: handleUpload,
+              label: isEditMode ? "수정" : "업로드",
+              onPress: handleSubmit,
               disabled: !canUpload,
               isPending: isUploading,
             },

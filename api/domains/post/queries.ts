@@ -186,7 +186,9 @@ export const useCreatePostMutation = () => {
       queryClient.invalidateQueries({ queryKey: postKeys.myPosts() });
       queryClient.invalidateQueries({ queryKey: postKeys.followingFeed() });
       queryClient.invalidateQueries({ queryKey: postKeys.recommendedFeed() });
-      queryClient.invalidateQueries({ queryKey: postKeys.userPosts(userProfile.id) });
+      queryClient.invalidateQueries({
+        queryKey: postKeys.userPosts(userProfile.id),
+      });
       post.cats.forEach((cat) => {
         queryClient.invalidateQueries({ queryKey: postKeys.catPosts(cat.id) });
       });
@@ -235,8 +237,12 @@ export const useDeletePostMutation = () => {
 
   return useMutation({
     mutationFn: (postId: string) => deletePost(postId),
-    onSuccess: () => {
+    onSuccess: (post) => {
+      queryClient.removeQueries({ queryKey: postKeys.detail(post.id) });
       queryClient.invalidateQueries({ queryKey: postKeys.myPosts() });
+      queryClient.invalidateQueries({
+        queryKey: postKeys.userPosts(post.authorId),
+      });
       queryClient.invalidateQueries({ queryKey: postKeys.followingFeed() });
       queryClient.invalidateQueries({ queryKey: postKeys.recommendedFeed() });
     },
