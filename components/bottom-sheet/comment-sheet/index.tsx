@@ -1,13 +1,10 @@
-import {
-  usePostCommentsNonSuspenseQuery,
-} from "@/api/domains/comment/queries";
-import { Comment } from "@/api/domains/comment/types";
-import { useUserProfileNonSuspenseQuery } from "@/api/domains/user/queries";
+import { usePostCommentsNonSuspenseQuery } from "@/api/domains/comment/queries";
 import BaseBottomSheet from "@/components/bottom-sheet/base-bottom-sheet";
-import CommentInputBar, { CommentInputRef } from "@/components/comment/input-bar";
-import CommentItem from "@/components/comment/item";
-import { CommentListSkeleton } from "@/components/comment/list";
+import CommentInputBar from "@/components/comment/input-bar";
+import { CommentListEmpty, CommentListSkeleton } from "@/components/comment/list";
 import { Text } from "@/components/ui/text";
+import useCommentItemRenderer from "@/hooks/comment/use-comment-item-renderer";
+import useCommentReplyInput from "@/hooks/comment/use-comment-reply-input";
 import {
   BottomSheetFlatList,
   BottomSheetFooter,
@@ -15,8 +12,7 @@ import {
   BottomSheetModal,
   BottomSheetTextInput,
 } from "@gorhom/bottom-sheet";
-import useCommentActions from "@/hooks/comment/use-comment-actions";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { LayoutChangeEvent, View } from "react-native";
 
 interface CommentSheetProps {
@@ -27,29 +23,22 @@ interface CommentSheetProps {
 const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [footerHeight, setFooterHeight] = useState(0);
-  const inputRef = useRef<CommentInputRef>(null);
+  const { inputRef, replyTarget, handleReply, clearReplyTarget } =
+    useCommentReplyInput();
   const {
     data: comments = [],
     isPending,
   } = usePostCommentsNonSuspenseQuery(postId, isOpen);
-  const { data: me } = useUserProfileNonSuspenseQuery();
-  const { handleToggleLike } = useCommentActions(postId);
-  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
-
-  const toggleReplies = useCallback((commentId: string) => {
-    setExpandedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(commentId)) {
-        next.delete(commentId);
-      } else {
-        next.add(commentId);
-      }
-      return next;
-    });
-  }, []);
+  const { renderComment } = useCommentItemRenderer({
+    postId,
+    onReply: handleReply,
+  });
 
   const handleFooterLayout = useCallback((event: LayoutChangeEvent) => {
-    setFooterHeight(event.nativeEvent.layout.height);
+    const nextHeight = event.nativeEvent.layout.height;
+    setFooterHeight((prevHeight) =>
+      prevHeight === nextHeight ? prevHeight : nextHeight,
+    );
   }, []);
 
   const footerComponent = useCallback(
@@ -59,11 +48,13 @@ const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
           postId={postId}
           InputComponent={BottomSheetTextInput}
           inputRef={inputRef}
+          replyTarget={replyTarget}
+          onClearReply={clearReplyTarget}
           onLayout={handleFooterLayout}
         />
       </BottomSheetFooter>
     ),
-    [handleFooterLayout, postId],
+    [clearReplyTarget, handleFooterLayout, inputRef, postId, replyTarget],
   );
 
   const handleChange = useCallback((index: number) => {
@@ -72,23 +63,8 @@ const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
 
   const handleDismiss = useCallback(() => {
     setIsOpen(false);
-    inputRef.current?.clearReplyTarget();
-  }, []);
-
-  const renderComment = useCallback(
-    ({ item }: { item: Comment }) => (
-      <CommentItem
-        postId={postId}
-        comment={item}
-        currentUserId={me?.id}
-        isRepliesExpanded={expandedIds.has(item.id)}
-        onToggleReplies={() => toggleReplies(item.id)}
-        onReply={(target) => inputRef.current?.setReplyTarget(target)}
-        onToggleLike={handleToggleLike}
-      />
-    ),
-    [expandedIds, handleToggleLike, me?.id, postId, toggleReplies],
-  );
+    clearReplyTarget();
+  }, [clearReplyTarget]);
 
   const listHeaderComponent = useCallback(
     () => (
@@ -107,13 +83,7 @@ const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
       return <CommentListSkeleton />;
     }
 
-    return (
-      <View className="items-center justify-center py-20">
-        <Text className="typo-body2 text-semantic-text-secondary text-center">
-          {"아직 댓글이 없어요!\n첫 댓글을 남겨볼까요?"}
-        </Text>
-      </View>
-    );
+    return <CommentListEmpty />;
   }, [isPending]);
 
   return (
@@ -142,7 +112,7 @@ const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
         maxToRenderPerBatch={6}
         updateCellsBatchingPeriod={50}
         windowSize={5}
-        keyboardShouldPersistTaps="always"
+        keyboardShouldPersistTaps="handled"
       />
     </BaseBottomSheet>
   );

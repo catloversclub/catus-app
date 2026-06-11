@@ -56,10 +56,7 @@ const Step1Form = ({ currentNickname }: Step1FormProps) => {
 
   return (
     <View className="flex-1 bg-semantic-bg-primary">
-      <KeyboardAvoidingView
-        className="flex-1 pt-6"
-        {...keyboardAvoidingViewProps}
-      >
+      <KeyboardAvoidingView {...keyboardAvoidingViewProps}>
         <ProgressBar progress={1} />
         <ScrollView className="flex-1 px-5" contentContainerStyle={{ flexGrow: 1 }}>
           <View className="h-10" />

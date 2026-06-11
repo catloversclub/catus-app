@@ -55,10 +55,7 @@ const CatProfileForm = ({
 
   return (
     <View className="flex-1 bg-semantic-bg-primary">
-      <KeyboardAvoidingView
-        className="flex-1 pt-6"
-        {...keyboardAvoidingViewProps}
-      >
+      <KeyboardAvoidingView {...keyboardAvoidingViewProps}>
         {stepNumber && <ProgressBar progress={stepNumber} />}
         <ScrollView
           className="flex-1 px-5"

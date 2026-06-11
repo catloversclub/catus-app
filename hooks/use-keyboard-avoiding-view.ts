@@ -5,6 +5,7 @@ const useKeyboardAvoidingView = (keyboardVerticalOffset?: number) => {
 
   return {
     keyboardAvoidingViewProps: {
+      className: "flex-1",
       behavior: "padding" as const,
       keyboardVerticalOffset: keyboardVerticalOffset ?? insets.top,
     },

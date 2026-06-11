@@ -41,10 +41,7 @@ const CatEditForm = ({ initialData, onSubmit, isPending }: CatEditFormProps) => 
 
   return (
     <View className="flex-1 bg-semantic-bg-primary">
-      <KeyboardAvoidingView
-        className="flex-1 pt-6"
-        {...keyboardAvoidingViewProps}
-      >
+      <KeyboardAvoidingView {...keyboardAvoidingViewProps}>
         <ScrollView
           className="flex-1 px-5"
           contentContainerStyle={{ flexGrow: 1 }}

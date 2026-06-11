@@ -40,11 +40,7 @@ const CommentBody = ({
             </Text>
           </ActionPressable>
           {onMorePress && (
-            <ActionPressable
-              onPress={onMorePress}
-              className="-mr-2 -mt-1 p-2"
-              hitSlop={8}
-            >
+            <ActionPressable onPress={onMorePress} hitSlop={8}>
               <MoreVertical size={16} className="text-semantic-text-tertiary" />
             </ActionPressable>
           )}

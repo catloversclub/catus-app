@@ -5,22 +5,23 @@ import { useColors } from "@/hooks/use-colors";
 import { X } from "@/lib/icons";
 import React, {
   useCallback,
+  useEffect,
   useImperativeHandle,
   useRef,
   useState,
 } from "react";
-import { LayoutChangeEvent, Text, TextInput, View } from "react-native";
-import { useReanimatedKeyboardAnimation } from "react-native-keyboard-controller";
-import Animated, {
-  runOnJS,
-  useAnimatedReaction,
-  useAnimatedStyle,
-} from "react-native-reanimated";
+import {
+  Keyboard,
+  LayoutChangeEvent,
+  Platform,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export interface CommentInputRef {
   focus: () => void;
-  setReplyTarget: (target: ReplyTarget) => void;
-  clearReplyTarget: () => void;
 }
 
 export interface ReplyTarget {
@@ -34,7 +35,6 @@ interface CommentInputBarProps {
   onClearReply?: () => void;
   InputComponent?: React.ElementType;
   inputRef?: React.Ref<CommentInputRef>;
-  paddingBottom?: number;
   onLayout?: (event: LayoutChangeEvent) => void;
 }
 
@@ -44,34 +44,19 @@ const CommentInputBar = ({
   onClearReply,
   InputComponent = TextInput,
   inputRef,
-  paddingBottom,
   onLayout,
 }: CommentInputBarProps) => {
   const { colors } = useColors();
+  const insets = useSafeAreaInsets();
   const [text, setText] = useState("");
-  const [internalReplyTarget, setInternalReplyTarget] =
-    useState<ReplyTarget | null>(null);
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const textInputRef = useRef<TextInput>(null);
-  const { progress } = useReanimatedKeyboardAnimation();
   const { mutate: createComment, isPending } = useCreateCommentMutation();
-
-  const isReplyTargetControlled = replyTarget !== undefined;
-  const currentReplyTarget = isReplyTargetControlled
-    ? replyTarget
-    : internalReplyTarget;
-
-  const targetPadding = paddingBottom ?? 24;
-  const animatedStyle = useAnimatedStyle(() => ({
-    paddingBottom: (1 - progress.value) * targetPadding,
-  }));
+  const currentReplyTarget = replyTarget ?? null;
 
   const clearReplyTarget = useCallback(() => {
-    if (!isReplyTargetControlled) {
-      setInternalReplyTarget(null);
-    }
-
     onClearReply?.();
-  }, [isReplyTargetControlled, onClearReply]);
+  }, [onClearReply]);
 
   useImperativeHandle(
     inputRef,
@@ -79,29 +64,33 @@ const CommentInputBar = ({
       focus: () => {
         textInputRef.current?.focus();
       },
-      setReplyTarget: (target: ReplyTarget) => {
-        if (!isReplyTargetControlled) {
-          setInternalReplyTarget(target);
-        }
-
-        requestAnimationFrame(() => {
-          textInputRef.current?.focus();
-        });
-      },
-      clearReplyTarget,
     }),
-    [clearReplyTarget, isReplyTargetControlled],
+    [],
   );
 
-  useAnimatedReaction(
-    () => progress.value,
-    (current, previous) => {
-      if (previous !== null && previous > 0.01 && current <= 0.01) {
-        runOnJS(clearReplyTarget)();
-      }
-    },
-    [clearReplyTarget],
-  );
+  useEffect(() => {
+    const handleKeyboardShow = () => {
+      setIsKeyboardVisible(true);
+    };
+
+    const handleKeyboardHide = () => {
+      setIsKeyboardVisible(false);
+      clearReplyTarget();
+    };
+
+    const showEvent =
+      Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
+    const hideEvent =
+      Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
+    const subscriptions = [
+      Keyboard.addListener(showEvent, handleKeyboardShow),
+      Keyboard.addListener(hideEvent, handleKeyboardHide),
+    ];
+
+    return () => {
+      subscriptions.forEach((subscription) => subscription.remove());
+    };
+  }, [clearReplyTarget]);
 
   const handleSubmit = () => {
     if (!text.trim() || isPending) return;
@@ -116,7 +105,7 @@ const CommentInputBar = ({
       {
         onSuccess: () => {
           setText("");
-          clearReplyTarget();
+          textInputRef.current?.blur();
         },
       },
     );
@@ -125,10 +114,10 @@ const CommentInputBar = ({
   const canSubmit = text.trim().length > 0 && !isPending;
 
   return (
-    <Animated.View
+    <View
       className="border-t border-semantic-border-primary bg-semantic-bg-primary"
       onLayout={onLayout}
-      style={animatedStyle}
+      style={{ paddingBottom: isKeyboardVisible ? 0 : insets.bottom }}
     >
       <View className="p-3 pb-6">
         <View className="relative min-h-[60px] justify-center rounded bg-semantic-bg-secondary pr-[84px]">
@@ -180,7 +169,7 @@ const CommentInputBar = ({
           </View>
         )}
       </View>
-    </Animated.View>
+    </View>
   );
 };
 

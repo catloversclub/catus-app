@@ -1,14 +1,12 @@
 import { usePostCommentsQuery } from "@/api/domains/comment/queries";
 import { Comment } from "@/api/domains/comment/types";
-import { useUserProfileNonSuspenseQuery } from "@/api/domains/user/queries";
 import { ReplyTarget } from "@/components/comment/input-bar";
-import CommentItem from "@/components/comment/item";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Text } from "@/components/ui/text";
-import useCommentActions from "@/hooks/comment/use-comment-actions";
+import useCommentItemRenderer from "@/hooks/comment/use-comment-item-renderer";
 import { useScrollToTop } from "@react-navigation/native";
 import type { ReactElement } from "react";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { RefreshControlProps, StyleProp, View, ViewStyle } from "react-native";
 import Animated, { useAnimatedRef } from "react-native-reanimated";
 
@@ -31,45 +29,10 @@ const CommentList = ({
   useScrollToTop(listRef);
 
   const { data: comments } = usePostCommentsQuery(postId);
-  const { data: me } = useUserProfileNonSuspenseQuery();
-  const { handleToggleLike } = useCommentActions(postId);
-  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
-
-  const toggleReplies = useCallback((commentId: string) => {
-    setExpandedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(commentId)) {
-        next.delete(commentId);
-      } else {
-        next.add(commentId);
-      }
-      return next;
-    });
-  }, []);
-
-  const renderComment = useCallback(
-    ({ item }: { item: Comment }) => (
-      <CommentItem
-        postId={postId}
-        comment={item}
-        currentUserId={me?.id}
-        isRepliesExpanded={expandedIds.has(item.id)}
-        onToggleReplies={() => toggleReplies(item.id)}
-        onReply={onReply}
-        onToggleLike={handleToggleLike}
-      />
-    ),
-    [expandedIds, handleToggleLike, me?.id, onReply, postId, toggleReplies],
-  );
+  const { renderComment } = useCommentItemRenderer({ postId, onReply });
 
   const listEmptyComponent = useCallback(
-    () => (
-      <View className="items-center justify-center py-20">
-        <Text className="typo-body2 text-semantic-text-secondary text-center">
-          {"아직 댓글이 없어요!\n첫 댓글을 남겨볼까요?"}
-        </Text>
-      </View>
-    ),
+    () => <CommentListEmpty />,
     [],
   );
 
@@ -88,7 +51,7 @@ const CommentList = ({
       maxToRenderPerBatch={6}
       updateCellsBatchingPeriod={50}
       windowSize={5}
-      keyboardShouldPersistTaps="always"
+      keyboardShouldPersistTaps="handled"
     />
   );
 };
@@ -105,6 +68,14 @@ const CommentItemSkeleton = () => (
   </View>
 );
 
+const CommentListEmpty = () => (
+  <View className="items-center justify-center py-20">
+    <Text className="typo-body2 text-semantic-text-secondary text-center">
+      {"아직 댓글이 없어요!\n첫 댓글을 남겨볼까요?"}
+    </Text>
+  </View>
+);
+
 const CommentListSkeleton = () => (
   <View>
     {[0, 1, 2].map((i) => (
@@ -113,5 +84,5 @@ const CommentListSkeleton = () => (
   </View>
 );
 
-export { CommentListSkeleton };
+export { CommentListEmpty, CommentListSkeleton };
 export default CommentList;

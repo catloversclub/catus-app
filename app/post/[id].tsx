@@ -1,6 +1,5 @@
 import { useLocalSearchParams } from "expo-router";
 import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
-import { useRef } from "react";
 import { View } from "react-native";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 
@@ -9,8 +8,9 @@ import { postKeys } from "@/api/domains/post/queries";
 import { userKeys } from "@/api/domains/user/queries";
 import Gradient from "@/components/common/gradient";
 import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
+import useCommentReplyInput from "@/hooks/comment/use-comment-reply-input";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
-import CommentInputBar, { CommentInputRef } from "@/components/comment/input-bar";
+import CommentInputBar from "@/components/comment/input-bar";
 import CommentList, { CommentListSkeleton } from "@/components/comment/list";
 import PostDetailCard, {
   PostDetailCardSkeleton,
@@ -20,10 +20,10 @@ import { useHeaderHeight } from "@react-navigation/elements";
 
 const PostDetailScreen = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const inputRef = useRef<CommentInputRef>(null);
+  const { inputRef, replyTarget, handleReply, clearReplyTarget } =
+    useCommentReplyInput();
   const headerHeight = useHeaderHeight();
-  const { keyboardAvoidingViewProps, insets } =
-    useKeyboardAvoidingView(headerHeight);
+  const { keyboardAvoidingViewProps } = useKeyboardAvoidingView(headerHeight);
   const onRefresh = useRefreshQueries([
     userKeys.me(),
     postKeys.detail(id),
@@ -33,7 +33,7 @@ const PostDetailScreen = () => {
 
   return (
     <View className="flex-1 bg-semantic-bg-primary">
-      <KeyboardAvoidingView className="flex-1" {...keyboardAvoidingViewProps}>
+      <KeyboardAvoidingView {...keyboardAvoidingViewProps}>
         <View className="flex-1">
           <Gradient
             direction="vertical"
@@ -50,7 +50,7 @@ const PostDetailScreen = () => {
           >
             <CommentList
               postId={id}
-              onReply={(target) => inputRef.current?.setReplyTarget(target)}
+              onReply={handleReply}
               ListHeaderComponent={
                 <View className="mb-6">
                   <PostDetailCard postId={id} />
@@ -63,7 +63,8 @@ const PostDetailScreen = () => {
           <CommentInputBar
             postId={id}
             inputRef={inputRef}
-            paddingBottom={insets.bottom}
+            replyTarget={replyTarget}
+            onClearReply={clearReplyTarget}
           />
         </View>
       </KeyboardAvoidingView>
