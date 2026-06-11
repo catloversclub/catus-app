@@ -3,12 +3,11 @@ import { Text, useWindowDimensions, View } from "react-native";
 import { usePostByIdQuery } from "@/api/domains/post/queries";
 import CommentSheet from "@/components/bottom-sheet/comment-sheet";
 import MoreSheet from "@/components/bottom-sheet/more-sheet";
-import ActionPressable from "@/components/common/action-pressable";
+import PostActionButtons from "@/components/post/action-buttons";
 import PostCarousel from "@/components/post/carousel";
 import { PostProfileHeader } from "@/components/post/profile-info";
 import { Skeleton } from "@/components/ui/skeleton";
 import usePostActions from "@/hooks/use-post-actions";
-import { Bookmark, Heart } from "@/lib/icons";
 import { Stack } from "expo-router";
 
 const PostDetailCard = ({ postId }: { postId: string }) => {
@@ -29,27 +28,14 @@ const PostDetailCard = ({ postId }: { postId: string }) => {
       <View className="typo-body4">
         <Text className="text-semantic-text-primary pt-2">{post.content}</Text>
       </View>
-      <View className="flex-row items-center justify-end gap-4">
-        <ActionPressable onPress={handleLike}>
-          <Heart
-            size={20}
-            className={
-              post.isLikedByMe
-                ? "fill-semantic-icon-error text-semantic-icon-error"
-                : "text-semantic-text-tertiary"
-            }
-          />
-        </ActionPressable>
-        <ActionPressable onPress={handleBookmark}>
-          <Bookmark
-            size={20}
-            className={
-              post.isBookmarkedByMe
-                ? "fill-semantic-icon-accent text-semantic-icon-accent"
-                : "text-semantic-text-tertiary"
-            }
-          />
-        </ActionPressable>
+      <View className="self-end">
+        <PostActionButtons
+          isLikedByMe={post.isLikedByMe}
+          likeCount={post.likeCount}
+          isBookmarkedByMe={post.isBookmarkedByMe}
+          onLike={handleLike}
+          onBookmark={handleBookmark}
+        />
       </View>
       {post.isCommentable && (
         <CommentSheet CommentSheetModalRef={commentSheetRef} postId={post.id} />

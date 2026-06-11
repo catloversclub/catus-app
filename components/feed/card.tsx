@@ -23,6 +23,7 @@ const FeedCard = ({ post }: { post: Post }) => {
   const overlay = (
     <PostOverlayActions
       isLikedByMe={post.isLikedByMe}
+      likeCount={post.likeCount}
       isBookmarkedByMe={post.isBookmarkedByMe}
       isCommentable={post.isCommentable}
       onLike={handleLike}
