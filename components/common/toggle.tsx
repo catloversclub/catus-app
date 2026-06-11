@@ -32,9 +32,9 @@ const Toggle = ({ value, onValueChange }: ToggleProps) => {
     <Pressable
       onPress={toggle}
       style={{
-        width: 33,
-        height: 18,
-        borderRadius: 18,
+        width: 50,
+        height: 24,
+        borderRadius: 12,
         backgroundColor: value
           ? colors.button.primary.bg
           : colors.button.primary.disabledBg,
@@ -42,9 +42,9 @@ const Toggle = ({ value, onValueChange }: ToggleProps) => {
     >
       <Animated.View
         style={{
-          width: 14,
-          height: 14,
-          borderRadius: 7,
+          width: 30,
+          height: 20,
+          borderRadius: 10,
           backgroundColor: "white",
           position: "absolute",
           top: 2,
