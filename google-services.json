@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "173729862302-eo4nnqfasgett4sl26acuvc0598ee7ta.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.catloversclub.catus.app",
+            "certificate_hash": "ee2dedbd7f9c61630c2c559731adc1ed7a2fd6f8"
+          }
+        },
+        {
           "client_id": "173729862302-olorgm46ht3pu6utuoqlug0h1vg5doii.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -35,14 +43,6 @@
           "android_info": {
             "package_name": "com.catloversclub.catus.app",
             "certificate_hash": "dfbfc5758338ac804735c180fd77823112814dcf"
-          }
-        },
-        {
-          "client_id": "173729862302-ukj7gs49a823onoi6lfpsp14v7h4nbn7.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.catloversclub.catus.app",
-            "certificate_hash": "ee2dedbd7f9c61630c2c559731adc1ed7a2fd6f8"
           }
         },
         {

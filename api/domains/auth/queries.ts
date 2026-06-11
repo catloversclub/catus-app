@@ -37,7 +37,7 @@ export const useLogin = () => {
           if (isSuccessResponse(googleRes)) {
             idToken = googleRes.data.idToken;
             // 디버깅용
-            // showError("Google 로그인 실패", JSON.stringify(googleRes));
+            console.log("Google 로그인 실패", JSON.stringify(googleRes));
           }
           break;
         case "apple":
