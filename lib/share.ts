@@ -1,24 +1,21 @@
 import { API_BASE_URL } from "@/constants/api";
 import { Share } from "react-native";
 
-const shareUser = async (userId: string, nickname: string) => {
+const shareUser = async (userId: string) => {
   await Share.share({
     url: `${API_BASE_URL}/share/user/${userId}`,
-    message: `${nickname}님의 프로필을 확인해보세요!`,
   });
 };
 
-const sharePost = async (postId: string, nickname: string) => {
+const sharePost = async (postId: string) => {
   await Share.share({
     url: `${API_BASE_URL}/share/post/${postId}`,
-    message: `${nickname}님의 게시물을 확인해보세요!`,
   });
 };
 
-const shareCat = async (catId: string, catName: string) => {
+const shareCat = async (catId: string) => {
   await Share.share({
     url: `${API_BASE_URL}/share/cat/${catId}`,
-    message: `${catName}의 프로필을 확인해보세요!`,
   });
 };
 

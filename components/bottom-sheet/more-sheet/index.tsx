@@ -41,7 +41,7 @@ interface OwnerActionsProps {
 
 const ShareAction = ({ post, dismiss }: ShareActionProps) => {
   const handlePress = async () => {
-    await sharePost(post.id, post.author.nickname);
+    await sharePost(post.id);
     dismiss();
   };
 

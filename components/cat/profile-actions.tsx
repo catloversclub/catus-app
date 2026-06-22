@@ -7,10 +7,9 @@ import { View } from "react-native";
 
 interface CatProfileActionsProps {
   catId: string;
-  catName: string;
 }
 
-const CatProfileActions = ({ catId, catName }: CatProfileActionsProps) => {
+const CatProfileActions = ({ catId }: CatProfileActionsProps) => {
   const router = useRouter();
 
   const buttons: ButtonType[] = [
@@ -22,7 +21,7 @@ const CatProfileActions = ({ catId, catName }: CatProfileActionsProps) => {
     },
     {
       label: "프로필 공유",
-      onPress: () => shareCat(catId, catName),
+      onPress: () => shareCat(catId),
       variant: "secondary",
       size: "md",
     },

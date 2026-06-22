@@ -8,7 +8,7 @@ import { router } from "expo-router";
 const ProfileActions = () => {
   const { data: userData } = useUserProfileQuery();
 
-  const handleShare = () => shareUser(userData.id, userData.nickname);
+  const handleShare = () => shareUser(userData.id);
 
   const buttons: ButtonType[] = [
     {

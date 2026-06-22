@@ -27,7 +27,7 @@ const OtherProfileActions = ({ userId }: OtherProfileActionsProps) => {
     onUnfollowStart: () => selectCatSheetRef.current?.present(),
   });
 
-  const handleShare = () => shareUser(userId, profile.nickname);
+  const handleShare = () => shareUser(userId);
   const handleConfirmUnfollow = (selectedCatIds: string[]) => {
     const selectedCatIdSet = new Set(selectedCatIds);
     const unfollowCatIds = followedCatIds.filter(

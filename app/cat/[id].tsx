@@ -90,7 +90,7 @@ const CatDetailGrid = ({ catId }: CatDetailGridProps) => {
               tags={tags}
             />
             {isMyCat ? (
-              <CatProfileActions catId={cat.id} catName={cat.name} />
+              <CatProfileActions catId={cat.id} />
             ) : (
               <CatButlerCard userId={cat.butlerId} />
             )}
