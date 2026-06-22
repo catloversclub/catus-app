@@ -4,7 +4,7 @@ import type { Cat } from "@/api/domains/cat/types";
 export interface DraftData {
   imageUris: string[];
   caption: string;
-  selectedCats: Pick<Cat, "id" | "name">[];
+  selectedCats: Pick<Cat, "id" | "name" | "profileImageUrl">[];
   commentsEnabled: boolean;
   sharingEnabled: boolean;
 }

@@ -19,7 +19,9 @@ interface SelectCatSheetProps {
   bottomSheetRef: RefObject<BottomSheetModal | null>;
   userId: string;
   initialSelectedCatIds?: string[];
-  onSelectionChange?: (selectedCats: Pick<Cat, "id" | "name">[]) => void;
+  onSelectionChange?: (
+    selectedCats: Pick<Cat, "id" | "name" | "profileImageUrl">[],
+  ) => void;
   onConfirm?: (catIds: string[]) => void;
 }
 

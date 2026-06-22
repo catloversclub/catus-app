@@ -6,9 +6,9 @@ import {
   useUpdatePostMutation,
 } from "@/api/domains/post/queries";
 import { useUserProfileQuery } from "@/api/domains/user/queries";
-import DefaultAvatarCatIcon from "@/assets/icons/default-avatar-cat.svg";
 import PlusIcon from "@/assets/icons/plus.svg";
 import SelectCatSheet from "@/components/bottom-sheet/select-cat-sheet";
+import CatProfileImage from "@/components/cat/profile-image";
 import ImageCarousel from "@/components/common/image-carousel";
 import { ScreenHeader } from "@/components/common/screen-header";
 import Toggle from "@/components/common/toggle";
@@ -19,8 +19,8 @@ import { STORAGE_BASE_URL } from "@/constants/api";
 import { ROUTES } from "@/constants/route";
 import { useColors } from "@/hooks/use-colors";
 import { useImageUrisParam } from "@/hooks/use-image-uris-param";
-import { useKeyboardAvoidingView } from "@/hooks/use-keyboard-avoiding-view";
 import { useToast } from "@/hooks/use-toast";
+import { presentBottomSheet } from "@/lib/bottom-sheet";
 import { useComposeStore } from "@/store/post/compose-store";
 import { useDraftStore } from "@/store/post/draft-store";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
@@ -35,13 +35,12 @@ import {
 } from "react";
 import {
   BackHandler,
-  ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import { KeyboardAvoidingView } from "react-native-keyboard-controller";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 const MAX_CAPTION = 300;
 
@@ -78,7 +77,7 @@ const SettingRow = ({
 );
 
 interface CatSelectorProps {
-  selectedCats: Pick<Cat, "id" | "name">[];
+  selectedCats: Pick<Cat, "id" | "name" | "profileImageUrl">[];
   bottomSheetRef: RefObject<BottomSheetModal | null>;
   plusIconColor: string;
 }
@@ -90,23 +89,43 @@ const CatSelector = ({
 }: CatSelectorProps) => (
   <View className="gap-2.5">
     <TouchableOpacity
-      onPress={() => bottomSheetRef.current?.present()}
+      onPress={() => presentBottomSheet(bottomSheetRef)}
       className="flex-row items-center gap-3 p-1.5"
     >
-      <View className="w-9 h-9 rounded-full bg-semantic-bg-secondary items-center justify-center overflow-hidden">
-        <DefaultAvatarCatIcon width={36} height={36} />
-      </View>
-      <Text
-        className="text-semantic-text-secondary text-sm"
-        style={{ letterSpacing: -0.56 }}
-      >
-        {selectedCats.length === 0
-          ? "고양이를 선택해주세요."
-          : selectedCats.map((cat) => cat.name).join(", ")}
-      </Text>
+      {selectedCats.length === 0 ? (
+        <>
+          <CatProfileImage imageUrl={null} size="sm" isPreviewDisabled />
+          <Text
+            className="text-semantic-text-secondary text-sm flex-1"
+            style={{ letterSpacing: -0.56 }}
+            numberOfLines={1}
+          >
+            고양이를 선택해주세요.
+          </Text>
+        </>
+      ) : (
+        <View className="flex-row flex-wrap gap-3">
+          {selectedCats.map((cat) => (
+            <View key={cat.id} className="items-center gap-1 max-w-16">
+              <CatProfileImage
+                imageUrl={cat.profileImageUrl}
+                size="sm"
+                isPreviewDisabled
+              />
+              <Text
+                className="text-semantic-text-secondary text-xs text-center"
+                style={{ letterSpacing: -0.36 }}
+                numberOfLines={1}
+              >
+                {cat.name}
+              </Text>
+            </View>
+          ))}
+        </View>
+      )}
     </TouchableOpacity>
     <TouchableOpacity
-      onPress={() => bottomSheetRef.current?.present()}
+      onPress={() => presentBottomSheet(bottomSheetRef)}
       className="flex-row items-center justify-center border border-semantic-border-primary rounded h-[46px] gap-1.5"
     >
       <PlusIcon width={16} height={16} color={plusIconColor} />
@@ -143,21 +162,18 @@ const ComposeScreen = () => {
   const { mutateAsync: updatePost } = useUpdatePostMutation();
 
   const [caption, setCaption] = useState(storedCaption);
-  const [selectedCats, setSelectedCats] = useState<Pick<Cat, "id" | "name">[]>(
-    storedSelectedCats,
-  );
-  const [commentsEnabled, setCommentsEnabled] = useState(
-    storedCommentsEnabled,
-  );
+  const [selectedCats, setSelectedCats] =
+    useState<Pick<Cat, "id" | "name" | "profileImageUrl">[]>(
+      storedSelectedCats,
+    );
+  const [commentsEnabled, setCommentsEnabled] = useState(storedCommentsEnabled);
   const [sharingEnabled, setSharingEnabled] = useState(storedSharingEnabled);
   const [showDraftModal, setShowDraftModal] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-
-  const { insets } = useKeyboardAvoidingView();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
   const isEditMode = !!postId;
-  const canUpload = images.length > 0;
+  const canUpload = images.length > 0 && selectedCats.length > 0;
   const selectedCatIds = useMemo(
     () => selectedCats.map((cat) => cat.id),
     [selectedCats],
@@ -257,90 +273,85 @@ const ComposeScreen = () => {
           title={isEditMode ? "게시물 수정" : "새 게시물"}
           onBack={handleBack}
         />
-        <KeyboardAvoidingView
+        <KeyboardAwareScrollView
           className="flex-1"
-          behavior="padding"
-          keyboardVerticalOffset={insets.top + 52}
+          contentContainerClassName="px-3 pb-8 pt-6 gap-[30px]"
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          bottomOffset={150}
         >
-          <ScrollView
-            className="flex-1"
-            contentContainerClassName="px-3 pb-8 pt-6 gap-[30px]"
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps="handled"
-          >
-            {images.length > 0 && (
-              <ImageCarousel
-                images={images.map((uri, i) => ({ id: String(i), url: uri }))}
-                linkable={false}
-              />
-            )}
+          {images.length > 0 && (
+            <ImageCarousel
+              images={images.map((uri, i) => ({ id: String(i), url: uri }))}
+              linkable={false}
+            />
+          )}
 
-            <View className="gap-3">
-              <Text
-                className="text-semantic-text-secondary text-base font-semibold"
-                style={{ letterSpacing: -0.32 }}
-              >
-                캡션
-              </Text>
-              <View className="gap-2">
-                <View className="bg-semantic-bg-secondary rounded-[6px] h-[150px] p-3 pt-2.5">
-                  <TextInput
-                    value={caption}
-                    onChangeText={(t) => setCaption(t.slice(0, MAX_CAPTION))}
-                    placeholder="설명을 작성해주세요."
-                    placeholderTextColor={colors.text.tertiary}
-                    multiline
-                    textAlignVertical="top"
-                    className="flex-1 text-semantic-text-primary text-sm"
-                    style={{
-                      letterSpacing: -0.56,
-                      padding: 0,
-                      includeFontPadding: false,
-                    }}
-                  />
-                </View>
-                <Text
-                  className="text-semantic-text-tertiary text-xs text-right"
-                  style={{ letterSpacing: -0.36 }}
-                >
-                  <Text className="text-semantic-text-secondary">
-                    {caption.length}
-                  </Text>
-                  /{MAX_CAPTION}
-                </Text>
+          <View className="gap-3">
+            <Text
+              className="text-semantic-text-secondary text-base font-semibold"
+              style={{ letterSpacing: -0.32 }}
+            >
+              캡션
+            </Text>
+            <View className="gap-2">
+              <View className="bg-semantic-bg-secondary rounded-[6px] h-[150px] p-3 pt-2.5">
+                <TextInput
+                  value={caption}
+                  onChangeText={(t) => setCaption(t.slice(0, MAX_CAPTION))}
+                  placeholder="설명을 작성해주세요."
+                  placeholderTextColor={colors.text.tertiary}
+                  multiline
+                  textAlignVertical="top"
+                  className="flex-1 text-semantic-text-primary text-sm"
+                  style={{
+                    letterSpacing: -0.56,
+                    padding: 0,
+                    includeFontPadding: false,
+                  }}
+                />
               </View>
-            </View>
-
-            <View className="gap-3">
               <Text
-                className="text-semantic-text-secondary text-sm font-semibold"
-                style={{ letterSpacing: -0.42 }}
+                className="text-semantic-text-tertiary text-xs text-right"
+                style={{ letterSpacing: -0.36 }}
               >
-                고양이 정보
+                <Text className="text-semantic-text-secondary">
+                  {caption.length}
+                </Text>
+                /{MAX_CAPTION}
               </Text>
-              <CatSelector
-                selectedCats={selectedCats}
-                bottomSheetRef={bottomSheetRef}
-                plusIconColor={colors.button.ghost.text}
-              />
             </View>
+          </View>
 
-            <View className="gap-[18px]">
-              <SettingRow
-                title="댓글 허용"
-                description="다른 사용자가 이 게시글에 댓글을 달 수 있어요."
-                value={commentsEnabled}
-                onValueChange={setCommentsEnabled}
-              />
-              <SettingRow
-                title="공유 허용"
-                description="이 게시글을 외부로 공유할 수 있어요."
-                value={sharingEnabled}
-                onValueChange={setSharingEnabled}
-              />
-            </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
+          <View className="gap-3">
+            <Text
+              className="text-semantic-text-secondary text-sm font-semibold"
+              style={{ letterSpacing: -0.42 }}
+            >
+              고양이 정보
+            </Text>
+            <CatSelector
+              selectedCats={selectedCats}
+              bottomSheetRef={bottomSheetRef}
+              plusIconColor={colors.button.ghost.text}
+            />
+          </View>
+
+          <View className="gap-[18px]">
+            <SettingRow
+              title="댓글 허용"
+              description="다른 사용자가 이 게시글에 댓글을 달 수 있어요."
+              value={commentsEnabled}
+              onValueChange={setCommentsEnabled}
+            />
+            <SettingRow
+              title="공유 허용"
+              description="이 게시글을 외부로 공유할 수 있어요."
+              value={sharingEnabled}
+              onValueChange={setSharingEnabled}
+            />
+          </View>
+        </KeyboardAwareScrollView>
 
         <BottomActionBar
           buttons={[

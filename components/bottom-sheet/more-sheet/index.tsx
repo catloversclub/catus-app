@@ -86,7 +86,11 @@ const OwnerActions = ({ post, dismiss }: OwnerActionsProps) => {
         .sort((a, b) => a.order - b.order)
         .map((image) => image.url),
       caption: post.content ?? "",
-      selectedCats: post.cats.map((cat) => ({ id: cat.id, name: cat.name })),
+      selectedCats: post.cats.map((cat) => ({
+        id: cat.id,
+        name: cat.name,
+        profileImageUrl: cat.profileImageUrl,
+      })),
       commentsEnabled: post.isCommentable,
       sharingEnabled: post.isShareable,
     });
