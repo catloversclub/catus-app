@@ -286,6 +286,7 @@ const CropTool = ({ uri, onSave, onCancel }: CropToolProps) => {
       </View>
       <BottomActionBar
         containerClassName="bg-gray-990"
+        gradientColorScheme="dark"
         buttons={[
           {
             label: "완료",

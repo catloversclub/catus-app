@@ -1,4 +1,6 @@
 import Button, { ButtonType } from "@/components/common/button";
+import Gradient from "@/components/common/gradient";
+import { triggerSelectionHaptic } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 import {
   KeyboardStickyView,
@@ -10,11 +12,13 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 interface BottomActionBarProps {
   buttons: Omit<ButtonType, "size">[];
   containerClassName?: string;
+  gradientColorScheme?: "light" | "dark";
 }
 
 const BottomActionBar = ({
   buttons,
   containerClassName,
+  gradientColorScheme,
 }: BottomActionBarProps) => {
   const { bottom } = useSafeAreaInsets();
   const { progress } = useReanimatedKeyboardAnimation();
@@ -26,13 +30,34 @@ const BottomActionBar = ({
     <KeyboardStickyView offset={{ closed: 0, opened: 0 }}>
       <Animated.View
         className={cn(
-          "flex-col w-full pt-3 px-3 gap-2 bg-semantic-bg-primary",
+          "flex-col w-full px-3 gap-2 bg-semantic-bg-primary",
           containerClassName,
         )}
         style={animatedStyle}
       >
+        <Gradient
+          direction="vertical"
+          height={20}
+          colorScheme={gradientColorScheme}
+          style={{
+            position: "absolute",
+            top: -20,
+            left: 0,
+            transform: [{ rotate: "180deg" }],
+          }}
+        />
         {buttons.map((btn) => (
-          <Button key={btn.label} button={{ ...btn, size: "lg" }} />
+          <Button
+            key={btn.label}
+            button={{
+              ...btn,
+              size: "lg",
+              onPress: () => {
+                triggerSelectionHaptic();
+                btn.onPress();
+              },
+            }}
+          />
         ))}
       </Animated.View>
     </KeyboardStickyView>

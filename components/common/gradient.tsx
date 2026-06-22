@@ -6,6 +6,7 @@ import { DimensionValue, useWindowDimensions, ViewStyle } from "react-native";
 interface GradientProps {
   direction?: "horizontal" | "vertical";
   height?: DimensionValue;
+  colorScheme?: "light" | "dark";
   style?: ViewStyle;
 }
 
@@ -15,11 +16,13 @@ const EASED_OPACITIES = [1, 0.966, 0.866, 0.707, 0.5, 0.259, 0];
 const Gradient = ({
   direction = "horizontal",
   height = "100%",
+  colorScheme,
   style,
 }: GradientProps) => {
   const { width: screenWidth } = useWindowDimensions();
   const { scheme } = useColors();
-  const rgb = scheme === "dark" ? "24, 24, 27" : "255, 255, 255";
+  const resolvedScheme = colorScheme ?? scheme;
+  const rgb = resolvedScheme === "dark" ? "24, 24, 27" : "255, 255, 255";
   const gradientColors = EASED_OPACITIES.map((a) => `rgba(${rgb}, ${a})`) as [
     string,
     string,
