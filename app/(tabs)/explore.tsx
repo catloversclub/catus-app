@@ -14,11 +14,12 @@ import { useColors } from "@/hooks/use-colors";
 import { useDefaultStackScreenOptions } from "@/hooks/use-default-screen-options";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
 import { useSearchHistoryStore } from "@/store/explore/search-history-store";
+import { useScrollToTop } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { useCallback, useState } from "react";
 import { Keyboard, Text, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Animated, { runOnJS } from "react-native-reanimated";
+import Animated, { runOnJS, useAnimatedRef } from "react-native-reanimated";
 
 type ExploreMode = "default" | "idle" | "typing" | "results";
 
@@ -27,6 +28,8 @@ const ExploreScreen = () => {
   const defaultOptions = useDefaultStackScreenOptions();
   const addSearch = useSearchHistoryStore((s) => s.addSearch);
   const refreshDefault = useRefreshQueries([postKeys.dailyPopular()]);
+  const scrollRef = useAnimatedRef<Animated.ScrollView>();
+  useScrollToTop(scrollRef);
 
   const [mode, setMode] = useState<ExploreMode>("default");
   const [query, setQuery] = useState("");
@@ -147,6 +150,7 @@ const ExploreScreen = () => {
           style={{ position: "absolute", top: 0, left: 0, zIndex: 1 }}
         />
         <Animated.ScrollView
+          ref={scrollRef}
           refreshControl={refreshControl}
           showsVerticalScrollIndicator={false}
           scrollEventThrottle={16}

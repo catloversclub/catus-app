@@ -18,13 +18,16 @@ import { ProfileHeaderSkeleton } from "@/components/user/profile/profile-header"
 import { useColors } from "@/hooks/use-colors";
 import { useDefaultStackScreenOptions } from "@/hooks/use-default-screen-options";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
+import { useScrollToTop } from "@react-navigation/native";
 import { Link, Stack, useRouter } from "expo-router";
-import { useState } from "react";
-import { View } from "react-native";
+import { useRef, useState } from "react";
+import { FlatList, View } from "react-native";
 
 const MypageGrid = () => {
   const [activeTab, setActiveTab] = useState(0);
   const router = useRouter();
+  const gridRef = useRef<FlatList>(null);
+  useScrollToTop(gridRef);
 
   const emptyComponents = [
     <EmptyActionState
@@ -71,6 +74,7 @@ const MypageGrid = () => {
 
   return (
     <PostGrid
+      ref={gridRef}
       posts={posts}
       isFetchingNextPage={activeQuery.isFetchingNextPage}
       emptyComponent={emptyComponents[activeTab]}

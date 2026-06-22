@@ -1,6 +1,6 @@
 import Gradient from "@/components/common/gradient";
-import type { ComponentProps } from "react";
-import { useCallback, useState } from "react";
+import type { ComponentProps, ComponentRef } from "react";
+import { forwardRef, useCallback, useState } from "react";
 import { RefreshControl, ScrollViewProps } from "react-native";
 import Animated from "react-native-reanimated";
 
@@ -35,11 +35,10 @@ interface RefreshableScrollViewProps extends Omit<ScrollViewProps, "onScroll"> {
   onScroll?: ComponentProps<typeof Animated.ScrollView>["onScroll"];
 }
 
-const RefreshableScrollView = ({
-  onRefresh,
-  children,
-  ...props
-}: RefreshableScrollViewProps) => {
+const RefreshableScrollView = forwardRef<
+  ComponentRef<typeof Animated.ScrollView>,
+  RefreshableScrollViewProps
+>(({ onRefresh, children, ...props }, ref) => {
   const { refreshControl } = useLogoRefreshControl({ onRefresh });
 
   return (
@@ -50,6 +49,7 @@ const RefreshableScrollView = ({
         style={{ position: "absolute", top: 0, left: 0, zIndex: 1 }}
       />
       <Animated.ScrollView
+        ref={ref}
         showsVerticalScrollIndicator={false}
         refreshControl={refreshControl}
         {...(props as any)}
@@ -62,6 +62,8 @@ const RefreshableScrollView = ({
       </Animated.ScrollView>
     </>
   );
-};
+});
+
+RefreshableScrollView.displayName = "RefreshableScrollView";
 
 export { RefreshableScrollView, useLogoRefreshControl };

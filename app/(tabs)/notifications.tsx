@@ -8,13 +8,17 @@ import { useDefaultStackScreenOptions } from "@/hooks/use-default-screen-options
 import { useLoadMoreScroll } from "@/hooks/use-load-more-scroll";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
 import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
+import { useScrollToTop } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { View } from "react-native";
+import Animated, { useAnimatedRef } from "react-native-reanimated";
 
 const NotificationsScreen = () => {
   const defaultOptions = useDefaultStackScreenOptions();
   const { handleScroll, loadMoreRef } = useLoadMoreScroll();
   const refreshQueries = useRefreshQueries([notificationKeys.list()]);
+  const scrollRef = useAnimatedRef<Animated.ScrollView>();
+  useScrollToTop(scrollRef);
 
   return (
     <>
@@ -23,6 +27,7 @@ const NotificationsScreen = () => {
       />
       <View className="flex-1 bg-semantic-bg-primary px-3">
         <RefreshableScrollView
+          ref={scrollRef}
           onRefresh={refreshQueries}
           onScroll={handleScroll}
           scrollEventThrottle={100}

@@ -3,6 +3,7 @@ import ImagePressable from "@/components/common/image-pressable";
 import { LoadMoreFooter } from "@/components/common/load-more-footer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SquareImage } from "@/components/ui/square-image";
+import { forwardRef } from "react";
 import {
   FlatList,
   RefreshControlProps,
@@ -57,7 +58,7 @@ interface PostGridProps {
   onEndReached?: () => void;
 }
 
-const PostGrid = ({
+const PostGrid = forwardRef<FlatList<Post[]>, PostGridProps>(({
   ListHeaderComponent,
   posts,
   isFetchingNextPage,
@@ -65,7 +66,7 @@ const PostGrid = ({
   scrollEnabled = false,
   refreshControl,
   onEndReached,
-}: PostGridProps) => {
+}, ref) => {
   const { width } = useWindowDimensions();
 
   const NUM_COLS = 3;
@@ -84,6 +85,7 @@ const PostGrid = ({
 
   return (
     <FlatList
+      ref={ref}
       style={{ flex: 1 }}
       contentContainerStyle={{ flexGrow: 1 }}
       ListHeaderComponent={
@@ -116,7 +118,9 @@ const PostGrid = ({
       onEndReachedThreshold={0.5}
     />
   );
-};
+});
+
+PostGrid.displayName = "PostGrid";
 
 export { PostGridSkeleton };
 export default PostGrid;
