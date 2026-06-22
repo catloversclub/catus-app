@@ -34,11 +34,8 @@ const ImagePickerModal = ({
         className="absolute inset-0 z-50 bg-semantic-bg-primary"
         style={{ paddingTop: top }}
       >
-        <View className="h-14 flex-row items-center justify-center border-b border-semantic-border-primary px-3">
-          <ActionPressable
-            onPress={onClose}
-            className="absolute left-3 p-2"
-          >
+        <View className="h-14 flex-row items-center justify-center px-3">
+          <ActionPressable onPress={onClose} className="absolute left-3 p-2">
             <ArrowLeftIcon width={20} height={20} color={colors.icon.primary} />
           </ActionPressable>
           <Text className="typo-title3 text-semantic-text-primary">

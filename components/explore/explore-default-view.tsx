@@ -9,7 +9,7 @@ import { Chip } from "@/components/common/chip";
 import PostCarousel from "@/components/post/carousel";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
-import { Pressable, Text, useWindowDimensions, View } from "react-native";
+import { Text, useWindowDimensions, View } from "react-native";
 
 interface DailyPopularCarouselItemProps {
   post: Post;
@@ -147,17 +147,6 @@ const DailyPopularCarouselListSkeleton = () => {
 const ExploreDefaultView = () => {
   return (
     <>
-      <View className="px-3 gap-6">
-        <Pressable className="px-3 py-4 rounded gap-0.5 border border-[#C2E9FF] bg-[#EBF8FF]">
-          <Text className="typo-title3 text-semantic-text-primary">
-            천하제일 내 고양이 자랑대회
-          </Text>
-          <Text className="typo-body4 text-semantic-text-secondary">
-            우리 고양이를 더 널리 알려보세요!
-          </Text>
-        </Pressable>
-      </View>
-
       <View className="gap-3">
         <Text className="typo-title3 text-semantic-text-primary px-3">
           인기쟁이 고양이들 🔥

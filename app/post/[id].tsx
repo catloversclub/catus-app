@@ -1,21 +1,21 @@
-import { useLocalSearchParams } from "expo-router";
 import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
+import { useLocalSearchParams } from "expo-router";
 import { View } from "react-native";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 
 import { commentKeys } from "@/api/domains/comment/queries";
 import { postKeys } from "@/api/domains/post/queries";
 import { userKeys } from "@/api/domains/user/queries";
-import Gradient from "@/components/common/gradient";
-import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
-import useCommentReplyInput from "@/hooks/comment/use-comment-reply-input";
-import { useRefreshQueries } from "@/hooks/use-refresh-queries";
 import CommentInputBar from "@/components/comment/input-bar";
 import CommentList, { CommentListSkeleton } from "@/components/comment/list";
+import Gradient from "@/components/common/gradient";
+import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
 import PostDetailCard, {
   PostDetailCardSkeleton,
 } from "@/components/post/detail-card";
+import useCommentReplyInput from "@/hooks/comment/use-comment-reply-input";
 import { useKeyboardAvoidingView } from "@/hooks/use-keyboard-avoiding-view";
+import { useRefreshQueries } from "@/hooks/use-refresh-queries";
 import { useHeaderHeight } from "@react-navigation/elements";
 
 const PostDetailScreen = () => {

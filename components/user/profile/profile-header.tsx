@@ -25,11 +25,11 @@ const UserProfileHeader = ({
   followingCount,
   actions,
 }: UserProfileHeaderProps) => (
-  <View className="py-6">
+  <View className="py-6 flex-col gap-6">
     <View className="flex-col items-center">
       <UserProfileImage imageUrl={imageUrl ?? null} size="lg" />
       <ProfileIdentity name={name} subtitle={subtitle} />
-      <View className="flex-row mb-6">
+      <View className="flex-row">
         <ProfileStat label="게시글" value={postsCount} />
         <ProfileStat
           label="팔로워"
