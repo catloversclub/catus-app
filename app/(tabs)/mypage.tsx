@@ -77,7 +77,7 @@ const MypageGrid = () => {
       ListHeaderComponent={
         <>
           <MyProfileHeaderContent />
-          <View className="px-5">
+          <View className="px-3">
             <TabIconBar activeIndex={activeTab} onChange={setActiveTab} />
           </View>
         </>

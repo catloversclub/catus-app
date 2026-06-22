@@ -68,11 +68,11 @@ const PostGrid = ({
 }: PostGridProps) => {
   const { width } = useWindowDimensions();
 
-  const GAP = 6;
   const NUM_COLS = 3;
-  const PADDING = 24;
+  const GAP = 6;
+  const PADDING = 12;
 
-  const size = (width - (NUM_COLS - 1) * GAP - PADDING) / NUM_COLS;
+  const size = (width - (NUM_COLS - 1) * GAP - PADDING * 2) / NUM_COLS;
 
   const rows: Post[][] = [];
   for (let i = 0; i < posts.length; i += NUM_COLS) {
@@ -87,7 +87,7 @@ const PostGrid = ({
       style={{ flex: 1 }}
       contentContainerStyle={{ flexGrow: 1 }}
       ListHeaderComponent={
-        <View style={{ marginBottom: 24 }}>{ListHeaderComponent}</View>
+        <View style={{ marginBottom: 16 }}>{ListHeaderComponent}</View>
       }
       ListEmptyComponent={
         <View style={{ minHeight: size * NUM_COLS + GAP * (NUM_COLS - 1) }}>

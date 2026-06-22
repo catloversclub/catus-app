@@ -3,7 +3,6 @@ import ProfileActionButtons from "@/components/user/profile/profile-action-butto
 import { ROUTES } from "@/constants/route";
 import { shareCat } from "@/lib/share";
 import { useRouter } from "expo-router";
-import { View } from "react-native";
 
 interface CatProfileActionsProps {
   catId: string;
@@ -16,7 +15,7 @@ const CatProfileActions = ({ catId }: CatProfileActionsProps) => {
     {
       label: "프로필 수정",
       onPress: () => router.push(ROUTES.CAT.UPDATE(catId)),
-      variant: "primary",
+      variant: "secondary",
       size: "md",
     },
     {
@@ -27,11 +26,7 @@ const CatProfileActions = ({ catId }: CatProfileActionsProps) => {
     },
   ];
 
-  return (
-    <View className="mt-8">
-      <ProfileActionButtons buttons={buttons} />
-    </View>
-  );
+  return <ProfileActionButtons buttons={buttons} />;
 };
 
 export default CatProfileActions;
