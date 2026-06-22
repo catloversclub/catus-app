@@ -10,10 +10,10 @@ import {
   getNotifications,
   getPushToken,
   registerPushToken,
+  setPushTokenEnabled,
   updateNotificationSettings,
-  updatePushToken,
 } from "./api";
-import { NotificationSettings } from "./types";
+import { NotificationSettings, PushToken } from "./types";
 
 const DEFAULT_TAKE = 20;
 
@@ -68,7 +68,8 @@ export const useDeleteNotificationMutation = () => {
 
 export const useRegisterPushTokenMutation = () => {
   return useMutation({
-    mutationFn: (token: string) => registerPushToken(token),
+    mutationFn: (payload: Pick<PushToken, "token" | "platform">) =>
+      registerPushToken(payload),
   });
 };
 
@@ -91,6 +92,6 @@ export const useUpdatePushTokenMutation = () => {
     }: {
       token: string;
       enabled: boolean;
-    }) => updatePushToken(token, enabled),
+    }) => setPushTokenEnabled(token, enabled),
   });
 };

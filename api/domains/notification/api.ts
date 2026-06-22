@@ -1,5 +1,4 @@
 import { apiClient } from "@/api/client";
-import { Platform } from "react-native";
 import {
   DeleteNotificationResponse,
   GetNotificationsParams,
@@ -15,17 +14,22 @@ const NOTI_ENDPOINTS = {
   BASE: BASE_URL,
   DETAIL: (id: string) => `${BASE_URL}/${id}`,
   PUSH_TOKEN: `${BASE_URL}/push-token`,
-  PUSH_TOKEN_DETAIL: (token: string) => `${BASE_URL}/push-token/${token}`,
+  PUSH_TOKEN_DETAIL: (token: string) =>
+    `${BASE_URL}/push-token/${encodeURIComponent(token)}`,
   SETTINGS: `${BASE_URL}/settings`,
   TEST: `${BASE_URL}/test`,
 } as const;
 
-export const registerPushToken = async (
-  expoPushToken: string,
-): Promise<PushToken> => {
+export const registerPushToken = async ({
+  token,
+  platform,
+}: {
+  token: string;
+  platform: PushToken["platform"];
+}): Promise<PushToken> => {
   const { data } = await apiClient.post<PushToken>(NOTI_ENDPOINTS.PUSH_TOKEN, {
-    token: expoPushToken,
-    platform: Platform.OS as "ios" | "android",
+    token,
+    platform,
   });
   return data;
 };
@@ -37,7 +41,7 @@ export const getPushToken = async (token: string): Promise<PushToken> => {
   return data;
 };
 
-export const updatePushToken = async (
+export const setPushTokenEnabled = async (
   token: string,
   enabled: boolean,
 ): Promise<{ token: string; enabled: boolean }> => {
@@ -47,6 +51,8 @@ export const updatePushToken = async (
   );
   return data;
 };
+
+export const updatePushToken = setPushTokenEnabled;
 
 export const getNotifications = async (
   params: GetNotificationsParams = {},

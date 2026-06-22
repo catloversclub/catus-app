@@ -10,6 +10,10 @@ import * as SecureStore from "expo-secure-store";
 
 import { AuthProvider } from "@/api/domains/auth/types";
 import { ROUTES } from "@/constants/route";
+import {
+  disableCurrentDevicePushToken,
+  registerCurrentDevicePushToken,
+} from "@/lib/push-notifications";
 import { tokenStorage } from "@/lib/token";
 import { useOidcStore } from "@/store/auth/oidc-store";
 import { exchangeAndSaveTokens, logoutUser } from "./api";
@@ -66,6 +70,12 @@ export const useLogin = () => {
         data.refreshToken ?? undefined,
       );
 
+      try {
+        await registerCurrentDevicePushToken();
+      } catch (e) {
+        console.warn("푸시 토큰 등록 실패:", e);
+      }
+
       if (data.onboardingRequired) {
         router.push(ROUTES.AUTH.ONBOARDING.INDEX);
       } else {
@@ -86,6 +96,13 @@ export const useLogout = () => {
   return useMutation({
     mutationFn: async () => {
       const refreshToken = await SecureStore.getItemAsync("refreshToken");
+
+      try {
+        await disableCurrentDevicePushToken();
+      } catch (e) {
+        console.warn("푸시 토큰 비활성화 실패:", e);
+      }
+
       if (refreshToken) {
         await logoutUser(refreshToken);
       }
