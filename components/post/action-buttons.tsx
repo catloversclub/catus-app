@@ -33,7 +33,7 @@ const PostActionButtons = ({
           className={
             isLikedByMe
               ? "fill-semantic-icon-error text-semantic-icon-error"
-              : "text-white"
+              : "text-semantic-icon-tertiary"
           }
         />
         {likeCount > 0 && (
@@ -46,7 +46,7 @@ const PostActionButtons = ({
           onPress={onCommentPress}
           className="px-2 py-3"
         >
-          <MessageCircle size={24} className="text-white" />
+          <MessageCircle size={24} className="text-semantic-icon-tertiary" />
         </ActionPressable>
       )}
       <ActionPressable onPress={onBookmark} className="px-2 py-3">
@@ -55,7 +55,7 @@ const PostActionButtons = ({
           className={
             isBookmarkedByMe
               ? "fill-semantic-icon-accent text-semantic-icon-accent"
-              : "text-white"
+              : "text-semantic-icon-tertiary"
           }
         />
       </ActionPressable>
