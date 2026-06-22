@@ -9,12 +9,19 @@ import { useEffect } from "react";
 const CatUpdatePage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data: cat } = useCatByIdQuery(id);
-  const { imageUri, setImageUri } = useCatStore();
+  const { imageUri, setImageUri, resetImageUri } = useCatStore();
 
   const { updateCat, submitProfileImage, isPending } = useUpdateCat();
 
   const handleOnSubmit = async (data: CatProfile) => {
-    await updateCat({ catId: id, payload: data });
+    await updateCat({
+      catId: id,
+      payload: {
+        ...data,
+        profileImageUrl:
+          imageUri === null && cat.profileImageUrl ? null : undefined,
+      },
+    });
 
     if (imageUri && imageUri !== cat.profileImageUrl) {
       await submitProfileImage({ catId: id, imageUri });
@@ -25,7 +32,9 @@ const CatUpdatePage = () => {
 
   useEffect(() => {
     setImageUri(cat.profileImageUrl);
-  }, [cat.profileImageUrl, setImageUri]);
+
+    return resetImageUri;
+  }, [cat.profileImageUrl, resetImageUri, setImageUri]);
 
   return (
     <>

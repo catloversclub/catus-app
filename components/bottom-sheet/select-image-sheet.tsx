@@ -5,21 +5,32 @@ import { Text, View } from "react-native";
 
 import AlbumIcon from "@/assets/icons/album.svg";
 import CameraIcon from "@/assets/icons/camera.svg";
+import TrashIcon from "@/assets/icons/trash.svg";
 import ActionPressable from "@/components/common/action-pressable";
 import ImagePickerModal from "@/components/media/image-picker-modal";
 import MediaPermissionModals from "@/components/modal/media-permission-modals";
 import { useColors } from "@/hooks/use-colors";
 import { useMediaPermissions } from "@/hooks/use-media-permissions";
 import * as ImagePicker from "expo-image-picker";
+import { SvgProps } from "react-native-svg";
 
 interface SelectImageSheetProps {
   SelectImageSheetModalRef: React.RefObject<BottomSheetModal | null>;
+  hasImage: boolean;
   handleIsLoading: (isLoading: boolean) => void;
   handleImageUriChange: (uri: string | null) => void;
 }
 
+type SelectImageSheetItem = {
+  Icon: React.FC<SvgProps>;
+  label: string;
+  action: () => void;
+  isDestructive?: boolean;
+};
+
 const SelectImageSheet = ({
   SelectImageSheetModalRef,
+  hasImage,
   handleIsLoading,
   handleImageUriChange,
 }: SelectImageSheetProps) => {
@@ -66,6 +77,11 @@ const SelectImageSheet = ({
     SelectImageSheetModalRef.current?.dismiss();
   };
 
+  const handleRemovePress = () => {
+    handleImageUriChange(null);
+    SelectImageSheetModalRef.current?.dismiss();
+  };
+
   const handleSheetDismiss = () => {
     if (shouldOpenGalleryPickerRef.current) {
       shouldOpenGalleryPickerRef.current = false;
@@ -95,14 +111,24 @@ const SelectImageSheet = ({
     handleImageUriChange(uris[0] ?? null);
   };
 
-  const SELECT_IMAGE_SHEET_ITEMS = [
+  const SELECT_IMAGE_SHEET_ITEMS: SelectImageSheetItem[] = [
     { Icon: CameraIcon, label: "카메라로 촬영", action: handleCameraPress },
     {
       Icon: AlbumIcon,
       label: "앨범에서 사진 업로드",
       action: handleGalleryPress,
     },
-  ] as const;
+    ...(hasImage
+      ? [
+          {
+            Icon: TrashIcon,
+            label: "사진 제거",
+            action: handleRemovePress,
+            isDestructive: true,
+          },
+        ]
+      : []),
+  ];
 
   return (
     <>
@@ -111,18 +137,32 @@ const SelectImageSheet = ({
         onDismiss={handleSheetDismiss}
       >
         <View className="flex-1 flex-col items-center justify-center pb-16">
-          {SELECT_IMAGE_SHEET_ITEMS.map(({ Icon, label, action }) => (
-            <ActionPressable
-              key={label}
-              onPress={action}
-              className="flex-row gap-1.5 py-[14px] items-center justify-center"
-            >
-              <Icon height={20} width={20} color={colors.icon.secondary} />
-              <Text className="typo-body1 text-semantic-text-primary">
-                {label}
-              </Text>
-            </ActionPressable>
-          ))}
+          {SELECT_IMAGE_SHEET_ITEMS.map(
+            ({ Icon, label, action, isDestructive }) => (
+              <ActionPressable
+                key={label}
+                onPress={action}
+                className="flex-row gap-1.5 py-[14px] items-center justify-center"
+              >
+                <Icon
+                  height={20}
+                  width={20}
+                  color={
+                    isDestructive ? colors.icon.error : colors.icon.secondary
+                  }
+                />
+                <Text
+                  className={
+                    isDestructive
+                      ? "typo-body1 text-semantic-text-error"
+                      : "typo-body1 text-semantic-text-primary"
+                  }
+                >
+                  {label}
+                </Text>
+              </ActionPressable>
+            ),
+          )}
         </View>
       </BaseBottomSheet>
       <MediaPermissionModals

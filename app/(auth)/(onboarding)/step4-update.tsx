@@ -18,7 +18,11 @@ const Step4 = () => {
   const handleOnSubmit = async (data: CatProfileFormData) => {
     await updateCat({
       catId,
-      payload: data,
+      payload: {
+        ...data,
+        profileImageUrl:
+          imageUri === null && cat.profileImageUrl ? null : undefined,
+      },
     });
 
     if (imageUri) {

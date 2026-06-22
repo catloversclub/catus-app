@@ -1,12 +1,11 @@
 import CameraIcon from "@/assets/icons/camera.svg";
-import AvatarDark from "@/assets/images/avatar/user-dark.png";
-import AvatarLight from "@/assets/images/avatar/user-light.png";
 import SelectImageSheet from "@/components/bottom-sheet/select-image-sheet";
 import IconButton from "@/components/common/icon-button";
 import ImagePressable from "@/components/common/image-pressable";
 import ProfilePreviewModal from "@/components/common/profile-preview-modal";
 import { PROFILE_SIZE } from "@/constants/user";
 import { useColors } from "@/hooks/use-colors";
+import { presentBottomSheet } from "@/lib/bottom-sheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Image } from "expo-image";
 import { type Href } from "expo-router";
@@ -16,12 +15,13 @@ import { ActivityIndicator, View } from "react-native";
 type ProfileImageSize = keyof typeof PROFILE_SIZE;
 
 interface ProfileImageProps {
-  imageUrl: string | null;
+  imageUrl: string;
   size: ProfileImageSize;
   href?: Href;
   alt?: string;
   isEditMode?: boolean;
   isPreviewDisabled?: boolean;
+  hasCustomImage?: boolean;
   handleImageUriChange?: (uri: string | null) => void;
 }
 
@@ -31,17 +31,17 @@ const ProfileImage = ({
   alt,
   isEditMode = false,
   isPreviewDisabled = false,
+  hasCustomImage = true,
   size,
   handleImageUriChange,
 }: ProfileImageProps) => {
-  const { colors, scheme } = useColors();
+  const { colors } = useColors();
 
-  const defaultAvatar = scheme === "dark" ? AvatarDark : AvatarLight;
-  const imageSource = imageUrl ? { uri: imageUrl } : defaultAvatar;
+  const imageSource = { uri: imageUrl };
   const sizeValue = PROFILE_SIZE[size];
 
   const [isLoading, setIsLoading] = useState(false);
-  const [isImageLoading, setIsImageLoading] = useState(!!imageUrl);
+  const [isImageLoading, setIsImageLoading] = useState(true);
   const [previewOrigin, setPreviewOrigin] = useState<{
     x: number;
     y: number;
@@ -53,7 +53,7 @@ const ProfileImage = ({
   const imageRef = useRef<View>(null);
 
   const handleSelectImagePress = () => {
-    SelectImageSheetModalRef.current?.present();
+    presentBottomSheet(SelectImageSheetModalRef);
   };
 
   const handlePreviewPress = () => {
@@ -66,7 +66,7 @@ const ProfileImage = ({
     <View ref={imageRef} style={{ width: sizeValue, height: sizeValue }}>
       <Image
         source={imageSource}
-        placeholder={defaultAvatar}
+        placeholder={imageSource}
         transition={150}
         style={{
           width: sizeValue,
@@ -108,6 +108,7 @@ const ProfileImage = ({
   const selectImageSheet = handleImageUriChange && (
     <SelectImageSheet
       SelectImageSheetModalRef={SelectImageSheetModalRef}
+      hasImage={hasCustomImage}
       handleIsLoading={setIsLoading}
       handleImageUriChange={handleImageUriChange}
     />

@@ -13,6 +13,10 @@ const UpdateProfile = () => {
     await updateUser({
       nickname: data.nickname,
       isLivingWithCat: data.isLivingWithCat,
+      profileImageUrl:
+        data.profileImageUrl === null && userData.profileImageUrl
+          ? null
+          : undefined,
     });
 
     if (
