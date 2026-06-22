@@ -6,16 +6,13 @@ import {
 import { catKeys, useCatByIdQuery } from "@/api/domains/cat/queries";
 import { postKeys, useCatPostsQuery } from "@/api/domains/post/queries";
 import { useUserProfileQuery, userKeys } from "@/api/domains/user/queries";
-import MoreIcon from "@/assets/icons/more.svg";
 import CatButlerCard from "@/components/cat/butler-card";
 import CatProfileActions from "@/components/cat/profile-actions";
 import { CatProfileHeader } from "@/components/cat/profile-header";
-import IconButton from "@/components/common/icon-button";
 import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
 import PostGrid, { PostGridSkeleton } from "@/components/post/grid";
 import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
 import { ProfileHeaderSkeleton } from "@/components/user/profile/profile-header";
-import { useColors } from "@/hooks/use-colors";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
 import { formatDate } from "@/lib/utils";
 import { Stack, useLocalSearchParams } from "expo-router";
@@ -30,7 +27,6 @@ const CatDetailGrid = ({ catId }: CatDetailGridProps) => {
   const { data: currentUser } = useUserProfileQuery();
   const { data: appearances } = useAppearanceQuery();
   const { data: personalities } = usePersonalityQuery();
-  const { colors } = useColors();
   const {
     data: postsData,
     fetchNextPage,
@@ -72,11 +68,6 @@ const CatDetailGrid = ({ catId }: CatDetailGridProps) => {
       <Stack.Screen
         options={{
           title: `${cat.name}의 프로필`,
-          headerRight: () => (
-            <IconButton className="p-3 active:opacity-60">
-              <MoreIcon width={24} height={24} color={colors.icon.primary} />
-            </IconButton>
-          ),
         }}
       />
       <PostGrid

@@ -1,8 +1,10 @@
 import { catKeys } from "@/api/domains/cat/queries";
 import { postKeys, useUserPostsQuery } from "@/api/domains/post/queries";
-import { userKeys, useUserDetailQuery, useUserProfileQuery } from "@/api/domains/user/queries";
-import MoreIcon from "@/assets/icons/more.svg";
-import IconButton from "@/components/common/icon-button";
+import {
+  userKeys,
+  useUserDetailQuery,
+  useUserProfileQuery,
+} from "@/api/domains/user/queries";
 import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
 import PostGrid, { PostGridSkeleton } from "@/components/post/grid";
 import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
@@ -12,7 +14,6 @@ import {
   UserProfileHeader,
 } from "@/components/user/profile/profile-header";
 import UserCatListSection from "@/components/user/profile/user-cat-list-section";
-import { useColors } from "@/hooks/use-colors";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { Text, View } from "react-native";
@@ -25,7 +26,6 @@ const UserDetailGrid = ({ userId }: UserDetailGridProps) => {
   const { data: profile } = useUserDetailQuery(userId);
   const { data: me } = useUserProfileQuery();
   const isMe = me.id === userId;
-  const { colors } = useColors();
   const {
     data: postsData,
     fetchNextPage,
@@ -50,11 +50,6 @@ const UserDetailGrid = ({ userId }: UserDetailGridProps) => {
       <Stack.Screen
         options={{
           title: `${profile.nickname}님의 프로필`,
-          headerRight: () => (
-            <IconButton className="p-3 active:opacity-60">
-              <MoreIcon width={24} height={24} color={colors.icon.primary} />
-            </IconButton>
-          ),
         }}
       />
       <PostGrid
