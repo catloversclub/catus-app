@@ -4,6 +4,7 @@ import CommentBody from "@/components/comment/body";
 import { ReplyTarget } from "@/components/comment/input-bar";
 import ActionPressable from "@/components/common/action-pressable";
 import { Text } from "@/components/ui/text";
+import { presentBottomSheet } from "@/lib/bottom-sheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { memo, useRef, useState } from "react";
 import { View } from "react-native";
@@ -42,7 +43,7 @@ const CommentItem = ({
 
   const openActionSheet = (targetComment: Comment) => {
     setSelectedComment(targetComment);
-    actionSheetRef.current?.present();
+    presentBottomSheet(actionSheetRef);
   };
 
   return (

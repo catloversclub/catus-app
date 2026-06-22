@@ -8,6 +8,7 @@ import FollowButton from "@/components/user/follow-button";
 import UserProfileImage from "@/components/user/profile-image";
 import { useColors } from "@/hooks/use-colors";
 import { useUserFollowToggle } from "@/hooks/user/use-user-follow-toggle";
+import { presentBottomSheet } from "@/lib/bottom-sheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useMemo, useRef } from "react";
 import { Text, View } from "react-native";
@@ -66,7 +67,7 @@ const CatButlerCard = ({ userId }: CatButlerCardProps) => {
             userId={userId}
             isFollowing={profile.isFollowing}
             size="md"
-            onUnfollowStart={() => selectCatSheetRef.current?.present()}
+            onUnfollowStart={() => presentBottomSheet(selectCatSheetRef)}
           />
         </View>
         <ActionPressable

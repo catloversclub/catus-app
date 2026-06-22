@@ -1,6 +1,7 @@
 import CalendarIcon from "@/assets/icons/calendar.svg";
 import SelectDateSheet from "@/components/bottom-sheet/select-date-sheet";
 import { useColors } from "@/hooks/use-colors";
+import { presentBottomSheet } from "@/lib/bottom-sheet";
 import { formatDate } from "@/lib/utils";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useCallback, useRef } from "react";
@@ -14,9 +15,11 @@ interface SelectDateProps {
 const SelectDate = ({ date, onChangeDate }: SelectDateProps) => {
   const { colors } = useColors();
   const SelectDateSheetModalRef = useRef<BottomSheetModal>(null);
+
   const handleSelectDatePress = useCallback(() => {
-    SelectDateSheetModalRef.current?.present();
+    presentBottomSheet(SelectDateSheetModalRef);
   }, []);
+
   return (
     <>
       <TouchableOpacity

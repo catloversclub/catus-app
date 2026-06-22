@@ -4,6 +4,7 @@ import Button from "@/components/common/button";
 import CenterModal from "@/components/modal/center-modal";
 import { SettingsLinkItem } from "@/components/settings/settings-item";
 import SettingsSection from "@/components/settings/settings-section";
+import { presentBottomSheet } from "@/lib/bottom-sheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
@@ -23,7 +24,7 @@ const Follower = () => {
   const displayMode = useThemeStore((s) => s.mode);
   const DisplayModeSheetModalRef = useRef<BottomSheetModal>(null);
   const handleDisplayModePress = useCallback(() => {
-    DisplayModeSheetModalRef.current?.present();
+    presentBottomSheet(DisplayModeSheetModalRef);
   }, []);
   return (
     <>

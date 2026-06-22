@@ -15,6 +15,7 @@ import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
 import { useColors } from "@/hooks/use-colors";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
 import { useUserFollowToggle } from "@/hooks/user/use-user-follow-toggle";
+import { presentBottomSheet } from "@/lib/bottom-sheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { RefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, FlatList, Text, View } from "react-native";
@@ -106,7 +107,7 @@ const FollowListUnfollowSheet = ({
   });
 
   useEffect(() => {
-    bottomSheetRef.current?.present();
+    presentBottomSheet(bottomSheetRef);
   }, [bottomSheetRef, userId]);
 
   const handleConfirmUnfollow = useCallback(
@@ -136,7 +137,7 @@ const useFollowListUnfollowSheet = () => {
 
   const handleUnfollowStart = useCallback((userId: string) => {
     setUnfollowUserId((prevUserId) => {
-      if (prevUserId === userId) bottomSheetRef.current?.present();
+      if (prevUserId === userId) presentBottomSheet(bottomSheetRef);
       return userId;
     });
   }, []);

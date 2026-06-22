@@ -5,6 +5,7 @@ import { ButtonType } from "@/components/common/button";
 import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
 import ProfileActionButtons from "@/components/user/profile/profile-action-buttons";
 import { useUserFollowToggle } from "@/hooks/user/use-user-follow-toggle";
+import { presentBottomSheet } from "@/lib/bottom-sheet";
 import { shareUser } from "@/lib/share";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useMemo, useRef } from "react";
@@ -24,7 +25,7 @@ const OtherProfileActions = ({ userId }: OtherProfileActionsProps) => {
   const { unfollowWithCats, toggleFollow, isPending } = useUserFollowToggle({
     userId,
     isFollowing: profile.isFollowing,
-    onUnfollowStart: () => selectCatSheetRef.current?.present(),
+    onUnfollowStart: () => presentBottomSheet(selectCatSheetRef),
   });
 
   const handleShare = () => shareUser(userId);

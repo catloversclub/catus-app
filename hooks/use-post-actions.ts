@@ -9,6 +9,7 @@ import {
   useUnlikePostMutation,
 } from "@/api/domains/post/queries";
 import { Post } from "@/api/domains/post/types";
+import { presentBottomSheet } from "@/lib/bottom-sheet";
 
 const usePostActions = (post: Post) => {
   const queryClient = useQueryClient();
@@ -43,11 +44,11 @@ const usePostActions = (post: Post) => {
 
   const handleCommentPress = useCallback(() => {
     if (!post.isCommentable) return;
-    commentSheetRef.current?.present();
+    presentBottomSheet(commentSheetRef);
   }, [post.isCommentable]);
 
   const handleMorePress = useCallback(() => {
-    moreSheetRef.current?.present();
+    presentBottomSheet(moreSheetRef);
   }, []);
 
   return {
