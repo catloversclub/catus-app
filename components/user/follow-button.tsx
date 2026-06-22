@@ -6,7 +6,7 @@ interface FollowButtonProps {
   userId: string;
   isFollowing: boolean;
   size?: "sm" | "md";
-  onFollowStart?: () => void;
+  onUnfollowStart?: () => void;
   className?: string;
 }
 
@@ -19,13 +19,13 @@ const FollowButton = ({
   userId,
   isFollowing,
   size = "sm",
-  onFollowStart,
+  onUnfollowStart,
   className,
 }: FollowButtonProps) => {
   const { toggleFollow, isPending } = useUserFollowToggle({
     userId,
     isFollowing,
-    onFollowStart,
+    onUnfollowStart,
   });
 
   const button: ButtonType = {

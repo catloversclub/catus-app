@@ -1,3 +1,4 @@
+import { useUserCatsQuery } from "@/api/domains/cat/queries";
 import { useUserDetailQuery } from "@/api/domains/user/queries";
 import SelectCatSheet from "@/components/bottom-sheet/select-cat-sheet";
 import { ButtonType } from "@/components/common/button";
@@ -6,7 +7,7 @@ import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
 import { useUserFollowToggle } from "@/hooks/user/use-user-follow-toggle";
 import { shareUser } from "@/lib/share";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 
 interface OtherProfileActionsProps {
   userId: string;
@@ -14,14 +15,26 @@ interface OtherProfileActionsProps {
 
 const OtherProfileActions = ({ userId }: OtherProfileActionsProps) => {
   const { data: profile } = useUserDetailQuery(userId);
+  const { data: cats } = useUserCatsQuery(userId);
   const selectCatSheetRef = useRef<BottomSheetModal>(null);
-  const { followWithCats, toggleFollow, isPending } = useUserFollowToggle({
+  const followedCatIds = useMemo(
+    () => cats.filter((cat) => cat.isFollowedByMe).map((cat) => cat.id),
+    [cats],
+  );
+  const { unfollowWithCats, toggleFollow, isPending } = useUserFollowToggle({
     userId,
     isFollowing: profile.isFollowing,
-    onFollowStart: () => selectCatSheetRef.current?.present(),
+    onUnfollowStart: () => selectCatSheetRef.current?.present(),
   });
 
   const handleShare = () => shareUser(userId, profile.nickname);
+  const handleConfirmUnfollow = (selectedCatIds: string[]) => {
+    const selectedCatIdSet = new Set(selectedCatIds);
+    const unfollowCatIds = followedCatIds.filter(
+      (catId) => !selectedCatIdSet.has(catId),
+    );
+    if (unfollowCatIds.length > 0) unfollowWithCats(unfollowCatIds);
+  };
 
   const buttons: ButtonType[] = [
     {
@@ -46,7 +59,8 @@ const OtherProfileActions = ({ userId }: OtherProfileActionsProps) => {
         <SelectCatSheet
           bottomSheetRef={selectCatSheetRef}
           userId={userId}
-          onConfirm={followWithCats}
+          initialSelectedCatIds={followedCatIds}
+          onConfirm={handleConfirmUnfollow}
         />
       </SuspenseWithDelay>
     </>

@@ -53,7 +53,6 @@ const SelectCatSheet = ({
 
   const handleConfirm = () => {
     onConfirm?.(selectedCatIds);
-    if (onConfirm) setSelectedCatIds([]);
     bottomSheetRef.current?.dismiss();
   };
 

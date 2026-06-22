@@ -1,3 +1,4 @@
+import { useUserCatsQuery } from "@/api/domains/cat/queries";
 import { useUserDetailQuery } from "@/api/domains/user/queries";
 import ChevronRightIcon from "@/assets/icons/chevron-right.svg";
 import SelectCatSheet from "@/components/bottom-sheet/select-cat-sheet";
@@ -8,7 +9,7 @@ import UserProfileImage from "@/components/user/profile-image";
 import { useColors } from "@/hooks/use-colors";
 import { useUserFollowToggle } from "@/hooks/user/use-user-follow-toggle";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { Text, View } from "react-native";
 
 interface CatButlerCardProps {
@@ -17,12 +18,24 @@ interface CatButlerCardProps {
 
 const CatButlerCard = ({ userId }: CatButlerCardProps) => {
   const { data: profile } = useUserDetailQuery(userId);
+  const { data: cats } = useUserCatsQuery(userId);
   const { colors } = useColors();
   const selectCatSheetRef = useRef<BottomSheetModal>(null);
-  const { followWithCats } = useUserFollowToggle({
+  const followedCatIds = useMemo(
+    () => cats.filter((cat) => cat.isFollowedByMe).map((cat) => cat.id),
+    [cats],
+  );
+  const { unfollowWithCats } = useUserFollowToggle({
     userId,
     isFollowing: profile.isFollowing,
   });
+  const handleConfirmUnfollow = (selectedCatIds: string[]) => {
+    const selectedCatIdSet = new Set(selectedCatIds);
+    const unfollowCatIds = followedCatIds.filter(
+      (catId) => !selectedCatIdSet.has(catId),
+    );
+    if (unfollowCatIds.length > 0) unfollowWithCats(unfollowCatIds);
+  };
 
   return (
     <>
@@ -53,7 +66,7 @@ const CatButlerCard = ({ userId }: CatButlerCardProps) => {
             userId={userId}
             isFollowing={profile.isFollowing}
             size="md"
-            onFollowStart={() => selectCatSheetRef.current?.present()}
+            onUnfollowStart={() => selectCatSheetRef.current?.present()}
           />
         </View>
         <ActionPressable
@@ -72,7 +85,8 @@ const CatButlerCard = ({ userId }: CatButlerCardProps) => {
         <SelectCatSheet
           bottomSheetRef={selectCatSheetRef}
           userId={userId}
-          onConfirm={followWithCats}
+          initialSelectedCatIds={followedCatIds}
+          onConfirm={handleConfirmUnfollow}
         />
       </SuspenseWithDelay>
     </>

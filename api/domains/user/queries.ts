@@ -1,5 +1,6 @@
 import { uploadImage } from "@/api/domains/common/api";
 import { getUserCats } from "@/api/domains/cat/api";
+import { catKeys } from "@/api/domains/cat/queries";
 import {
   useMutation,
   useQuery,
@@ -168,6 +169,7 @@ export const useFollowUserMutation = () => {
       const userId = typeof input === "string" ? input : input.userId;
       queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
       queryClient.invalidateQueries({ queryKey: userKeys.followings(userId) });
+      queryClient.invalidateQueries({ queryKey: catKeys.userList(userId) });
     },
   });
 };
@@ -181,6 +183,7 @@ export const useUnfollowUserMutation = () => {
       const userId = typeof input === "string" ? input : input.userId;
       queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
       queryClient.invalidateQueries({ queryKey: userKeys.followings(userId) });
+      queryClient.invalidateQueries({ queryKey: catKeys.userList(userId) });
     },
   });
 };
