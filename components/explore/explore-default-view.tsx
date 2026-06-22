@@ -17,13 +17,15 @@ interface DailyPopularCarouselItemProps {
   personalities: Map<number, string>;
 }
 
+interface DailyPopularCatOverlayProps {
+  name: string;
+  tags: string[];
+}
+
 const DailyPopularCatOverlay = ({
   name,
   tags,
-}: {
-  name: string;
-  tags: string[];
-}) => {
+}: DailyPopularCatOverlayProps) => {
   const tagRows = [];
   for (let i = 0; i < tags.length; i += 2) {
     tagRows.push(tags.slice(i, i + 2));
@@ -105,7 +107,9 @@ const DailyPopularCarouselList = () => {
 
   if (!posts || posts.length === 0) return null;
 
-  const appearances = new Map(appearanceData.map((item) => [item.id, item.label]));
+  const appearances = new Map(
+    appearanceData.map((item) => [item.id, item.label]),
+  );
   const personalities = new Map(
     personalityData.map((item) => [item.id, item.label]),
   );

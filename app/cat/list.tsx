@@ -1,5 +1,5 @@
 import { catKeys, useMyCatsQuery } from "@/api/domains/cat/queries";
-import PlusIcon from "@/assets/icons/plus.svg";
+import PlusIcon from "@/assets/icons/plus-circle.svg";
 import CatCard from "@/components/cat/cat-card";
 import ActionPressable from "@/components/common/action-pressable";
 import { RefreshableScrollView } from "@/components/common/logo-refresh-control";
@@ -23,8 +23,8 @@ const CatList = () => {
           ))}
         </View>
         <ActionPressable href="/cat/register">
-          <View className="py-3 flex-row items-center gap-1.5">
-            <PlusIcon width={16} height={16} fill={colors.icon.tertiary} />
+          <View className="py-3 flex-row items-center gap-1.5 w-full justify-center">
+            <PlusIcon width={16} height={16} color={colors.icon.tertiary} />
             <Text className="text-semantic-button-ghost-text typo-body4">
               더 추가하기
             </Text>
