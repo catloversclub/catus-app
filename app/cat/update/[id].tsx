@@ -1,9 +1,9 @@
 import { useCatByIdQuery } from "@/api/domains/cat/queries";
-import CatEditForm from "@/components/cat/form/edit-form";
 import { CatProfile } from "@/api/domains/cat/types";
+import CatEditForm from "@/components/cat/form/edit-form";
 import { useUpdateCat } from "@/hooks/cat/use-update-cat";
 import { useCatStore } from "@/store/cat/cat-store";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
 
 const CatUpdatePage = () => {
@@ -28,11 +28,18 @@ const CatUpdatePage = () => {
   }, [cat.profileImageUrl, setImageUri]);
 
   return (
-    <CatEditForm
-      initialData={cat}
-      onSubmit={handleOnSubmit}
-      isPending={isPending}
-    />
+    <>
+      <Stack.Screen
+        options={{
+          title: "고양이 프로필 수정",
+        }}
+      />
+      <CatEditForm
+        initialData={cat}
+        onSubmit={handleOnSubmit}
+        isPending={isPending}
+      />
+    </>
   );
 };
 
