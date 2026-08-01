@@ -5,7 +5,6 @@ import {
   useUserDetailQuery,
   useUserProfileQuery,
 } from "@/api/domains/user/queries";
-import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
 import PostGrid, { PostGridSkeleton } from "@/components/post/grid";
 import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
 import OtherProfileActions from "@/components/user/profile/other-profile-actions";
@@ -35,15 +34,12 @@ const UserDetailGrid = ({ userId }: UserDetailGridProps) => {
 
   const posts = postsData.pages.flat();
 
-  const refreshQueries = useRefreshQueries([
+  const { onRefresh, refreshing } = useRefreshQueries([
     userKeys.me(),
     userKeys.detail(userId),
     postKeys.userPosts(userId),
     catKeys.userList(userId),
   ]);
-  const { refreshControl } = useLogoRefreshControl({
-    onRefresh: refreshQueries,
-  });
 
   return (
     <>
@@ -77,7 +73,8 @@ const UserDetailGrid = ({ userId }: UserDetailGridProps) => {
           </>
         }
         scrollEnabled
-        refreshControl={refreshControl}
+        onRefresh={onRefresh}
+        refreshing={refreshing}
         onEndReached={() => {
           if (hasNextPage && !isFetchingNextPage) {
             fetchNextPage();

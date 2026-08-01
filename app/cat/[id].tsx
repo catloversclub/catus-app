@@ -9,7 +9,6 @@ import { useUserProfileQuery, userKeys } from "@/api/domains/user/queries";
 import CatButlerCard from "@/components/cat/butler-card";
 import CatProfileActions from "@/components/cat/profile-actions";
 import { CatProfileHeader } from "@/components/cat/profile-header";
-import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
 import PostGrid, { PostGridSkeleton } from "@/components/post/grid";
 import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
 import { ProfileHeaderSkeleton } from "@/components/user/profile/profile-header";
@@ -50,7 +49,7 @@ const CatDetailGrid = ({ catId }: CatDetailGridProps) => {
   ) as string[];
   const isMyCat = cat.butlerId === currentUser.id;
 
-  const refreshQueries = useRefreshQueries([
+  const { onRefresh, refreshing } = useRefreshQueries([
     catKeys.detail(catId),
     userKeys.me(),
     userKeys.detail(cat.butlerId),
@@ -59,9 +58,6 @@ const CatDetailGrid = ({ catId }: CatDetailGridProps) => {
     attributeKeys.appearance(),
     attributeKeys.personality(),
   ]);
-  const { refreshControl } = useLogoRefreshControl({
-    onRefresh: refreshQueries,
-  });
 
   return (
     <>
@@ -97,7 +93,8 @@ const CatDetailGrid = ({ catId }: CatDetailGridProps) => {
           </>
         }
         scrollEnabled
-        refreshControl={refreshControl}
+        onRefresh={onRefresh}
+        refreshing={refreshing}
         onEndReached={() => {
           if (hasNextPage && !isFetchingNextPage) {
             fetchNextPage();

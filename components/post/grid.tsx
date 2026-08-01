@@ -4,12 +4,7 @@ import { LoadMoreFooter } from "@/components/common/load-more-footer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SquareImage } from "@/components/ui/square-image";
 import { forwardRef } from "react";
-import {
-  FlatList,
-  RefreshControlProps,
-  View,
-  useWindowDimensions,
-} from "react-native";
+import { FlatList, View, useWindowDimensions } from "react-native";
 
 const PostGridSkeleton = () => {
   const { width } = useWindowDimensions();
@@ -54,7 +49,8 @@ interface PostGridProps {
   isFetchingNextPage: boolean;
   emptyComponent: React.ReactElement;
   scrollEnabled?: boolean;
-  refreshControl?: React.ReactElement<RefreshControlProps>;
+  onRefresh?: () => void;
+  refreshing?: boolean;
   onEndReached?: () => void;
 }
 
@@ -64,7 +60,8 @@ const PostGrid = forwardRef<FlatList<Post[]>, PostGridProps>(({
   isFetchingNextPage,
   emptyComponent,
   scrollEnabled = false,
-  refreshControl,
+  onRefresh,
+  refreshing,
   onEndReached,
 }, ref) => {
   const { width } = useWindowDimensions();
@@ -113,7 +110,8 @@ const PostGrid = forwardRef<FlatList<Post[]>, PostGridProps>(({
       )}
       ItemSeparatorComponent={() => <View style={{ height: GAP }} />}
       scrollEnabled={scrollEnabled}
-      refreshControl={refreshControl}
+      onRefresh={onRefresh}
+      refreshing={refreshing}
       onEndReached={onEndReached}
       onEndReachedThreshold={0.5}
     />

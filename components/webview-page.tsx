@@ -1,7 +1,7 @@
 import ActionPressable from "@/components/common/action-pressable";
-import { RefreshableScrollView } from "@/components/common/logo-refresh-control";
+import { RefreshableScrollView } from "@/components/common/refreshable-scroll-view";
 import { commonStyles } from "@/styles/common-styles";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { Linking, Text, View } from "react-native";
 
 interface WebViewPageProps {
@@ -10,9 +10,15 @@ interface WebViewPageProps {
 }
 
 export function WebViewPage({ url, onMessage }: WebViewPageProps) {
+  const [refreshing, setRefreshing] = useState(false);
   const onRefresh = useCallback(async () => {
-    onMessage?.({ nativeEvent: { data: "refresh" } });
-    await new Promise<void>((resolve) => setTimeout(resolve, 1000));
+    setRefreshing(true);
+    try {
+      onMessage?.({ nativeEvent: { data: "refresh" } });
+      await new Promise<void>((resolve) => setTimeout(resolve, 1000));
+    } finally {
+      setRefreshing(false);
+    }
   }, [onMessage]);
 
   const openExternal = useCallback(() => {
@@ -23,6 +29,7 @@ export function WebViewPage({ url, onMessage }: WebViewPageProps) {
     <View style={{ flex: 1 }}>
       <RefreshableScrollView
         onRefresh={onRefresh}
+        refreshing={refreshing}
         contentContainerStyle={{ flex: 1 }}
       >
         <View

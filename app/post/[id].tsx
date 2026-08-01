@@ -8,7 +8,6 @@ import { postKeys } from "@/api/domains/post/queries";
 import { userKeys } from "@/api/domains/user/queries";
 import CommentInputBar from "@/components/comment/input-bar";
 import CommentList, { CommentListSkeleton } from "@/components/comment/list";
-import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
 import PostDetailCard, {
   PostDetailCardSkeleton,
 } from "@/components/post/detail-card";
@@ -23,12 +22,11 @@ const PostDetailScreen = () => {
     useCommentReplyInput();
   const headerHeight = useHeaderHeight();
   const { keyboardAvoidingViewProps } = useKeyboardAvoidingView(headerHeight);
-  const onRefresh = useRefreshQueries([
+  const { onRefresh, refreshing } = useRefreshQueries([
     userKeys.me(),
     postKeys.detail(id),
     commentKeys.byPost(id),
   ]);
-  const { refreshControl } = useLogoRefreshControl({ onRefresh });
 
   return (
     <View className="flex-1 bg-semantic-bg-primary">
@@ -51,7 +49,8 @@ const PostDetailScreen = () => {
                 </View>
               }
               contentContainerStyle={{ paddingBottom: 16 }}
-              refreshControl={refreshControl}
+              onRefresh={onRefresh}
+              refreshing={refreshing}
             />
           </SuspenseWithDelay>
           <CommentInputBar

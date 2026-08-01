@@ -2,7 +2,7 @@ import { catKeys, useMyCatsQuery } from "@/api/domains/cat/queries";
 import PlusIcon from "@/assets/icons/plus-circle.svg";
 import CatCard from "@/components/cat/cat-card";
 import ActionPressable from "@/components/common/action-pressable";
-import { RefreshableScrollView } from "@/components/common/logo-refresh-control";
+import { RefreshableScrollView } from "@/components/common/refreshable-scroll-view";
 import { useColors } from "@/hooks/use-colors";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
 import { Text, View } from "react-native";
@@ -10,11 +10,12 @@ import { Text, View } from "react-native";
 const CatList = () => {
   const { colors } = useColors();
   const { data: catData } = useMyCatsQuery();
-  const refreshQueries = useRefreshQueries([catKeys.list()]);
+  const { onRefresh, refreshing } = useRefreshQueries([catKeys.list()]);
   return (
     <View className="flex-1">
       <RefreshableScrollView
-        onRefresh={refreshQueries}
+        onRefresh={onRefresh}
+        refreshing={refreshing}
         className="flex-1 bg-semantic-bg-primary py-6 px-5"
       >
         <View className="flex-col gap-1.5">

@@ -7,7 +7,6 @@ import {
 } from "@/api/domains/user/queries";
 import SelectCatSheet from "@/components/bottom-sheet/select-cat-sheet";
 import ActionPressable from "@/components/common/action-pressable";
-import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
 import FollowButton from "@/components/user/follow-button";
 import UserProfileImage from "@/components/user/profile-image";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -162,13 +161,10 @@ const FollowerList = ({ userId }: { userId: string }) => {
     useUserFollowersQuery(userId);
   const { colors } = useColors();
   const { handleUnfollowStart, sheet } = useFollowListUnfollowSheet();
-  const refreshQueries = useRefreshQueries([
+  const { onRefresh, refreshing } = useRefreshQueries([
     userKeys.me(),
     userKeys.followers(userId),
   ]);
-  const { refreshControl } = useLogoRefreshControl({
-    onRefresh: refreshQueries,
-  });
   const followers = data.pages.flat();
 
   return (
@@ -199,7 +195,8 @@ const FollowerList = ({ userId }: { userId: string }) => {
           if (hasNextPage && !isFetchingNextPage) fetchNextPage();
         }}
         onEndReachedThreshold={0.5}
-        refreshControl={refreshControl}
+        onRefresh={onRefresh}
+        refreshing={refreshing}
         ListFooterComponent={
           isFetchingNextPage ? (
             <ActivityIndicator size="small" style={{ marginVertical: 12 }} />
@@ -219,13 +216,10 @@ const FollowingList = ({ userId }: { userId: string }) => {
     useUserFollowingsQuery(userId);
   const { colors } = useColors();
   const { handleUnfollowStart, sheet } = useFollowListUnfollowSheet();
-  const refreshQueries = useRefreshQueries([
+  const { onRefresh, refreshing } = useRefreshQueries([
     userKeys.me(),
     userKeys.followings(userId),
   ]);
-  const { refreshControl } = useLogoRefreshControl({
-    onRefresh: refreshQueries,
-  });
   const followings = data.pages.flat();
 
   return (
@@ -256,7 +250,8 @@ const FollowingList = ({ userId }: { userId: string }) => {
           if (hasNextPage && !isFetchingNextPage) fetchNextPage();
         }}
         onEndReachedThreshold={0.5}
-        refreshControl={refreshControl}
+        onRefresh={onRefresh}
+        refreshing={refreshing}
         ListFooterComponent={
           isFetchingNextPage ? (
             <ActivityIndicator size="small" style={{ marginVertical: 12 }} />

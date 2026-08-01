@@ -1,16 +1,22 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { QueryKey } from "@tanstack/react-query";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 
 const useRefreshQueries = (queryKeys: QueryKey[]) => {
   const queryClient = useQueryClient();
-  return useCallback(
-    () =>
-      Promise.all(
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await Promise.all(
         queryKeys.map((key) => queryClient.invalidateQueries({ queryKey: key })),
-      ),
-    [queryClient, queryKeys],
-  );
+      );
+    } finally {
+      setRefreshing(false);
+    }
+  }, [queryClient, queryKeys]);
+
+  return { onRefresh, refreshing };
 };
 
 export { useRefreshQueries };

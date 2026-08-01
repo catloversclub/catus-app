@@ -9,7 +9,6 @@ import { userKeys } from "@/api/domains/user/queries";
 import SettingsIcon from "@/assets/icons/settings.svg";
 import EmptyActionState from "@/components/common/empty-action-state";
 import IconButton from "@/components/common/icon-button";
-import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
 import TabIconBar from "@/components/layout/tab-icon-bar";
 import PostGrid, { PostGridSkeleton } from "@/components/post/grid";
 import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
@@ -53,16 +52,13 @@ const MypageGrid = () => {
     />,
   ];
 
-  const refreshQueries = useRefreshQueries([
+  const { onRefresh, refreshing } = useRefreshQueries([
     userKeys.me(),
     postKeys.myPosts(),
     postKeys.myLikedPosts(),
     postKeys.myBookmarkedPosts(),
     catKeys.list(),
   ]);
-  const { refreshControl } = useLogoRefreshControl({
-    onRefresh: refreshQueries,
-  });
 
   const myPostsQuery = useMyPostsQuery();
   const likedQuery = useMyLikedPostsQuery();
@@ -87,7 +83,8 @@ const MypageGrid = () => {
         </>
       }
       scrollEnabled
-      refreshControl={refreshControl}
+      onRefresh={onRefresh}
+      refreshing={refreshing}
       onEndReached={() => {
         if (activeQuery.hasNextPage && !activeQuery.isFetchingNextPage) {
           activeQuery.fetchNextPage();

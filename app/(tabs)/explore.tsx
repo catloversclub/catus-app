@@ -3,7 +3,6 @@ import { searchKeys } from "@/api/domains/search/queries";
 import AlertIcon from "@/assets/icons/alert.svg";
 import ArrowLeftIcon from "@/assets/icons/arrow-left.svg";
 import IconButton from "@/components/common/icon-button";
-import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
 import SearchInput from "@/components/common/search-input";
 import ExploreDefaultView from "@/components/explore/explore-default-view";
 import ExploreIdleView from "@/components/explore/explore-idle-view";
@@ -16,7 +15,7 @@ import { useSearchHistoryStore } from "@/store/explore/search-history-store";
 import { useScrollToTop } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { useCallback, useState } from "react";
-import { Keyboard, Text, View } from "react-native";
+import { Keyboard, RefreshControl, Text, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, { runOnJS, useAnimatedRef } from "react-native-reanimated";
 
@@ -26,7 +25,10 @@ const ExploreScreen = () => {
   const { colors } = useColors();
   const defaultOptions = useDefaultStackScreenOptions();
   const addSearch = useSearchHistoryStore((s) => s.addSearch);
-  const refreshDefault = useRefreshQueries([postKeys.dailyPopular()]);
+  const {
+    onRefresh: refreshDefault,
+    refreshing: isRefreshingDefault,
+  } = useRefreshQueries([postKeys.dailyPopular()]);
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   useScrollToTop(scrollRef);
 
@@ -34,7 +36,10 @@ const ExploreScreen = () => {
   const [query, setQuery] = useState("");
   const [submittedQuery, setSubmittedQuery] = useState("");
   const [showEmptyToast, setShowEmptyToast] = useState(false);
-  const refreshResults = useRefreshQueries([
+  const {
+    onRefresh: refreshResults,
+    refreshing: isRefreshingResults,
+  } = useRefreshQueries([
     searchKeys.results("post", submittedQuery),
     searchKeys.results("profile", submittedQuery),
   ]);
@@ -105,7 +110,6 @@ const ExploreScreen = () => {
     if (mode === "default") return refreshDefault();
     if (mode === "results") return refreshResults();
   }, [mode, refreshDefault, refreshResults]);
-  const { refreshControl } = useLogoRefreshControl({ onRefresh: handleRefresh });
 
   const renderContent = () => {
     switch (mode) {
@@ -145,7 +149,12 @@ const ExploreScreen = () => {
       <View className="flex-1 bg-semantic-bg-primary">
         <Animated.ScrollView
           ref={scrollRef}
-          refreshControl={refreshControl}
+          refreshControl={
+            <RefreshControl
+              onRefresh={handleRefresh}
+              refreshing={isRefreshingDefault || isRefreshingResults}
+            />
+          }
           showsVerticalScrollIndicator={false}
           scrollEventThrottle={16}
           className="flex-1"

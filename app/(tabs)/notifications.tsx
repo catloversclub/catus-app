@@ -1,5 +1,5 @@
 import { notificationKeys } from "@/api/domains/notification/queries";
-import { RefreshableScrollView } from "@/components/common/logo-refresh-control";
+import { RefreshableScrollView } from "@/components/common/refreshable-scroll-view";
 import {
   NotificationList,
   NotificationListSkeleton,
@@ -16,7 +16,7 @@ import Animated, { useAnimatedRef } from "react-native-reanimated";
 const NotificationsScreen = () => {
   const defaultOptions = useDefaultStackScreenOptions();
   const { handleScroll, loadMoreRef } = useLoadMoreScroll();
-  const refreshQueries = useRefreshQueries([notificationKeys.list()]);
+  const { onRefresh, refreshing } = useRefreshQueries([notificationKeys.list()]);
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   useScrollToTop(scrollRef);
 
@@ -28,7 +28,8 @@ const NotificationsScreen = () => {
       <View className="flex-1 bg-semantic-bg-primary px-3">
         <RefreshableScrollView
           ref={scrollRef}
-          onRefresh={refreshQueries}
+          onRefresh={onRefresh}
+          refreshing={refreshing}
           onScroll={handleScroll}
           scrollEventThrottle={100}
         >

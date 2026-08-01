@@ -4,7 +4,6 @@ import {
 } from "@/api/domains/post/queries";
 import { Post } from "@/api/domains/post/types";
 import { LoadMoreFooter } from "@/components/common/load-more-footer";
-import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
 import FeedCard, { FeedCardSkeleton } from "@/components/feed/card";
 import { useScrollToTop } from "@react-navigation/native";
 import { Text, View } from "react-native";
@@ -19,6 +18,7 @@ type FeedListProps = {
   hasNextPage: boolean;
   isFetchingNextPage: boolean;
   refetch: () => Promise<unknown>;
+  isRefetching: boolean;
   scrollHandler: ReturnType<typeof useAnimatedScrollHandler>;
   isActive: boolean;
 };
@@ -29,6 +29,7 @@ const FeedList = ({
   hasNextPage,
   isFetchingNextPage,
   refetch,
+  isRefetching,
   scrollHandler,
   isActive,
 }: FeedListProps) => {
@@ -36,10 +37,6 @@ const FeedList = ({
 
   const listRef = useAnimatedRef<Animated.FlatList<Post>>();
   useScrollToTop(listRef);
-
-  const { refreshControl } = useLogoRefreshControl({
-    onRefresh: refetch,
-  });
 
   return (
     <View className="flex-1">
@@ -59,7 +56,8 @@ const FeedList = ({
             </Text>
           </View>
         }
-        refreshControl={refreshControl}
+        onRefresh={refetch}
+        refreshing={isRefetching}
         onScroll={scrollHandler}
         scrollEventThrottle={16}
         alwaysBounceVertical

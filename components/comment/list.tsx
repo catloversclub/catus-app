@@ -7,7 +7,7 @@ import useCommentItemRenderer from "@/hooks/comment/use-comment-item-renderer";
 import { useScrollToTop } from "@react-navigation/native";
 import type { ReactElement } from "react";
 import { useCallback } from "react";
-import { RefreshControlProps, StyleProp, View, ViewStyle } from "react-native";
+import { StyleProp, View, ViewStyle } from "react-native";
 import Animated, { useAnimatedRef } from "react-native-reanimated";
 
 interface CommentListProps {
@@ -15,7 +15,8 @@ interface CommentListProps {
   onReply?: (target: ReplyTarget) => void;
   ListHeaderComponent?: ReactElement | null;
   contentContainerStyle?: StyleProp<ViewStyle>;
-  refreshControl?: ReactElement<RefreshControlProps>;
+  onRefresh?: () => void;
+  refreshing?: boolean;
 }
 
 const CommentList = ({
@@ -23,7 +24,8 @@ const CommentList = ({
   onReply,
   ListHeaderComponent,
   contentContainerStyle,
-  refreshControl,
+  onRefresh,
+  refreshing,
 }: CommentListProps) => {
   const listRef = useAnimatedRef<Animated.FlatList<Comment>>();
   useScrollToTop(listRef);
@@ -46,7 +48,8 @@ const CommentList = ({
       ListHeaderComponent={ListHeaderComponent}
       ListEmptyComponent={listEmptyComponent}
       contentContainerStyle={[{ flexGrow: 1 }, contentContainerStyle]}
-      refreshControl={refreshControl}
+      onRefresh={onRefresh}
+      refreshing={refreshing}
       initialNumToRender={8}
       maxToRenderPerBatch={6}
       updateCellsBatchingPeriod={50}
