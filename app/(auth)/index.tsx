@@ -5,7 +5,7 @@ import KakaoLogo from "@/assets/icons/kakao.svg";
 import FeatureCarousel from "@/components/auth/feature-carousel";
 import { useColors } from "@/hooks/use-colors";
 import { cn } from "@/lib/utils";
-import { Platform, Text, TouchableOpacity, View } from "react-native";
+import { Linking, Platform, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 type Provider = "kakao" | "google" | "apple";
@@ -51,7 +51,7 @@ const Index = () => {
       <View className="items-center justify-center flex-1">
         <FeatureCarousel />
       </View>
-      <View className="w-full flex-col gap-2 pb-16 px-4">
+      <View className="w-full flex-col gap-2 pb-4 px-4">
         {LOGIN_OPTIONS.map(({ id, label, containerClass, textClass, Icon }) => (
           <TouchableOpacity
             key={id}
@@ -68,9 +68,17 @@ const Index = () => {
             <Text className={cn("typo-body1", textClass)}>{label}</Text>
           </TouchableOpacity>
         ))}
+        <TouchableOpacity
+          onPress={() => Linking.openURL("mailto:support@catus.app")}
+          className="w-full items-center justify-center py-4"
+        >
+          <Text className="typo-body4 text-semantic-button-ghost-text underline">
+            로그인 과정에 문제가 있나요?
+          </Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
-}
+};
 
 export default Index;

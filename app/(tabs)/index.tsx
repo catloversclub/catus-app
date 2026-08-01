@@ -4,11 +4,11 @@ import {
   RecommendedFeedList,
 } from "@/components/feed/list";
 import TabPager from "@/components/layout/tab-pager";
+import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
 import { useColors } from "@/hooks/use-colors";
 import { useScrollHeader } from "@/hooks/use-scroll-header";
 import { commonStyles } from "@/styles/common-styles";
 import { Image } from "expo-image";
-import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
 import { useState } from "react";
 import { View } from "react-native";
 import Animated from "react-native-reanimated";
