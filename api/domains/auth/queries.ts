@@ -15,6 +15,7 @@ import {
   registerCurrentDevicePushToken,
 } from "@/lib/push-notifications";
 import { tokenStorage } from "@/lib/token";
+import { useAuthStore } from "@/store/auth/auth-store";
 import { useOidcStore } from "@/store/auth/oidc-store";
 import { exchangeAndSaveTokens, logoutUser } from "./api";
 
@@ -24,6 +25,7 @@ GoogleSignin.configure({
 
 export const useLogin = () => {
   const { setOidc } = useOidcStore();
+  const setAuthStatus = useAuthStore((state) => state.setStatus);
   // const showError = useErrorStore((s) => s.showError);
 
   return useMutation({
@@ -79,7 +81,7 @@ export const useLogin = () => {
       if (data.onboardingRequired) {
         router.push(ROUTES.AUTH.ONBOARDING.INDEX);
       } else {
-        router.replace(ROUTES.TABS.INDEX);
+        setAuthStatus("authenticated");
       }
     },
 
@@ -92,8 +94,13 @@ export const useLogin = () => {
 export const useLogout = () => {
   const queryClient = useQueryClient();
   const { clearOidc } = useOidcStore();
+  const setAuthStatus = useAuthStore((state) => state.setStatus);
 
   return useMutation({
+    onMutate: () => {
+      setAuthStatus("unauthenticated");
+    },
+
     mutationFn: async () => {
       const refreshToken = await SecureStore.getItemAsync("refreshToken");
 
@@ -114,8 +121,7 @@ export const useLogout = () => {
       // 모든 캐시 무효화 (다른 유저 정보 노출 방지)
       queryClient.clear();
       clearOidc();
-
-      router.replace(ROUTES.AUTH.INDEX);
+      setAuthStatus("unauthenticated");
     },
   });
 };

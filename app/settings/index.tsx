@@ -1,4 +1,4 @@
-import { logoutUser } from "@/api/domains/auth/api";
+import { useLogout } from "@/api/domains/auth/queries";
 import DisplayModeSheet from "@/components/bottom-sheet/display-mode-sheet";
 import Button from "@/components/common/button";
 import CenterModal from "@/components/modal/center-modal";
@@ -7,7 +7,6 @@ import SettingsSection from "@/components/settings/settings-section";
 import { presentBottomSheet } from "@/lib/bottom-sheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
-import * as SecureStore from "expo-secure-store";
 import { useCallback, useRef, useState } from "react";
 import { Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
@@ -21,6 +20,7 @@ const DISPLAY_MODE_LABELS: Record<ThemeMode, string> = {
 
 const Follower = () => {
   const [isLogoutModalVisible, setIsLogoutModalVisible] = useState(false);
+  const { mutate: logout } = useLogout();
   const displayMode = useThemeStore((s) => s.mode);
   const DisplayModeSheetModalRef = useRef<BottomSheetModal>(null);
   const handleDisplayModePress = useCallback(() => {
@@ -98,15 +98,8 @@ const Follower = () => {
               <Button
                 button={{
                   label: "로그아웃",
-                  onPress: async () => {
-                    const refreshToken =
-                      await SecureStore.getItemAsync("refreshToken");
-                    if (refreshToken) {
-                      await logoutUser(refreshToken);
-                      await SecureStore.deleteItemAsync("accessToken");
-                      await SecureStore.deleteItemAsync("refreshToken");
-                      router.replace("/(auth)");
-                    }
+                  onPress: () => {
+                    logout();
                     setIsLogoutModalVisible(false);
                   },
                   variant: "primary",

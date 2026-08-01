@@ -1,13 +1,13 @@
 import BottomActionBar from "@/components/layout/bottom-action-bar";
-import { ROUTES } from "@/constants/route";
-import { router } from "expo-router";
+import { useAuthStore } from "@/store/auth/auth-store";
 import { Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 const Step8 = () => {
+  const setAuthStatus = useAuthStore((state) => state.setStatus);
+
   const handleStartPress = () => {
-    router.dismissAll();
-    router.replace(ROUTES.TABS.INDEX);
+    setAuthStatus("authenticated");
   };
 
   return (

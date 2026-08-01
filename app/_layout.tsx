@@ -4,16 +4,15 @@ import { ToastProvider } from "@/components/ui/toast-provider";
 import { useAuthBootstrap } from "@/hooks/auth/use-auth-redirect";
 import { useAuthStore } from "@/store/auth/auth-store";
 import { useErrorStore } from "@/store/error-store";
-import { ROUTES } from "@/constants/route";
 import { useReactQueryDevTools } from "@dev-plugins/react-query";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { PortalHost } from "@rn-primitives/portal";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useFonts } from "expo-font";
-import { router, Stack, useSegments } from "expo-router";
+import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { useThemeStore } from "@/store/theme-store";
@@ -58,7 +57,6 @@ const AppContent = () => {
   const authStatus = useAuthStore((s) => s.status);
   const isThemeLoaded = useThemeStore((s) => s.isLoaded);
   const loadThemeMode = useThemeStore((s) => s.loadMode);
-  const [rootSegment] = useSegments();
 
   useEffect(() => {
     loadThemeMode();
@@ -67,21 +65,10 @@ const AppContent = () => {
   // 폰트와 auth 둘 다 결정될 때까지 splash 유지
   const isReady = fontsLoaded && authStatus !== "unknown" && isThemeLoaded;
 
-  const hasNavigated = useRef(false);
-
   useEffect(() => {
-    if (!isReady || hasNavigated.current) return;
-    hasNavigated.current = true;
+    if (!isReady) return;
     SplashScreen.hideAsync();
-
-    if (authStatus === "authenticated" && rootSegment !== "(tabs)") {
-      router.replace(ROUTES.TABS.INDEX);
-    }
-
-    if (authStatus === "unauthenticated" && rootSegment !== "(auth)") {
-      router.replace(ROUTES.AUTH.INDEX);
-    }
-  }, [authStatus, isReady, rootSegment]);
+  }, [isReady]);
 
   if (!isReady) return null;
 
@@ -92,9 +79,17 @@ const AppContent = () => {
           <KeyboardProvider>
             <BottomSheetModalProvider>
               <Stack screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="(auth)" />
-                <Stack.Screen name="(tabs)" />
-                <Stack.Screen name="post" />
+                <Stack.Protected guard={authStatus === "unauthenticated"}>
+                  <Stack.Screen name="(auth)" />
+                </Stack.Protected>
+                <Stack.Protected guard={authStatus === "authenticated"}>
+                  <Stack.Screen name="(tabs)" />
+                  <Stack.Screen name="cat" />
+                  <Stack.Screen name="mypage" />
+                  <Stack.Screen name="post" />
+                  <Stack.Screen name="settings" />
+                  <Stack.Screen name="user" />
+                </Stack.Protected>
               </Stack>
               <ErrorModal />
             </BottomSheetModalProvider>
