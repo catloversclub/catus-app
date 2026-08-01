@@ -15,7 +15,6 @@ const FeedCard = ({ post }: { post: Post }) => {
     moreSheetRef,
     handleLike,
     handleBookmark,
-    handleCommentPressIn,
     handleCommentPress,
     handleMorePress,
   } = usePostActions(post);
@@ -24,10 +23,10 @@ const FeedCard = ({ post }: { post: Post }) => {
     <PostOverlayActions
       isLikedByMe={post.isLikedByMe}
       likeCount={post.likeCount}
+      commentCount={post.commentCount}
       isBookmarkedByMe={post.isBookmarkedByMe}
       isCommentable={post.isCommentable}
       onLike={handleLike}
-      onCommentPressIn={handleCommentPressIn}
       onCommentPress={handleCommentPress}
       onBookmark={handleBookmark}
     />
@@ -35,8 +34,8 @@ const FeedCard = ({ post }: { post: Post }) => {
 
   return (
     <View className="mb-5 flex-col gap-3 px-3">
-      <PostCarousel post={post} overlay={overlay} />
       <PostProfileHeader post={post} onMorePress={handleMorePress} />
+      <PostCarousel post={post} overlay={overlay} />
       {post.isCommentable && (
         <CommentSheet CommentSheetModalRef={commentSheetRef} postId={post.id} />
       )}

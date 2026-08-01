@@ -4,10 +4,10 @@ import { View } from "react-native";
 interface PostOverlayActionsProps {
   isLikedByMe: boolean;
   likeCount: number;
+  commentCount: number;
   isBookmarkedByMe: boolean;
   isCommentable: boolean;
   onLike: () => void;
-  onCommentPressIn?: () => void;
   onCommentPress: () => void;
   onBookmark: () => void;
 }
@@ -15,10 +15,10 @@ interface PostOverlayActionsProps {
 const PostOverlayActions = ({
   isLikedByMe,
   likeCount,
+  commentCount,
   isBookmarkedByMe,
   isCommentable,
   onLike,
-  onCommentPressIn,
   onCommentPress,
   onBookmark,
 }: PostOverlayActionsProps) => {
@@ -27,9 +27,9 @@ const PostOverlayActions = ({
       <PostActionButtons
         isLikedByMe={isLikedByMe}
         likeCount={likeCount}
+        commentCount={commentCount}
         isBookmarkedByMe={isBookmarkedByMe}
         onLike={onLike}
-        onCommentPressIn={onCommentPressIn}
         onCommentPress={isCommentable ? onCommentPress : undefined}
         onBookmark={onBookmark}
       />

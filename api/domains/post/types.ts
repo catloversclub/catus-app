@@ -4,6 +4,7 @@ export interface Post {
   id: string;
   content: string | null;
   likeCount: number;
+  commentCount: number;
   isShareable: boolean;
   isCommentable: boolean;
   createdAt: string;

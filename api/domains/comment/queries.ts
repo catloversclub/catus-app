@@ -1,4 +1,5 @@
-import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query"
+import { queryOptions, useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query"
+import { postKeys } from "@/api/domains/post/queries"
 
 import {
   createComment,
@@ -15,22 +16,17 @@ export const commentKeys = {
   byPost: (postId: string) => [...commentKeys.all, "post", postId] as const,
 }
 
-export const postCommentsQueryOptions = (postId: string) => ({
+export const postCommentsQueryOptions = (postId: string) => queryOptions({
   queryKey: commentKeys.byPost(postId),
   queryFn: () => getPostComments(postId),
   staleTime: Infinity,
+  gcTime: Infinity,
+  refetchOnMount: (query) => query.state.isInvalidated,
 })
 
 export const usePostCommentsQuery = (postId: string) => {
   return useSuspenseQuery({
     ...postCommentsQueryOptions(postId),
-  })
-}
-
-export const usePostCommentsNonSuspenseQuery = (postId: string, enabled = true) => {
-  return useQuery({
-    ...postCommentsQueryOptions(postId),
-    enabled,
   })
 }
 
@@ -42,6 +38,7 @@ export const useCreateCommentMutation = () => {
       createComment(postId, payload),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: commentKeys.byPost(variables.postId) })
+      queryClient.invalidateQueries({ queryKey: postKeys.all })
     },
   })
 }
@@ -54,6 +51,7 @@ export const useDeleteCommentMutation = () => {
       deleteComment(commentId),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: commentKeys.byPost(variables.postId) })
+      queryClient.invalidateQueries({ queryKey: postKeys.all })
     },
   })
 }

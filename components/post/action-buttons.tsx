@@ -6,9 +6,9 @@ import { View } from "react-native";
 interface PostActionButtonsProps {
   isLikedByMe: boolean;
   likeCount?: number;
+  commentCount?: number;
   isBookmarkedByMe: boolean;
   onLike: () => void;
-  onCommentPressIn?: () => void;
   onCommentPress?: () => void;
   onBookmark: () => void;
 }
@@ -16,9 +16,9 @@ interface PostActionButtonsProps {
 const PostActionButtons = ({
   isLikedByMe,
   likeCount = 0,
+  commentCount = 0,
   isBookmarkedByMe,
   onLike,
-  onCommentPressIn,
   onCommentPress,
   onBookmark,
 }: PostActionButtonsProps) => {
@@ -42,11 +42,13 @@ const PostActionButtons = ({
       </ActionPressable>
       {onCommentPress && (
         <ActionPressable
-          onPressIn={onCommentPressIn}
           onPress={onCommentPress}
-          className="px-2 py-3"
+          className="flex-row items-center gap-0.5 px-2 py-3"
         >
           <MessageCircle size={24} className="text-semantic-icon-tertiary" />
+          {commentCount > 0 && (
+            <Text className="typo-label1 text-white">{commentCount}</Text>
+          )}
         </ActionPressable>
       )}
       <ActionPressable onPress={onBookmark} className="px-2 py-3">

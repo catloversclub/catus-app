@@ -1,6 +1,8 @@
-import { usePostCommentsNonSuspenseQuery } from "@/api/domains/comment/queries";
+import { usePostCommentsQuery } from "@/api/domains/comment/queries";
 import BaseBottomSheet from "@/components/bottom-sheet/base-bottom-sheet";
-import CommentInputBar from "@/components/comment/input-bar";
+import CommentInputBar, {
+  ReplyTarget,
+} from "@/components/comment/input-bar";
 import { CommentListEmpty, CommentListSkeleton } from "@/components/comment/list";
 import { Text } from "@/components/ui/text";
 import useCommentItemRenderer from "@/hooks/comment/use-comment-item-renderer";
@@ -12,7 +14,7 @@ import {
   BottomSheetModal,
   BottomSheetTextInput,
 } from "@gorhom/bottom-sheet";
-import React, { useCallback, useState } from "react";
+import React, { Suspense, useCallback, useState } from "react";
 import { LayoutChangeEvent, View } from "react-native";
 
 interface CommentSheetProps {
@@ -20,19 +22,71 @@ interface CommentSheetProps {
   CommentSheetModalRef: React.RefObject<BottomSheetModal | null>;
 }
 
+interface CommentSheetListProps {
+  postId: string;
+  footerHeight: number;
+  onReply: (target: ReplyTarget) => void;
+}
+
+const CommentSheetLoadingList = ({ footerHeight }: { footerHeight: number }) => (
+  <BottomSheetFlatList
+    data={[]}
+    renderItem={() => null}
+    ListHeaderComponent={
+      <View className="flex-row items-center justify-center py-3">
+        <Text className="typo-body1 text-semantic-text-tertiary">댓글</Text>
+      </View>
+    }
+    ListEmptyComponent={<CommentListSkeleton />}
+    contentContainerStyle={{
+      flexGrow: 1,
+      paddingHorizontal: 12,
+      paddingBottom: footerHeight,
+    }}
+  />
+);
+
+const CommentSheetList = ({
+  postId,
+  footerHeight,
+  onReply,
+}: CommentSheetListProps) => {
+  const { data: comments } = usePostCommentsQuery(postId);
+  const { renderComment } = useCommentItemRenderer({ postId, onReply });
+
+  return (
+    <BottomSheetFlatList
+      data={comments}
+      keyExtractor={(item) => item.id}
+      renderItem={renderComment}
+      ListHeaderComponent={
+        <View className="flex-row items-center justify-center gap-1 py-3">
+          <Text className="typo-body1 text-semantic-text-tertiary">댓글</Text>
+          <Text className="typo-body2 text-semantic-text-secondary">
+            {comments.length}
+          </Text>
+        </View>
+      }
+      ListEmptyComponent={<CommentListEmpty />}
+      contentContainerStyle={{
+        flexGrow: 1,
+        paddingHorizontal: 12,
+        paddingBottom: footerHeight,
+      }}
+      initialNumToRender={8}
+      maxToRenderPerBatch={6}
+      updateCellsBatchingPeriod={50}
+      windowSize={5}
+      keyboardShouldPersistTaps="handled"
+    />
+  );
+};
+
 const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [hasPresented, setHasPresented] = useState(false);
   const [footerHeight, setFooterHeight] = useState(0);
   const { inputRef, replyTarget, handleReply, clearReplyTarget } =
     useCommentReplyInput();
-  const {
-    data: comments = [],
-    isPending,
-  } = usePostCommentsNonSuspenseQuery(postId, isOpen);
-  const { renderComment } = useCommentItemRenderer({
-    postId,
-    onReply: handleReply,
-  });
 
   const handleFooterLayout = useCallback((event: LayoutChangeEvent) => {
     const nextHeight = event.nativeEvent.layout.height;
@@ -57,34 +111,15 @@ const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
     [clearReplyTarget, handleFooterLayout, inputRef, postId, replyTarget],
   );
 
-  const handleChange = useCallback((index: number) => {
-    setIsOpen(index >= 0);
-  }, []);
-
   const handleDismiss = useCallback(() => {
-    setIsOpen(false);
     clearReplyTarget();
   }, [clearReplyTarget]);
 
-  const listHeaderComponent = useCallback(
-    () => (
-      <View className="flex-row items-center justify-center gap-1 py-3">
-        <Text className="typo-body1 text-semantic-text-tertiary">댓글</Text>
-        <Text className="typo-body2 text-semantic-text-secondary">
-          {comments.length}
-        </Text>
-      </View>
-    ),
-    [comments.length],
-  );
-
-  const listEmptyComponent = useCallback(() => {
-    if (isPending) {
-      return <CommentListSkeleton />;
+  const handleChange = useCallback((index: number) => {
+    if (index >= 0) {
+      setHasPresented(true);
     }
-
-    return <CommentListEmpty />;
-  }, [isPending]);
+  }, []);
 
   return (
     <BaseBottomSheet
@@ -97,23 +132,19 @@ const CommentSheet = ({ CommentSheetModalRef, postId }: CommentSheetProps) => {
       footerComponent={footerComponent}
       withContentContainer={false}
     >
-      <BottomSheetFlatList
-        data={comments}
-        keyExtractor={(item) => item.id}
-        renderItem={renderComment}
-        ListHeaderComponent={listHeaderComponent}
-        ListEmptyComponent={listEmptyComponent}
-        contentContainerStyle={{
-          flexGrow: 1,
-          paddingHorizontal: 12,
-          paddingBottom: footerHeight,
-        }}
-        initialNumToRender={8}
-        maxToRenderPerBatch={6}
-        updateCellsBatchingPeriod={50}
-        windowSize={5}
-        keyboardShouldPersistTaps="handled"
-      />
+      {hasPresented ? (
+        <Suspense
+          fallback={<CommentSheetLoadingList footerHeight={footerHeight} />}
+        >
+          <CommentSheetList
+            postId={postId}
+            footerHeight={footerHeight}
+            onReply={handleReply}
+          />
+        </Suspense>
+      ) : (
+        <CommentSheetLoadingList footerHeight={footerHeight} />
+      )}
     </BaseBottomSheet>
   );
 };
