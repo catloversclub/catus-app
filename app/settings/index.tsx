@@ -42,6 +42,10 @@ const Follower = () => {
             value={DISPLAY_MODE_LABELS[displayMode]}
             onPress={handleDisplayModePress}
           />
+          <SettingsLinkItem
+            label="차단한 계정 관리"
+            onPress={() => router.push("/settings/blocked-accounts")}
+          />
         </SettingsSection>
         <SettingsSection title="문의">
           <SettingsLinkItem

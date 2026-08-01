@@ -1,6 +1,7 @@
 import { uploadImage } from "@/api/domains/common/api";
 import { getUserCats } from "@/api/domains/cat/api";
 import { catKeys } from "@/api/domains/cat/queries";
+import type { InfiniteData } from "@tanstack/react-query";
 import {
   useMutation,
   useQuery,
@@ -8,7 +9,7 @@ import {
   useSuspenseInfiniteQuery,
   useSuspenseQuery,
 } from "@tanstack/react-query";
-import { FollowUserRequest } from "./types";
+import type { FollowUserRequest, GetBlocksResponse } from "./types";
 import {
   blockUser,
   checkNickname,
@@ -27,8 +28,39 @@ import {
 } from "./api";
 
 const DEFAULT_TAKE = 20;
+const BLOCK_RELATED_QUERY_DOMAINS = new Set([
+  "user",
+  "cat",
+  "post",
+  "comment",
+  "search",
+  "notification",
+]);
 
 type FollowMutationInput = string | FollowUserRequest;
+
+const invalidateFollowRelatedQueries = (
+  queryClient: ReturnType<typeof useQueryClient>,
+  userId: string,
+) => {
+  queryClient.invalidateQueries({ queryKey: userKeys.all });
+  queryClient.invalidateQueries({ queryKey: catKeys.userList(userId) });
+  queryClient.invalidateQueries({
+    predicate: ({ queryKey }) =>
+      queryKey[0] === "post" &&
+      queryKey[1] === "feed" &&
+      queryKey[2] === "following",
+  });
+};
+
+const invalidateBlockRelatedQueries = (
+  queryClient: ReturnType<typeof useQueryClient>,
+) => {
+  queryClient.invalidateQueries({
+    predicate: ({ queryKey }) =>
+      BLOCK_RELATED_QUERY_DOMAINS.has(String(queryKey[0])),
+  });
+};
 
 const resolveFollowRequest = async (
   input: FollowMutationInput,
@@ -167,9 +199,7 @@ export const useFollowUserMutation = () => {
       followUser(await resolveFollowRequest(input)),
     onSuccess: (_, input) => {
       const userId = typeof input === "string" ? input : input.userId;
-      queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
-      queryClient.invalidateQueries({ queryKey: userKeys.followings(userId) });
-      queryClient.invalidateQueries({ queryKey: catKeys.userList(userId) });
+      invalidateFollowRelatedQueries(queryClient, userId);
     },
   });
 };
@@ -181,9 +211,7 @@ export const useUnfollowUserMutation = () => {
       unfollowUser(await resolveFollowRequest(input)),
     onSuccess: (_, input) => {
       const userId = typeof input === "string" ? input : input.userId;
-      queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
-      queryClient.invalidateQueries({ queryKey: userKeys.followings(userId) });
-      queryClient.invalidateQueries({ queryKey: catKeys.userList(userId) });
+      invalidateFollowRelatedQueries(queryClient, userId);
     },
   });
 };
@@ -192,9 +220,8 @@ export const useBlockUserMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (userId: string) => blockUser(userId),
-    onSuccess: (_, userId) => {
-      queryClient.invalidateQueries({ queryKey: userKeys.blocks() });
-      queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
+    onSuccess: () => {
+      invalidateBlockRelatedQueries(queryClient);
     },
   });
 };
@@ -204,8 +231,19 @@ export const useUnblockUserMutation = () => {
   return useMutation({
     mutationFn: (userId: string) => unblockUser(userId),
     onSuccess: (_, userId) => {
-      queryClient.invalidateQueries({ queryKey: userKeys.blocks() });
-      queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
+      queryClient.setQueryData<InfiniteData<GetBlocksResponse>>(
+        userKeys.blocks(),
+        (data) =>
+          data
+            ? {
+                ...data,
+                pages: data.pages.map((page) =>
+                  page.filter((user) => user.id !== userId),
+                ),
+              }
+            : data,
+      );
+      invalidateBlockRelatedQueries(queryClient);
     },
   });
 };

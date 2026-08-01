@@ -1,22 +1,15 @@
-import { useUserCatsQuery } from "@/api/domains/cat/queries";
 import {
   useUserFollowersQuery,
   useUserFollowingsQuery,
   useUserProfileQuery,
   userKeys,
 } from "@/api/domains/user/queries";
-import SelectCatSheet from "@/components/bottom-sheet/select-cat-sheet";
 import ActionPressable from "@/components/common/action-pressable";
 import FollowButton from "@/components/user/follow-button";
 import UserProfileImage from "@/components/user/profile-image";
 import { Skeleton } from "@/components/ui/skeleton";
-import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
 import { useColors } from "@/hooks/use-colors";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
-import { useUserFollowToggle } from "@/hooks/user/use-user-follow-toggle";
-import { presentBottomSheet } from "@/lib/bottom-sheet";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { RefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, FlatList, Text, View } from "react-native";
 
 // ─── Skeleton ────────────────────────────────────────────────
@@ -51,7 +44,6 @@ interface FollowItemProps {
   profileImageUrl?: string | null;
   isFollowedByMe: boolean;
   currentUserId: string;
-  onUnfollowStart: (userId: string) => void;
 }
 
 const FollowItem = ({
@@ -60,7 +52,6 @@ const FollowItem = ({
   profileImageUrl,
   isFollowedByMe,
   currentUserId,
-  onUnfollowStart,
 }: FollowItemProps) => {
   const isMe = id === currentUserId;
 
@@ -76,81 +67,10 @@ const FollowItem = ({
         </Text>
       </ActionPressable>
       {!isMe && (
-        <FollowButton
-          userId={id}
-          isFollowing={isFollowedByMe}
-          onUnfollowStart={() => onUnfollowStart(id)}
-        />
+        <FollowButton userId={id} isFollowing={isFollowedByMe} />
       )}
     </View>
   );
-};
-
-interface FollowListUnfollowSheetProps {
-  bottomSheetRef: RefObject<BottomSheetModal | null>;
-  userId: string;
-}
-
-const FollowListUnfollowSheet = ({
-  bottomSheetRef,
-  userId,
-}: FollowListUnfollowSheetProps) => {
-  const { data: cats } = useUserCatsQuery(userId);
-  const followedCatIds = useMemo(
-    () => cats.filter((cat) => cat.isFollowedByMe).map((cat) => cat.id),
-    [cats],
-  );
-  const { unfollowWithCats } = useUserFollowToggle({
-    userId,
-    isFollowing: true,
-  });
-
-  useEffect(() => {
-    presentBottomSheet(bottomSheetRef);
-  }, [bottomSheetRef, userId]);
-
-  const handleConfirmUnfollow = useCallback(
-    (selectedCatIds: string[]) => {
-      const selectedCatIdSet = new Set(selectedCatIds);
-      const unfollowCatIds = followedCatIds.filter(
-        (catId) => !selectedCatIdSet.has(catId),
-      );
-      if (unfollowCatIds.length > 0) unfollowWithCats(unfollowCatIds);
-    },
-    [followedCatIds, unfollowWithCats],
-  );
-
-  return (
-    <SelectCatSheet
-      bottomSheetRef={bottomSheetRef}
-      userId={userId}
-      initialSelectedCatIds={followedCatIds}
-      onConfirm={handleConfirmUnfollow}
-    />
-  );
-};
-
-const useFollowListUnfollowSheet = () => {
-  const bottomSheetRef = useRef<BottomSheetModal>(null);
-  const [unfollowUserId, setUnfollowUserId] = useState<string | null>(null);
-
-  const handleUnfollowStart = useCallback((userId: string) => {
-    setUnfollowUserId((prevUserId) => {
-      if (prevUserId === userId) presentBottomSheet(bottomSheetRef);
-      return userId;
-    });
-  }, []);
-
-  const sheet = unfollowUserId ? (
-    <SuspenseWithDelay fallback={null} delay={0}>
-      <FollowListUnfollowSheet
-        bottomSheetRef={bottomSheetRef}
-        userId={unfollowUserId}
-      />
-    </SuspenseWithDelay>
-  ) : null;
-
-  return { handleUnfollowStart, sheet };
 };
 
 // ─── Follower list ───────────────────────────────────────────
@@ -160,7 +80,6 @@ const FollowerList = ({ userId }: { userId: string }) => {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useUserFollowersQuery(userId);
   const { colors } = useColors();
-  const { handleUnfollowStart, sheet } = useFollowListUnfollowSheet();
   const { onRefresh, refreshing } = useRefreshQueries([
     userKeys.me(),
     userKeys.followers(userId),
@@ -181,7 +100,6 @@ const FollowerList = ({ userId }: { userId: string }) => {
             profileImageUrl={item.profileImageUrl}
             isFollowedByMe={item.isFollowedByMe}
             currentUserId={currentUser.id}
-            onUnfollowStart={handleUnfollowStart}
           />
         )}
         ListEmptyComponent={
@@ -203,7 +121,6 @@ const FollowerList = ({ userId }: { userId: string }) => {
           ) : null
         }
       />
-      {sheet}
     </View>
   );
 };
@@ -215,7 +132,6 @@ const FollowingList = ({ userId }: { userId: string }) => {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useUserFollowingsQuery(userId);
   const { colors } = useColors();
-  const { handleUnfollowStart, sheet } = useFollowListUnfollowSheet();
   const { onRefresh, refreshing } = useRefreshQueries([
     userKeys.me(),
     userKeys.followings(userId),
@@ -236,7 +152,6 @@ const FollowingList = ({ userId }: { userId: string }) => {
             profileImageUrl={item.profileImageUrl}
             isFollowedByMe={item.isFollowedByMe}
             currentUserId={currentUser.id}
-            onUnfollowStart={handleUnfollowStart}
           />
         )}
         ListEmptyComponent={
@@ -258,7 +173,6 @@ const FollowingList = ({ userId }: { userId: string }) => {
           ) : null
         }
       />
-      {sheet}
     </View>
   );
 };

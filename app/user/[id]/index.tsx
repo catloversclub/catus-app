@@ -5,6 +5,9 @@ import {
   useUserDetailQuery,
   useUserProfileQuery,
 } from "@/api/domains/user/queries";
+import MoreIcon from "@/assets/icons/more.svg";
+import ProfileMoreSheet from "@/components/bottom-sheet/profile-more-sheet";
+import IconButton from "@/components/common/icon-button";
 import PostGrid, { PostGridSkeleton } from "@/components/post/grid";
 import { SuspenseWithDelay } from "@/components/ui/suspense-with-delay";
 import OtherProfileActions from "@/components/user/profile/other-profile-actions";
@@ -14,7 +17,11 @@ import {
 } from "@/components/user/profile/profile-header";
 import UserCatListSection from "@/components/user/profile/user-cat-list-section";
 import { useRefreshQueries } from "@/hooks/use-refresh-queries";
+import { useColors } from "@/hooks/use-colors";
+import { presentBottomSheet } from "@/lib/bottom-sheet";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Stack, useLocalSearchParams } from "expo-router";
+import { useRef } from "react";
 import { Text, View } from "react-native";
 
 interface UserDetailGridProps {
@@ -24,6 +31,8 @@ interface UserDetailGridProps {
 const UserDetailGrid = ({ userId }: UserDetailGridProps) => {
   const { data: profile } = useUserDetailQuery(userId);
   const { data: me } = useUserProfileQuery();
+  const { colors } = useColors();
+  const profileMoreSheetRef = useRef<BottomSheetModal>(null);
   const isMe = me.id === userId;
   const {
     data: postsData,
@@ -46,8 +55,24 @@ const UserDetailGrid = ({ userId }: UserDetailGridProps) => {
       <Stack.Screen
         options={{
           title: `${profile.nickname}님의 프로필`,
+          headerRight: isMe
+            ? undefined
+            : () => (
+                <IconButton
+                  onPress={() => presentBottomSheet(profileMoreSheetRef)}
+                  className="p-2"
+                >
+                  <MoreIcon width={20} height={20} color={colors.icon.primary} />
+                </IconButton>
+              ),
         }}
       />
+      {!isMe && (
+        <ProfileMoreSheet
+          bottomSheetRef={profileMoreSheetRef}
+          userId={userId}
+        />
+      )}
       <PostGrid
         posts={posts}
         isFetchingNextPage={isFetchingNextPage}
