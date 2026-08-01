@@ -1,5 +1,4 @@
 import Button, { ButtonType } from "@/components/common/button";
-import Gradient from "@/components/common/gradient";
 import { triggerSelectionHaptic } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 import {
@@ -12,13 +11,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 interface BottomActionBarProps {
   buttons: Omit<ButtonType, "size">[];
   containerClassName?: string;
-  gradientColorScheme?: "light" | "dark";
 }
 
 const BottomActionBar = ({
   buttons,
   containerClassName,
-  gradientColorScheme,
 }: BottomActionBarProps) => {
   const { bottom } = useSafeAreaInsets();
   const { progress } = useReanimatedKeyboardAnimation();
@@ -35,17 +32,6 @@ const BottomActionBar = ({
         )}
         style={animatedStyle}
       >
-        <Gradient
-          direction="vertical"
-          height={20}
-          colorScheme={gradientColorScheme}
-          style={{
-            position: "absolute",
-            top: -20,
-            left: 0,
-            transform: [{ rotate: "180deg" }],
-          }}
-        />
         {buttons.map((btn) => (
           <Button
             key={btn.label}

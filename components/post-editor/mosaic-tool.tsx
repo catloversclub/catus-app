@@ -185,7 +185,6 @@ const MosaicTool = ({ uri, onSave, onCancel }: MosaicToolProps) => {
       </View>
       <BottomActionBar
         containerClassName="bg-gray-990"
-        gradientColorScheme="dark"
         buttons={[{ label: "완료", onPress: handleComplete }]}
       />
     </View>

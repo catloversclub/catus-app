@@ -174,7 +174,6 @@ const TextTool = ({ uri, onSave, onCancel }: TextToolProps) => {
       </View>
       <BottomActionBar
         containerClassName="bg-gray-990"
-        gradientColorScheme="dark"
         buttons={[{ label: "완료", onPress: handleComplete }]}
       />
 

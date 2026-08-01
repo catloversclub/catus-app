@@ -1,4 +1,3 @@
-import Gradient from "@/components/common/gradient";
 import { useColors } from "@/hooks/use-colors";
 import { View } from "react-native";
 const TOTAL_STEPS = 7;
@@ -20,11 +19,6 @@ const ProgressBar = ({ progress }: { progress: number }) => {
           />
         ))}
       </View>
-      <Gradient
-        direction="vertical"
-        height={20}
-        style={{ position: "absolute", bottom: -20, left: 0, zIndex: 10 }}
-      />
     </View>
   );
 };

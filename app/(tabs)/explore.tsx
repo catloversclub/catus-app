@@ -2,7 +2,6 @@ import { postKeys } from "@/api/domains/post/queries";
 import { searchKeys } from "@/api/domains/search/queries";
 import AlertIcon from "@/assets/icons/alert.svg";
 import ArrowLeftIcon from "@/assets/icons/arrow-left.svg";
-import Gradient from "@/components/common/gradient";
 import IconButton from "@/components/common/icon-button";
 import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
 import SearchInput from "@/components/common/search-input";
@@ -144,18 +143,13 @@ const ExploreScreen = () => {
       />
 
       <View className="flex-1 bg-semantic-bg-primary">
-        <Gradient
-          direction="vertical"
-          height={10}
-          style={{ position: "absolute", top: 0, left: 0, zIndex: 1 }}
-        />
         <Animated.ScrollView
           ref={scrollRef}
           refreshControl={refreshControl}
           showsVerticalScrollIndicator={false}
           scrollEventThrottle={16}
           className="flex-1"
-          contentContainerStyle={{ paddingTop: 10, flexGrow: 1 }}
+          contentContainerStyle={{ flexGrow: 1 }}
           contentContainerClassName="pb-8 gap-6"
           keyboardShouldPersistTaps="handled"
         >

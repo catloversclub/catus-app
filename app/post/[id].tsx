@@ -8,7 +8,6 @@ import { postKeys } from "@/api/domains/post/queries";
 import { userKeys } from "@/api/domains/user/queries";
 import CommentInputBar from "@/components/comment/input-bar";
 import CommentList, { CommentListSkeleton } from "@/components/comment/list";
-import Gradient from "@/components/common/gradient";
 import { useLogoRefreshControl } from "@/components/common/logo-refresh-control";
 import PostDetailCard, {
   PostDetailCardSkeleton,
@@ -35,11 +34,6 @@ const PostDetailScreen = () => {
     <View className="flex-1 bg-semantic-bg-primary">
       <KeyboardAvoidingView {...keyboardAvoidingViewProps}>
         <View className="flex-1">
-          <Gradient
-            direction="vertical"
-            height={10}
-            style={{ position: "absolute", top: 0, left: 0, zIndex: 1 }}
-          />
           <SuspenseWithDelay
             fallback={
               <View className="gap-y-6 px-3 pb-4 pt-2">
@@ -56,7 +50,7 @@ const PostDetailScreen = () => {
                   <PostDetailCard postId={id} />
                 </View>
               }
-              contentContainerStyle={{ paddingTop: 10, paddingBottom: 16 }}
+              contentContainerStyle={{ paddingBottom: 16 }}
               refreshControl={refreshControl}
             />
           </SuspenseWithDelay>

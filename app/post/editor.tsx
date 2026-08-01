@@ -103,7 +103,6 @@ const EditorScreen = () => {
 
           <BottomActionBar
             containerClassName="bg-gray-990"
-            gradientColorScheme="dark"
             buttons={[
               {
                 label: "다음으로",
