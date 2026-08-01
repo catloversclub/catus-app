@@ -5,12 +5,12 @@ import CenterModal from "@/components/modal/center-modal";
 import { SettingsLinkItem } from "@/components/settings/settings-item";
 import SettingsSection from "@/components/settings/settings-section";
 import { presentBottomSheet } from "@/lib/bottom-sheet";
+import { ThemeMode, useThemeStore } from "@/store/theme-store";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
 import { useCallback, useRef, useState } from "react";
-import { Text, View } from "react-native";
+import { Linking, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import { ThemeMode, useThemeStore } from "@/store/theme-store";
 
 const DISPLAY_MODE_LABELS: Record<ThemeMode, string> = {
   system: "시스템 (자동)",
@@ -43,10 +43,12 @@ const Follower = () => {
             onPress={handleDisplayModePress}
           />
         </SettingsSection>
-        {/* <SettingsSection title="문의">
-          <SettingsLinkItem label="FAQ" onPress={() => {}} />
-          <SettingsLinkItem label="CatUs에 직접 문의하기" onPress={() => {}} />
-        </SettingsSection> */}
+        <SettingsSection title="문의">
+          <SettingsLinkItem
+            label="CatUs에 직접 문의하기"
+            onPress={() => Linking.openURL("mailto:support@catus.app")}
+          />
+        </SettingsSection>
         <SettingsSection title="기타">
           <SettingsLinkItem label="버전 정보" value="1.0.0" hideButton />
           <SettingsLinkItem
